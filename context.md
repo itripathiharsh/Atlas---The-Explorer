@@ -22,6 +22,31 @@
 
 ## Iteration Log
 
+## Iteration 8 — 2026-10-06 — owner feedback: "check whether the sheet actions work"
+- **Milestone:** polish (owner-reported)
+- **Feedback (owner, screenshot):** detail sheet showed "Could not get your
+  location" when tapping "I'm here — mark visited" from the desktop.
+- **Root cause:** the visit flow re-acquired GPS from scratch via
+  getCurrentPosition, which often fails on desktops — while the map's
+  watchPosition tracker already had a live fix the whole time. Also the sheet
+  showed distance from the *map view*, not from the user.
+- **Fixed:**
+  - Check-in now reuses the live tracked fix (fresh <20 s) and only falls back
+    to a fresh GPS read when there isn't one.
+  - Sheet distance is computed client-side from the user's actual position
+    (display-only; the server still enforces the 150 m rule).
+  - Distance gate: >150 m replaces the check-in button with "Walk closer to
+    check in" instead of letting a doomed request fire.
+  - Distance formatting: km beyond 1000 m.
+- **Verified end to end** (`web\scripts\verify_sheet.mjs`, screenshots
+  data\shots\20–25): standing at Begum Hazrat Mahal Park → mark visited
+  (+15 XP, "Visited ✓", EXPLORED count +1) → worth visiting (+20 XP, gold
+  "Recommended", RECOMMENDED +1, "Worth it" 75%→100%) → photo upload (thumb
+  appears) → report submitted ("Report sent — thank you"). Far case
+  (Mairwa, 338 km): check-in correctly gated with "Walk closer".
+  Also verified: at Mairwa the nearby list correctly shows its empty state.
+- **Commit:** see git log
+
 ## Iteration 7 — 2026-10-06 — owner feedback: cert error in the in-app browser
 - **Milestone:** polish (owner-reported)
 - **Feedback (owner, screenshot):** "This site's HTTPS certificate is not
