@@ -1,5 +1,8 @@
 # Rule 1: all project data stays inside this folder on D:. Nothing in C:\.
 
+# tools (portable postgres binaries — downloaded, not committed)
+tools/
+
 # databases, uploads, caches (never commit, always on D:)
 data/
 .venv/

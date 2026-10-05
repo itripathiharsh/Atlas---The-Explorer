@@ -5,17 +5,54 @@
 
 ---
 
-## Current State (updated: Iteration 0)
+## Current State (updated: Iteration 2)
 
-- **What works:** nothing yet — planning phase complete.
-- **Code:** none written.
-- **How to run:** not available yet. M0 will add `scripts\dev.ps1`.
-- **Next milestone:** M0 — Foundation (skeleton, portable PostgreSQL at `data\pg`,
-  FastAPI `/health`, pytest wired, first commit of code).
+- **What works:** full auth (register/login/JWT) verified by tests; PostgreSQL 16.9
+  portable server running from `tools\pg` with cluster at `data\pg` on D:, port
+  **5433**; Alembic initial migration applied; `pytest`: 8 passed.
+- **Code:** backend (`backend\app`) — health, auth, /me, models for all planned
+  tables. Frontend: not started yet (M2 next).
+- **How to run:** `powershell -File scripts\setup_db.ps1` (starts DB + migrations),
+  then `powershell -File scripts\dev.ps1` (backend :8000, frontend :5173 — frontend
+  from M2 onward).
+- **Next milestone:** M2 — web app (Vite + Tailwind + MapLibre dark map + fog).
 
 ---
 
 ## Iteration Log
+
+## Iteration 2 — 2026-10-05 — M1: auth & users
+- **Milestone:** M1
+- **Done:** JWT auth (register/login, bcrypt, PyJWT), `GET /me`, deps
+  (get_current_user/admin), schemas; 8 backend tests passing (auth success/dup/
+  invalid/reject paths + health).
+- **Decided:** tests run against a real Postgres (`worldgame_test` DB, created and
+  dropped per run by conftest) — server is the real deal, no SQLite.
+- **Not working / known issues:** none.
+- **Next:** M2 — web app.
+- **Commit:** see git log
+
+## Iteration 1 — 2026-10-05 — M0: foundation
+- **Milestone:** M0
+- **Done:** portable PostgreSQL 16.9 downloaded and extracted to `tools\pg`
+  (gitignored); cluster initialized at `data\pg` (D: only); FastAPI skeleton with
+  `/health`; pytest + conftest harness (real test DB); Alembic wired, initial
+  migration applied; `scripts\setup_db.ps1` (idempotent) + `scripts\dev.ps1`;
+  venv at `backend\.venv` (D:).
+- **Decided:**
+  - **PostGIS skipped for MVP** (D3 fallback exercised): portable PostGIS on
+    Windows is not feasible → lat/lng columns + haversine + JSONB cell boundaries.
+    Revisit with real PostGIS deployment post-MVP.
+  - **Port 5432 is blocked by security software on this machine** (bind →
+    WinError 10013, verified even outside sandbox; 5433 works) → Postgres runs on
+    **5433**; all connection strings updated.
+  - Sandbox on this machine blocks TCP listeners/connections → DB/dev servers
+    must run unsandboxed; `setup_db.ps1`/`dev.ps1` are the normal entry points.
+  - The machine's global Python lives at `D:\dev\New folder` (already on D:).
+- **Not working / known issues:** 5432 permanently unusable on this box — keep
+  everything on 5433.
+- **Next:** M1 — auth.
+- **Commit:** see git log
 
 ## Iteration 0 — 2026-10-05 — PRD review, project rules, plan
 
