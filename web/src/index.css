@@ -1,0 +1,301 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #06080d;
+  --color-ink: #eef2ea;
+  --color-mute: #8b94a3;
+  --color-lime: #c8f135;
+  --color-limedim: #4d5f18;
+  --color-gold: #ffc24b;
+  --color-danger: #ff5d5d;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* ---------- surfaces ---------- */
+
+.glass {
+  background: color-mix(in srgb, #0b0f16 78%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.hud-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-mute);
+}
+
+.btn-lime {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--color-lime);
+  color: #0a0d05;
+  border-radius: 999px;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.btn-lime:hover {
+  filter: brightness(1.06);
+}
+.btn-lime:active {
+  transform: scale(0.97);
+}
+.btn-lime:disabled {
+  filter: grayscale(0.6) brightness(0.7);
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--color-ink);
+  border-radius: 999px;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.chip {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: var(--color-mute);
+}
+.chip.active {
+  background: var(--color-lime);
+  color: #0a0d05;
+  border-color: var(--color-lime);
+}
+
+input,
+textarea,
+select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--color-ink);
+  outline: none;
+  width: 100%;
+  font-size: 15px;
+  user-select: text;
+}
+input:focus,
+textarea:focus {
+  border-color: rgba(200, 241, 53, 0.55);
+  box-shadow: 0 0 0 3px rgba(200, 241, 53, 0.12);
+}
+input::placeholder,
+textarea::placeholder {
+  color: #5b6270;
+}
+
+/* ---------- map ---------- */
+
+.maplibregl-map {
+  font-family: var(--font-body);
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(2, 4, 8, 0.55) 100%),
+    linear-gradient(to bottom, rgba(2, 4, 8, 0.35), transparent 18%, transparent 78%, rgba(2, 4, 8, 0.5));
+}
+
+.me-marker {
+  width: 22px;
+  height: 22px;
+  position: relative;
+}
+.me-marker::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(200, 241, 53, 0.55);
+  animation: me-pulse 2.4s ease-out infinite;
+}
+.me-marker::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 999px;
+  background: var(--color-lime);
+  box-shadow: 0 0 14px rgba(200, 241, 53, 0.9), 0 0 3px rgba(200, 241, 53, 1);
+}
+
+@keyframes me-pulse {
+  0% {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* ---------- effects ---------- */
+
+@keyframes xp-float {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  12% {
+    transform: translateY(-10px) scale(1.06);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-72px) scale(1);
+    opacity: 0;
+  }
+}
+.fx-xp {
+  animation: xp-float 1.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.sheet {
+  animation: sheet-up 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fade-in 0.35s ease both;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.slide-in {
+  animation: slide-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateY(-16px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+.toast {
+  animation: toast-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.shimmer {
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.04) 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* hex grid used in onboarding */
+.hex-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 30px);
+  gap: 3px;
+}
+.hex {
+  width: 30px;
+  height: 26px;
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  background: rgba(255, 255, 255, 0.045);
+  border: none;
+}
+.hex.on {
+  background: var(--color-lime);
+  box-shadow: 0 0 12px rgba(200, 241, 53, 0.5);
+  transition: background 0.4s ease;
+}
+
+/* scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* safe areas */
+.safe-t {
+  padding-top: max(env(safe-area-inset-top), 12px);
+}
+.safe-b {
+  padding-bottom: max(env(safe-area-inset-bottom), 14px);
+}

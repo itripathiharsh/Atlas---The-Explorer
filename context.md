@@ -5,21 +5,82 @@
 
 ---
 
-## Current State (updated: Iteration 2)
+## Current State (updated: Iteration 5)
 
-- **What works:** full auth (register/login/JWT) verified by tests; PostgreSQL 16.9
-  portable server running from `tools\pg` with cluster at `data\pg` on D:, port
-  **5433**; Alembic initial migration applied; `pytest`: 8 passed.
-- **Code:** backend (`backend\app`) — health, auth, /me, models for all planned
-  tables. Frontend: not started yet (M2 next).
-- **How to run:** `powershell -File scripts\setup_db.ps1` (starts DB + migrations),
-  then `powershell -File scripts\dev.ps1` (backend :8000, frontend :5173 — frontend
-  from M2 onward).
-- **Next milestone:** M2 — web app (Vite + Tailwind + MapLibre dark map + fog).
+- **What works:** the full MVP loop, verified visually end-to-end with simulated
+  GPS in headless Edge: register → onboarding → dark map → live GPS tracking →
+  server-verified unlocks (+XP animations) → discovery pins → detail sheet →
+  stats/profile with achievements. Backend: 34/34 tests green. Frontend builds
+  clean (`npm run build`).
+- **Code:** `backend\` (FastAPI, all M0–M7 features), `web\` (React PWA, all
+  screens), `scripts\` (setup/dev/seed), seed data: 594 Lucknow cells + 44 places.
+- **How to run:** `powershell -File scripts\setup_db.ps1` → seed via
+  `backend\.venv\Scripts\python.exe scripts\seed_db.py` →
+  `powershell -File scripts\dev.ps1`. App at https://localhost:5173 (LAN: same
+  URL with machine IP; HTTPS is auto-enabled in dev for phone geolocation).
+- **Not yet done (needs a human outside):** PRD §40's physical walk (steps 5–8)
+  with a real phone; PWA icon PNGs (SVG only for now); code-splitting the 1 MB
+  maplibre bundle.
+- **Next milestone:** M8 leftovers above, or owner feedback from first real play.
 
 ---
 
 ## Iteration Log
+
+## Iteration 5 — 2026-10-06 — M2–M8: full frontend + visual QA pass
+- **Milestone:** M2–M8
+- **Done:** Complete React PWA: auth screen, 3-step onboarding, MapLibre map
+  with fog-of-war reveal (dark basemap + lime hex fills + unlock pulse
+  animation), HUD (level hex + XP bar), stats dock, discovery bottom sheet
+  (visit/recommend/photos/report), create-discovery sheet, profile sheet
+  (stats, city %, achievements), XP/achievement/level-up FX, geolocation hook
+  + 4s batched ping loop. Screenshot QA pipeline (`web\scripts\shot.mjs`,
+  system Edge + simulated GPS walk, nothing installed to C:). Fixed in the
+  process: maplibre container size (Tailwind v4 layer vs unlayered CSS — inline
+  style wins), CARTO free tiles dead → switched to OpenFreeMap dark (keyless),
+  geolocation permission override, preserveDrawingBuffer for headless shots.
+- **Decided:**
+  - Basemap: OpenFreeMap "dark" vector style (free, keyless); MapTiler via
+    `VITE_MAPTILER_KEY` is the upgrade path (D8 update — CARTO raster tiles now
+    watermark "API KEY REQUIRED").
+  - Reveal style: fill #b8e83c at 0.34→0.24 opacity by zoom + luminous edge
+    line; pulse = #eaff9e flash on unlock.
+  - App name: **ATLAS** ("The world starts unexplored. Walk to reveal it.").
+- **Not working / known issues:** bundle is ~1 MB (maplibre) — fine for MVP,
+  code-split later; PWA icons are SVG-only; onboarding hex grid animation is
+  decorative; discovery "Worth visiting" requires a visit (by design).
+- **Next:** real-phone walk test (PRD §40), then owner feedback.
+- **Commit:** see git log
+
+## Iteration 4 — 2026-10-06 — M4–M7 backend: discoveries, social, safety
+- **Milestone:** M4–M7
+- **Done:** discoveries (nearby haversine, detail, create with presence proof +
+  5/day rate limit), verified visits (150 m gate, +15 XP once), recommendations
+  (gated on visit, unique, score = recs/visitors), photo uploads (type/size
+  validated → data\uploads, served at /uploads), reports, admin endpoints
+  (reports queue, discovery status, ban), achievements evaluation on every XP
+  event. 34/34 tests passing.
+- **Decided:** DiscoveryIn carries both the player fix (`fix_lat/fix_lng`) and
+  the pinned position (pin may be ≤300 m from the player); photos default to
+  approved (admin can reject) for MVP; seed = 44 curated Lucknow places.
+- **Not working / known issues:** none.
+- **Next:** frontend.
+- **Commit:** see git log
+
+## Iteration 3 — 2026-10-06 — M3 backend: exploration engine
+- **Milestone:** M3
+- **Done:** `/exploration/ping` (batch ≤20 fixes) with the full verification
+  pipeline (accuracy ≤50 m, stale ≤5 min, speed ≤160 km/h for gaps ≥1 s,
+  coordinate schema), H3 res-8 unlock + XP + level curve, `xp_events` audit
+  log, `/map/explored` (GeoJSON) + `/map/summary`, `/me/stats`,
+  `/me/achievements`, achievements seeding, Lucknow city boundary + 594-cell
+  polyfill seeding. 20/20 tests at this point.
+- **Decided:** speed check only applies to fix gaps ≥1 s (same-burst fixes
+  would imply absurd velocities); cells get city assignment at creation via
+  point-in-polygon; `xp_events.ref_id` is BIGINT (h3 indices overflow INT32).
+- **Not working / known issues:** none.
+- **Next:** M4–M7 backend.
+- **Commit:** see git log
 
 ## Iteration 2 — 2026-10-05 — M1: auth & users
 - **Milestone:** M1
