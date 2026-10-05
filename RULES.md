@@ -53,6 +53,9 @@ The point: no agent ever drifts from context. Working without it is forbidden.
   - **Commit:** <sha> or "none"
   ```
 
+- **Chat is not project memory.** Feedback, corrections, or new direction the
+  owner gives in conversation must be written into `context.md` (iteration entry
+  or decisions) in the same session. If it isn't in the files, it didn't happen.
 - Report what *is*, not what was intended. Never mark work done that was not
   verified running.
 - Iteration entries are append-only. The **Current State** section is updated in place.
