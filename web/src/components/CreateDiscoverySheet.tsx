@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { api } from "../api/client";
 import { emitFx } from "../state/fx";
 
-const CATEGORIES = ["Viewpoint", "Park", "Monument", "Culture", "Nature", "Food", "Street", "Museum", "Hidden gem"];
+const CATEGORIES = ["Viewpoint", "Park", "Monument", "Culture", "Nature", "Food", "Street", "Museum", "Landmark", "Hidden gem"];
 
 interface Props {
   pos: { lat: number; lng: number; accuracy: number };

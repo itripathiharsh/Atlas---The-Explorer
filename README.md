@@ -21,7 +21,7 @@ powershell -File scripts\setup_db.ps1
 # 2. seed Lucknow (594 cells, 44 curated places, achievements)
 backend\.venv\Scripts\python.exe scripts\seed_db.py
 
-# 3. backend :8014 + frontend :5173 (separate windows)
+# 3. backend :8777 + frontend :5173 (separate windows)
 powershell -File scripts\dev.ps1
 ```
 

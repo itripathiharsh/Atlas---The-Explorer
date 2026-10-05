@@ -13,6 +13,7 @@ from ..schemas import (
     RecommendOut,
     VisitIn,
     VisitOut,
+    WorldPinOut,
 )
 from ..services.gamification import award_xp, check_achievements
 from ..services.geo import fix_issues, get_or_create_cell, haversine_m
@@ -113,6 +114,45 @@ def nearby(
         for dist, d in scored
         if dist <= radius_m
     ][:50]
+
+
+@router.get("/all", response_model=list[WorldPinOut])
+def all_pins(user: UserDep, db: DbDep):
+    """Thin pin layer for the whole world map (single aggregated query)."""
+    visits = dict(
+        db.query(Visit.discovery_id, func.count(Visit.id))
+        .filter(Visit.verification == "verified")
+        .group_by(Visit.discovery_id)
+        .all()
+    )
+    rows = (
+        db.query(
+            Discovery.id,
+            Discovery.name,
+            Discovery.category,
+            Discovery.lat,
+            Discovery.lng,
+        )
+        .filter(Discovery.status == "active")
+        .all()
+    )
+    recs = dict(
+        db.query(Recommendation.discovery_id, func.count(Recommendation.id))
+        .filter(Recommendation.status == "active")
+        .group_by(Recommendation.discovery_id)
+        .all()
+    )
+    return [
+        WorldPinOut(
+            id=id,
+            name=name,
+            category=category,
+            lat=lat,
+            lng=lng,
+            recommendation_count=recs.get(id, 0),
+        )
+        for id, name, category, lat, lng in rows
+    ]
 
 
 @router.get("/{discovery_id}", response_model=DiscoveryDetailOut)

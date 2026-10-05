@@ -90,7 +90,7 @@ def register(client, username="harsh", email="harsh@example.com", password="hunt
 @pytest.fixture()
 def city(db):
     """Lucknow with its res-8 cells polyfilled + achievements seeded."""
-    (lucknow,) = seed_cities(db)
+    lucknow = next(c for c in seed_cities(db) if c.name == "lucknow")
     seed_city_cells(db, lucknow)
     seed_achievements(db)
     return lucknow

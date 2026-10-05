@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { AuthProvider, useAuth } from "./state/auth";
 import { emitFx } from "./state/fx";
 import { api } from "./api/client";
-import type { ApiConfig, Discovery, GeoFC, MapSummary, Stats, UnlockedCell } from "./api/types";
+import type { ApiConfig, Discovery, GeoFC, MapSummary, Stats, UnlockedCell, WorldPin } from "./api/types";
 import { useGeolocation } from "./hooks/useGeolocation";
 import { useExploration } from "./hooks/useExploration";
 import MapCanvas from "./map/MapCanvas";
@@ -16,10 +16,12 @@ import Onboarding from "./components/Onboarding";
 import DiscoverySheet from "./components/DiscoverySheet";
 import CreateDiscoverySheet from "./components/CreateDiscoverySheet";
 import NearbySheet from "./components/NearbySheet";
+import CityListSheet from "./components/CityListSheet";
 import ProfileSheet from "./components/ProfileSheet";
 import XPFX from "./components/XPFX";
 
 const ONBOARD_KEY = "wg_onboarded_v1";
+const CATEGORIES = ["Food", "Park", "Monument", "Culture", "Nature", "Viewpoint", "Museum", "Street", "Landmark", "Hidden gem"];
 
 function Game() {
   const { user, loading } = useAuth();
@@ -47,6 +49,8 @@ function Game() {
 
   const showOnboarding = !!user && !onboarded;
   const tracking = !!user && onboarded;
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [cityListOpen, setCityListOpen] = useState(false);
 
   const exploration = useExploration(tracking, (cells) => {
     setPulse(cells);
@@ -107,6 +111,13 @@ function Game() {
     enabled: !!user && !!geo.pos,
     refetchInterval: 45_000,
   });
+  // the whole world's pins — clustered on the map
+  const worldPins = useQuery<WorldPin[]>({
+    queryKey: ["worldpins"],
+    queryFn: () => api("/discoveries/all"),
+    enabled: !!user,
+    staleTime: 60_000,
+  });
 
   // merge server-explored cells with live unlocks
   useEffect(() => {
@@ -129,13 +140,23 @@ function Game() {
       if (selected) setSelected(null);
       else if (creating) setCreating(false);
       else if (nearbyOpen) setNearbyOpen(false);
+      else if (cityListOpen) setCityListOpen(false);
       else if (profileOpen) setProfileOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, creating, nearbyOpen, profileOpen]);
+  }, [selected, creating, nearbyOpen, cityListOpen, profileOpen]);
 
-  const discoveries = useMemo(() => nearby.data ?? [], [nearby.data]);
+  const openDiscovery = useCallback(
+    async (id: number) => {
+      try {
+        setSelected(await api<Discovery>(`/discoveries/${id}`));
+      } catch {
+        emitFx({ kind: "toast", text: "Could not open that discovery", tone: "bad" });
+      }
+    },
+    [],
+  );
 
   // distance shown in the detail sheet is always from *you* (display-only)
   const selectedWithDist = useMemo(() => {
@@ -159,18 +180,36 @@ function Game() {
       <MapCanvas
         explored={merged}
         pulse={pulse}
-        discoveries={discoveries}
+        discoveries={worldPins.data ?? []}
         userPos={geo.pos}
-        onSelectDiscovery={setSelected}
+        onSelectDiscovery={openDiscovery}
         flyTo={flyTo}
         onMove={setMapCenter}
+        categoryFilter={categoryFilter}
       />
 
       <HUD user={user} stats={stats.data} onProfile={() => setProfileOpen(true)} />
 
+      {/* category filter chips */}
+      <div className="absolute inset-x-0 top-[86px] z-20 flex gap-1.5 overflow-x-auto px-3 pb-1 [scrollbar-width:none]">
+        <button onClick={() => setCategoryFilter(null)} className={`chip shrink-0 px-3 py-1.5 ${categoryFilter === null ? "active" : ""}`}>
+          All
+        </button>
+        {CATEGORIES.map((c) => (
+          <button
+            key={c}
+            onClick={() => setCategoryFilter(categoryFilter === c ? null : c)}
+            className={`chip shrink-0 px-3 py-1.5 ${categoryFilter === c ? "active" : ""}`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+
       <StatsDock
         stats={stats.data}
         summary={summary.data}
+        onCityList={() => setCityListOpen(true)}
         onRecenter={() => {
           if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
           else gpsHint();
@@ -232,6 +271,16 @@ function Game() {
           onJumpLucknow={() => {
             setFlyTo({ lat: 26.8467, lng: 80.9462, zoom: 13.5 });
             emitFx({ kind: "toast", text: "Flying to Lucknow — where the story starts" });
+          }}
+        />
+      )}
+      {cityListOpen && (
+        <CityListSheet
+          summary={summary.data}
+          onClose={() => setCityListOpen(false)}
+          onFly={(lat, lng, zoom) => {
+            setCityListOpen(false);
+            setFlyTo({ lat, lng, zoom });
           }}
         />
       )}

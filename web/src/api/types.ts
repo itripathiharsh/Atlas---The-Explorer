@@ -17,6 +17,17 @@ export interface CityPct {
   name: string;
   display_name: string;
   pct: number;
+  center_lat?: number;
+  center_lng?: number;
+}
+
+export interface WorldPin {
+  id: number;
+  name: string;
+  category: string;
+  lat: number;
+  lng: number;
+  recommendation_count: number;
 }
 
 export interface Stats {

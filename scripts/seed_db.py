@@ -1,4 +1,10 @@
-"""Seed the dev database: city boundaries + cells, achievements, discoveries."""
+"""Seed the dev database: city boundaries + cells, achievements, discoveries.
+
+Sources:
+  - app/seed/lucknow_places.py  (hand-curated Lucknow)
+  - app/seed/world_places.json  (fetched from Wikipedia — see scripts/fetch_places.py)
+"""
+import json
 import sys
 from pathlib import Path
 
@@ -14,6 +20,38 @@ from app.seed.lucknow_places import DISCOVERIES  # noqa: E402
 from app.services.geo import point_in_ring  # noqa: E402
 
 
+def import_world_places(db, cities) -> int:
+    path = Path(__file__).resolve().parents[1] / "backend" / "app" / "seed" / "world_places.json"
+    if not path.exists():
+        print("world_places.json not found — skipping world import")
+        return 0
+    places = json.loads(path.read_text(encoding="utf-8"))
+    added = 0
+    for p in places:
+        exists = db.query(Discovery).filter(Discovery.name == p["name"]).first()
+        if exists:
+            continue
+        city = next(
+            (c for c in cities if point_in_ring(p["lng"], p["lat"], c.boundary)), None
+        )
+        h_int = int(h3.latlng_to_cell(p["lat"], p["lng"], get_settings().h3_resolution), 16)
+        db.add(
+            Discovery(
+                name=p["name"],
+                description=p["description"],
+                category=p["category"],
+                lat=p["lat"],
+                lng=p["lng"],
+                h3_index=h_int,
+                city_id=city.id if city else None,
+                source="seed",
+            )
+        )
+        added += 1
+    db.commit()
+    return added
+
+
 def run():
     db = SessionLocal()
     try:
@@ -24,33 +62,36 @@ def run():
             total = seed_city_cells(db, city)
             print(f"{city.display_name}: {total} cells")
 
-            for d in DISCOVERIES:
-                if not point_in_ring(d["lng"], d["lat"], city.boundary):
-                    continue
-                exists = (
-                    db.query(Discovery)
-                    .filter(Discovery.name == d["name"], Discovery.category == d["category"])
-                    .first()
+        for d in DISCOVERIES:
+            if not any(point_in_ring(d["lng"], d["lat"], c.boundary) for c in cities):
+                continue
+            exists = (
+                db.query(Discovery)
+                .filter(Discovery.name == d["name"], Discovery.category == d["category"])
+                .first()
+            )
+            if exists:
+                continue
+            h_int = int(
+                h3.latlng_to_cell(d["lat"], d["lng"], get_settings().h3_resolution), 16
+            )
+            lucknow = next(c for c in cities if c.name == "lucknow")
+            db.add(
+                Discovery(
+                    name=d["name"],
+                    description=d["description"],
+                    category=d["category"],
+                    lat=d["lat"],
+                    lng=d["lng"],
+                    h3_index=h_int,
+                    city_id=lucknow.id,
+                    source="seed",
                 )
-                if exists:
-                    continue
-                h_int = int(
-                    h3.latlng_to_cell(d["lat"], d["lng"], get_settings().h3_resolution), 16
-                )
-                db.add(
-                    Discovery(
-                        name=d["name"],
-                        description=d["description"],
-                        category=d["category"],
-                        lat=d["lat"],
-                        lng=d["lng"],
-                        h3_index=h_int,
-                        city_id=city.id,
-                        source="seed",
-                    )
-                )
+            )
         db.commit()
-        print(f"Discoveries: {db.query(Discovery).count()}")
+        added = import_world_places(db, cities)
+        print(f"world places added: {added}")
+        print(f"Discoveries total: {db.query(Discovery).count()}")
         print(f"Achievements: {db.query(Achievement).count()}")
         print("Seed complete.")
     finally:

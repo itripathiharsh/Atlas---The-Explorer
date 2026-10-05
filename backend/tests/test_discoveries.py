@@ -213,3 +213,17 @@ def test_photo_upload_and_validation(client, disc, tmp_path):
     assert url.startswith("/uploads/")
     detail = client.get(f"/api/discoveries/{d.id}", headers=headers).json()
     assert url in detail["photos"]
+
+
+def test_all_pins_world_layer(client, disc):
+    headers, _ = auth_headers(client, username="pinner", email="pw@x.com")
+    d = disc(name="World Pin Spot")
+    r = client.get("/api/discoveries/all", headers=headers)
+    assert r.status_code == 200
+    pins = r.json()
+    assert any(p["id"] == d.id and p["name"] == "World Pin Spot" for p in pins)
+    assert all({"id", "name", "category", "lat", "lng", "recommendation_count"} <= set(p) for p in pins)
+
+
+def test_all_pins_requires_auth(client):
+    assert client.get("/api/discoveries/all").status_code == 401

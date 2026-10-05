@@ -40,9 +40,12 @@ def explored(user: UserDep, db: DbDep, bbox: str | None = Query(None)):
         {
             "type": "Feature",
             "geometry": {"type": "Polygon", "coordinates": [cell.boundary]},
-            "properties": {"h3": h3.int_to_str(cell.h3_index)},
+            "properties": {
+                "h3": h3.int_to_str(cell.h3_index),
+                "explored_at": explored.isoformat(),
+            },
         }
-        for cell, _ in rows
+        for cell, explored in rows
     ]
     return {"type": "FeatureCollection", "features": features}
 
@@ -60,6 +63,8 @@ def summary(user: UserDep, db: DbDep):
                 "name": c.name,
                 "display_name": c.display_name,
                 "pct": city_percent(db, user.id, c),
+                "center_lat": c.center_lat,
+                "center_lng": c.center_lng,
             }
             for c in cities
         ],

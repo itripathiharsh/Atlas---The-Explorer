@@ -7,9 +7,10 @@ interface Props {
   onRecenter: () => void;
   onNearby: () => void;
   onNearbyList: () => void;
+  onCityList: () => void;
 }
 
-export default function StatsDock({ stats, summary, onRecenter, onNearby, onNearbyList }: Props) {
+export default function StatsDock({ stats, summary, onRecenter, onNearby, onNearbyList, onCityList }: Props) {
   const city = summary?.cities?.[0];
   const pct = city ? city.pct : summary ? null : undefined;
 
@@ -18,7 +19,9 @@ export default function StatsDock({ stats, summary, onRecenter, onNearby, onNear
       <div className="glass slide-in min-w-0 flex-1 rounded-2xl px-5 py-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <div className="hud-label">{city ? city.display_name : "World"} explored</div>
+            <button onClick={onCityList} className="hud-label text-left transition hover:text-ink" title="All cities">
+              {city ? city.display_name : "World"} explored ⌄
+            </button>
             <div className="mt-0.5 flex items-baseline gap-2">
               <span className="font-display text-[34px] font-bold leading-none tracking-tight text-ink">
                 {pct === undefined ? "—" : pct === null ? `${summary!.world_pct}%` : `${pct}%`}

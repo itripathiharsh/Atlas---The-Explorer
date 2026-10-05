@@ -5,7 +5,7 @@
 
 ---
 
-## Current State (updated: Iteration 11)
+## Current State (updated: Iteration 12)
 
 - **What works:** the full MVP loop (auth, fog map, GPS unlocks with desktop
   demo mode, discoveries, recommendations, photos, reports, profile), ATLAS
@@ -14,7 +14,7 @@
 - **How to run:** `powershell -File scripts\setup_db.ps1` → seed via
   `backend\.venv\Scripts\python.exe scripts\seed_db.py` →
   `powershell -File scripts\dev.ps1`. App at **http://localhost:5173**;
-  backend on **:8014** (8000 belongs to the owner's other project).
+  backend on **:8777** (8000 belongs to the owner's other project).
 - **Not yet done (needs a human outside):** PRD §40's physical walk with a real
   phone; code-splitting the 1 MB maplibre bundle.
 - **Next milestone:** owner feedback from first real play.
@@ -22,6 +22,35 @@
 ---
 
 ## Iteration Log
+
+## Iteration 12 — 2026-10-06 — owner: real-world data + interactive map
+- **Milestone:** world content + interactivity (owner-requested)
+- **Data pipeline** (`scriptsetch_places.py`): pulls each city's "Tourist
+  attractions in <City>" Wikipedia category with coordinates + intro extracts,
+  ranked by langlinkscount (language editions = pop-culture popularity), top 30
+  per city -> `app\seed\world_places.json`. 248 real places across Delhi,
+  Mumbai, Jaipur, Kolkata, New York, London, Paris, Tokyo, Dubai, Singapore
+  (Eiffel Tower at 175 language editions leads the pack). Bugs fixed on the
+  way: Wikipedia's field is `extract` not `extracts`; big generators silently
+  cap extracts (-> chunked title queries); 429 backoff loop.
+- **World seed:** 11 cities now (Lucknow + 10) with octagon boundaries and
+  8,980 H3 res-8 cells; 293 total discoveries. `/map/summary` includes city
+  centers; `/map/explored` includes unlock timestamps.
+- **Interactivity (frontend):**
+  - pin clustering at world zoom with count bubbles; tap cluster -> zoom in
+  - name labels under pins from zoom 13 (ivory with navy halo)
+  - category filter chips (All/Food/Park/Monument/...) filtering pins live
+  - tap a revealed hex -> "Unlocked <date>" toast
+  - "Explore the world" city sheet (tap the dock's city label): per-city
+    progress + one-tap fly
+  - map now opens on the whole world (zoom 2.4) then flies to you
+  - new `GET /api/discoveries/all` thin world-pin layer (single aggregated
+    query); pins open the full detail on tap
+- **Ops:** port 8014 had zombie listeners with dead PIDs blocking binds ->
+  backend moved to **:8777**; uvicorn `--reload` proven unreliable on this
+  machine (stale code served twice) — restart + verify openapi after backend
+  edits. Tests 39/39.
+- **Commit:** see git log
 
 ## Iteration 11 — 2026-10-06 — owner feedback: stuck on "Finding your location"
 - **Milestone:** polish (owner-reported)
@@ -53,7 +82,7 @@
     numeral), buttons/chips/onboarding hexes — all navy/ivory now. Auth screen
     wears the emblem + "Explore · Unlock · Discover" lockup.
   - Port fix discovered mid-pass: port 8000 was taken over by the owner's other
-    project (a movie app) → ATLAS backend moved to **8014** (vite proxy,
+    project (a movie app) → ATLAS backend moved to **8777** (vite proxy,
     dev.ps1, README). The other project was left untouched.
 - **Verified:** build clean; full screenshot pass on http (shots 01–07) — auth,
   onboarding, fog map, sheet, profile all in brand. QA scripts' selectors

@@ -83,6 +83,8 @@ class CityPctOut(BaseModel):
     name: str
     display_name: str
     pct: float
+    center_lat: float | None = None
+    center_lng: float | None = None
 
 
 class MapSummaryOut(BaseModel):
@@ -142,6 +144,15 @@ class DiscoveryOut(BaseModel):
     recommended_by_me: bool = False
     created_by_me: bool = False
     photos: list[str] = []
+
+
+class WorldPinOut(BaseModel):
+    id: int
+    name: str
+    category: str
+    lat: float
+    lng: float
+    recommendation_count: int
 
 
 class DiscoveryDetailOut(DiscoveryOut):

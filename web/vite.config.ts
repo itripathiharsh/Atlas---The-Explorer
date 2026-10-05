@@ -13,9 +13,9 @@ export default defineConfig(({ mode }) => ({
     host: true,
     port: 5173,
     proxy: {
-      // ATLAS backend lives on 8014 — port 8000 collides with another project
-      "/api": { target: "http://localhost:8014", changeOrigin: true },
-      "/uploads": { target: "http://localhost:8014", changeOrigin: true },
+      // ATLAS backend lives on 8777 — port 8000 collides with another project
+      "/api": { target: "http://localhost:8777", changeOrigin: true },
+      "/uploads": { target: "http://localhost:8777", changeOrigin: true },
     },
   },
 }));

@@ -1,23 +1,34 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { Map as MlMap, GeoJSONSource } from "maplibre-gl";
-import type { Discovery, GeoFC, UnlockedCell } from "../api/types";
+import type { GeoFC, UnlockedCell, WorldPin } from "../api/types";
 import type { Fix } from "../hooks/useGeolocation";
 import { basemapStyle } from "./style";
 import { registerSprites } from "./icons";
+import { emitFx } from "../state/fx";
 
 const EMPTY_FC: GeoJSON.FeatureCollection<GeoJSON.Geometry> = { type: "FeatureCollection", features: [] };
 
 interface Props {
   explored: GeoFC | null;
   pulse: UnlockedCell[];
-  discoveries: Discovery[];
+  discoveries: WorldPin[];
   userPos: Fix | null;
-  onSelectDiscovery: (d: Discovery) => void;
+  onSelectDiscovery: (id: number) => void;
   flyTo: { lat: number; lng: number; zoom?: number } | null;
   onMove?: (center: { lat: number; lng: number }) => void;
+  categoryFilter: string | null;
 }
 
-export default function MapCanvas({ explored, pulse, discoveries, userPos, onSelectDiscovery, flyTo, onMove }: Props) {
+export default function MapCanvas({
+  explored,
+  pulse,
+  discoveries,
+  userPos,
+  onSelectDiscovery,
+  flyTo,
+  onMove,
+  categoryFilter,
+}: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -35,7 +46,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
       container: container.current,
       style: basemapStyle(import.meta.env.VITE_MAPTILER_KEY),
       center: [80.9462, 26.8467], // Lucknow until the first GPS fix arrives
-      zoom: 12.5,
+      zoom: 2.4, // start on the whole world — it is all explorable now
       attributionControl: { compact: true },
       dragRotate: false,
       pitchWithRotate: false,
@@ -46,7 +57,6 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
     (window as unknown as { __map?: MlMap }).__map = map;
 
     // report the viewport center (throttled to one update per frame)
-    const moveRef = onMoveRef;
     let rafPending = false;
     map.on("move", () => {
       if (rafPending) return;
@@ -54,13 +64,14 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
       requestAnimationFrame(() => {
         rafPending = false;
         const c = map.getCenter();
-        moveRef.current?.({ lat: c.lat, lng: c.lng });
+        onMoveRef.current?.({ lat: c.lat, lng: c.lng });
       });
     });
 
     map.on("load", () => {
       registerSprites(map);
 
+      // explored hexes
       map.addSource("explored", { type: "geojson", data: EMPTY_FC });
       map.addLayer({
         id: "explored-fill",
@@ -82,6 +93,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
         },
       });
 
+      // unlock pulse flash
       map.addSource("pulse", { type: "geojson", data: EMPTY_FC });
       map.addLayer({
         id: "pulse-fill",
@@ -90,11 +102,44 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
         paint: { "fill-color": "#ffffff", "fill-opacity": 0 },
       });
 
-      map.addSource("discoveries", { type: "geojson", data: EMPTY_FC });
+      // discovery pins — clustered at low zoom, kite pins + name labels up close
+      map.addSource("discoveries", {
+        type: "geojson",
+        data: EMPTY_FC,
+        cluster: true,
+        clusterMaxZoom: 12,
+        clusterRadius: 45,
+      });
+      map.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: "discoveries",
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-color": "#0a1a2b",
+          "circle-opacity": 0.85,
+          "circle-stroke-color": "#f2ecd9",
+          "circle-stroke-width": 1.4,
+          "circle-radius": ["step", ["get", "point_count"], 14, 10, 19, 40, 25],
+        },
+      });
+      map.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: "discoveries",
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": ["get", "point_count_abbreviated"],
+          "text-font": ["Noto Sans Bold"],
+          "text-size": 12,
+        },
+        paint: { "text-color": "#f2ecd9" },
+      });
       map.addLayer({
         id: "disc-layer",
         type: "symbol",
         source: "discoveries",
+        filter: ["!", ["has", "point_count"]],
         layout: {
           "icon-image": ["case", ["==", ["get", "rec"], true], "pin-gold", "pin-brand"],
           "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.42, 15, 0.62, 18, 0.8],
@@ -102,16 +147,53 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
           "icon-ignore-placement": true,
         },
       });
+      map.addLayer({
+        id: "disc-label",
+        type: "symbol",
+        source: "discoveries",
+        filter: ["!", ["has", "point_count"]],
+        minzoom: 13,
+        layout: {
+          "text-field": ["get", "name"],
+          "text-font": ["Noto Sans Bold"],
+          "text-size": 11,
+          "text-offset": [0, 1.5],
+          "text-anchor": "top",
+        },
+        paint: {
+          "text-color": "#f5f2e9",
+          "text-halo-color": "#061623",
+          "text-halo-width": 1.6,
+        },
+      });
 
       map.on("click", "disc-layer", (e) => {
         const f = e.features?.[0];
         if (!f) return;
-        const id = f.properties?.id as number;
-        const disc = discoveriesRef.current.find((d) => d.id === id);
-        if (disc) selectRef.current(disc);
+        selectRef.current(f.properties?.id as number);
       });
-      map.on("mouseenter", "disc-layer", () => (map.getCanvas().style.cursor = "pointer"));
-      map.on("mouseleave", "disc-layer", () => (map.getCanvas().style.cursor = ""));
+      for (const layer of ["disc-layer", "disc-label", "clusters"]) {
+        map.on("mouseenter", layer, () => (map.getCanvas().style.cursor = "pointer"));
+        map.on("mouseleave", layer, () => (map.getCanvas().style.cursor = ""));
+      }
+      map.on("click", "clusters", (e) => {
+        const f = e.features?.[0];
+        if (!f) return;
+        const c = f.geometry as GeoJSON.Point;
+        map.easeTo({ center: c.coordinates as [number, number], zoom: (map.getZoom() ?? 3) + 2.5 });
+      });
+
+      // tapping a revealed hex (not a pin) shows when it was unlocked
+      map.on("click", (e) => {
+        const pinHit = map.queryRenderedFeatures(e.point, { layers: ["disc-layer", "clusters"] });
+        if (pinHit.length > 0) return;
+        const hexHit = map.queryRenderedFeatures(e.point, { layers: ["explored-fill"] });
+        if (hexHit.length > 0) {
+          const at = hexHit[0].properties?.explored_at;
+          const day = at ? new Date(String(at)).toLocaleDateString() : "your journey";
+          emitFx({ kind: "toast", text: `Unlocked ${day}` });
+        }
+      });
 
       setLoaded(true);
     });
@@ -124,9 +206,6 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const discoveriesRef = useRef(discoveries);
-  discoveriesRef.current = discoveries;
 
   // --- explored cells ---
   useEffect(() => {
@@ -153,7 +232,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
     let raf = 0;
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / dur);
-      const opacity = t < 0.25 ? t / 0.25 * 0.9 : 0.9 * (1 - (t - 0.25) / 0.75);
+      const opacity = t < 0.25 ? (t / 0.25) * 0.9 : 0.9 * (1 - (t - 0.25) / 0.75);
       map.setPaintProperty("pulse-fill", "fill-opacity", opacity);
       if (t < 1) raf = requestAnimationFrame(tick);
       else (map.getSource("pulse") as GeoJSONSource).setData(EMPTY_FC);
@@ -162,7 +241,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
     return () => cancelAnimationFrame(raf);
   }, [pulse, loaded]);
 
-  // --- discovery markers ---
+  // --- discovery markers (with the active category filter) ---
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !loaded) return;
@@ -171,11 +250,16 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
       features: discoveries.map((d) => ({
         type: "Feature" as const,
         geometry: { type: "Point" as const, coordinates: [d.lng, d.lat] },
-        properties: { id: d.id, rec: d.recommendation_count > 0 },
+        properties: { id: d.id, name: d.name, cat: d.category, rec: d.recommendation_count > 0 },
       })),
     };
     (map.getSource("discoveries") as GeoJSONSource).setData(fc);
-  }, [discoveries, loaded]);
+    const catExpr = (categoryFilter
+      ? ["==", ["get", "cat"], categoryFilter]
+      : ["!", ["has", "point_count"]]) as unknown as maplibregl.FilterSpecification;
+    map.setFilter("disc-layer", catExpr);
+    map.setFilter("disc-label", catExpr);
+  }, [discoveries, loaded, categoryFilter]);
 
   // --- user marker ---
   useEffect(() => {
@@ -202,11 +286,10 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
 
   return (
     <div className="absolute inset-0">
-      {/* inline positioning beats maplibre-gl.css's unlayered .maplibregl-map{position:relative} */}
       <div ref={container} style={{ position: "absolute", inset: 0 }} />
       <div className="vignette" />
       {!ready && (
-        <div className="absolute inset-0 grid place-items-center bg-[#06080d]">
+        <div className="absolute inset-0 grid place-items-center bg-[#061623]">
           <div className="hud-label animate-pulse">Mapping the world…</div>
         </div>
       )}

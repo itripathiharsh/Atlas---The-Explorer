@@ -1,5 +1,20 @@
 """Seed data: city boundaries and achievement definitions."""
 
+import math
+
+
+def octagon(lat: float, lng: float, radius_km: float) -> list[list[float]]:
+    """Rough city boundary: an octagon of the given radius around the center."""
+    ring = []
+    for k in range(8):
+        theta = math.radians(22.5 + 45 * k)
+        ring.append([
+            round(lng + radius_km * math.cos(theta) / (111.32 * math.cos(math.radians(lat))), 4),
+            round(lat + radius_km * math.sin(theta) / 110.57, 4),
+        ])
+    return ring
+
+
 # Rough administrative blob for Lucknow (GeoJSON ring, [lng, lat]).
 LUCKNOW_BOUNDARY = [
     [80.795, 26.800], [80.800, 26.860], [80.830, 26.905], [80.870, 26.935],
@@ -9,13 +24,28 @@ LUCKNOW_BOUNDARY = [
 ]
 
 CITIES = [
-    {
-        "name": "lucknow",
-        "display_name": "Lucknow",
-        "boundary": LUCKNOW_BOUNDARY,
-        "center_lat": 26.8467,
-        "center_lng": 80.9462,
-    }
+    {"name": "lucknow", "display_name": "Lucknow", "boundary": LUCKNOW_BOUNDARY,
+     "center_lat": 26.8467, "center_lng": 80.9462},
+    {"name": "delhi", "display_name": "Delhi", "boundary": octagon(28.6139, 77.2090, 18),
+     "center_lat": 28.6139, "center_lng": 77.2090},
+    {"name": "mumbai", "display_name": "Mumbai", "boundary": octagon(19.0760, 72.8777, 15),
+     "center_lat": 19.0760, "center_lng": 72.8777},
+    {"name": "jaipur", "display_name": "Jaipur", "boundary": octagon(26.9124, 75.7873, 12),
+     "center_lat": 26.9124, "center_lng": 75.7873},
+    {"name": "kolkata", "display_name": "Kolkata", "boundary": octagon(22.5726, 88.3639, 13),
+     "center_lat": 22.5726, "center_lng": 88.3639},
+    {"name": "new_york", "display_name": "New York", "boundary": octagon(40.7128, -74.0060, 15),
+     "center_lat": 40.7128, "center_lng": -74.0060},
+    {"name": "london", "display_name": "London", "boundary": octagon(51.5074, -0.1278, 15),
+     "center_lat": 51.5074, "center_lng": -0.1278},
+    {"name": "paris", "display_name": "Paris", "boundary": octagon(48.8566, 2.3522, 10),
+     "center_lat": 48.8566, "center_lng": 2.3522},
+    {"name": "tokyo", "display_name": "Tokyo", "boundary": octagon(35.6762, 139.6503, 18),
+     "center_lat": 35.6762, "center_lng": 139.6503},
+    {"name": "dubai", "display_name": "Dubai", "boundary": octagon(25.2048, 55.2708, 13),
+     "center_lat": 25.2048, "center_lng": 55.2708},
+    {"name": "singapore", "display_name": "Singapore", "boundary": octagon(1.3521, 103.8198, 10),
+     "center_lat": 1.3521, "center_lng": 103.8198},
 ]
 
 ACHIEVEMENTS = [
