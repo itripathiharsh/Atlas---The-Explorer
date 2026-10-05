@@ -5,12 +5,26 @@ import { api, uploadPhoto } from "../api/client";
 import type { Discovery } from "../api/types";
 import { emitFx } from "../state/fx";
 
+export interface Fix3 {
+  lat: number;
+  lng: number;
+  accuracy_m: number;
+}
+
 interface Props {
   discovery: Discovery;
   onClose: () => void;
+  /** Live position from the map's tracker — no fresh GPS prompt needed. */
+  getFix: () => Promise<Fix3>;
 }
 
-export default function DiscoverySheet({ discovery, onClose }: Props) {
+const VISIT_RADIUS_M = 150;
+
+function fmtDist(m: number): string {
+  return m >= 1000 ? `${(m / 1000).toFixed(m >= 10_000 ? 0 : 1)} km` : `${Math.round(m)} m`;
+}
+
+export default function DiscoverySheet({ discovery, onClose, getFix }: Props) {
   const qc = useQueryClient();
   const [d, setD] = useState<Discovery>(discovery);
   const [busy, setBusy] = useState<string | null>(null);
@@ -18,7 +32,7 @@ export default function DiscoverySheet({ discovery, onClose }: Props) {
   const [showReport, setShowReport] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  async function run(action: "visit" | "recommend", fn: () => Promise<{ xp_awarded: number }>) {
+  async function run(action: "visit" | "recommend", fn: () => Promise<unknown>) {
     setBusy(action);
     setError(null);
     try {
@@ -38,7 +52,7 @@ export default function DiscoverySheet({ discovery, onClose }: Props) {
 
   const visit = () =>
     run("visit", async () => {
-      const pos = await currentPos();
+      const pos = await getFix();
       return api(`/discoveries/${d.id}/visit`, {
         method: "POST",
         body: { ...pos, recorded_at: new Date().toISOString() },
@@ -74,6 +88,8 @@ export default function DiscoverySheet({ discovery, onClose }: Props) {
     }
   }
 
+  const tooFar = d.distance_m !== null && d.distance_m > VISIT_RADIUS_M;
+
   return (
     <>
       <div className="absolute inset-0 z-30 bg-black/40" onClick={onClose} />
@@ -84,7 +100,11 @@ export default function DiscoverySheet({ discovery, onClose }: Props) {
             <span className="chip">{d.category}</span>
             <h2 className="mt-2 font-display text-[24px] font-bold leading-tight">{d.name}</h2>
             {d.distance_m !== null && (
-              <p className="mt-1 text-[13px] text-mute">{Math.round(d.distance_m)} m away</p>
+              <p className="mt-1 text-[13px] text-mute">
+                {tooFar
+                  ? `${fmtDist(d.distance_m)} away — you need to be within ${VISIT_RADIUS_M} m`
+                  : `${fmtDist(d.distance_m)} away`}
+              </p>
             )}
           </div>
           <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded-full border border-white/10">
@@ -134,7 +154,14 @@ export default function DiscoverySheet({ discovery, onClose }: Props) {
         <div className="mt-4 flex gap-2 pb-2">
           {d.visited_by_me ? (
             <div className="btn-ghost flex flex-1 items-center justify-center gap-2 border-lime/50 py-3.5 text-[13px] text-lime">
-              <Star size={15} className="fill-lime" /> Visited
+              <Star size={15} className="fill-lime" /> Visited ✓
+            </div>
+          ) : tooFar ? (
+            <div
+              className="btn-ghost flex-1 py-3.5 text-center text-[12px] text-mute"
+              title="Exploration is verified by physical presence"
+            >
+              Walk closer to check in
             </div>
           ) : (
             <button onClick={visit} disabled={busy !== null} className="btn-lime flex-1 py-3.5 text-[13px]">
@@ -146,7 +173,7 @@ export default function DiscoverySheet({ discovery, onClose }: Props) {
             disabled={busy !== null || !d.visited_by_me || d.recommended_by_me}
             className={`btn-ghost flex items-center gap-2 px-5 py-3.5 text-[13px] ${
               d.recommended_by_me ? "border-gold/60 text-gold" : ""
-            }`}
+            } ${!d.visited_by_me ? "opacity-50" : ""}`}
             title={d.visited_by_me ? "Recommend this place" : "Visit first to recommend"}
           >
             <Star size={15} className={d.recommended_by_me ? "fill-gold" : ""} />
@@ -200,15 +227,4 @@ export default function DiscoverySheet({ discovery, onClose }: Props) {
       )}
     </>
   );
-}
-
-function currentPos(): Promise<{ lat: number; lng: number; accuracy_m: number }> {
-  return new Promise((resolve, reject) => {
-    if (!("geolocation" in navigator)) return reject(new Error("No GPS available"));
-    navigator.geolocation.getCurrentPosition(
-      (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, accuracy_m: p.coords.accuracy }),
-      (e) => reject(new Error(e.code === 1 ? "Location permission denied" : "Could not get your location")),
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 3000 },
-    );
-  });
 }

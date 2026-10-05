@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { AuthProvider, useAuth } from "./state/auth";
@@ -8,6 +8,7 @@ import type { Discovery, GeoFC, MapSummary, Stats, UnlockedCell } from "./api/ty
 import { useGeolocation } from "./hooks/useGeolocation";
 import { useExploration } from "./hooks/useExploration";
 import MapCanvas from "./map/MapCanvas";
+import { haversineM } from "./utils/geo";
 import HUD from "./components/HUD";
 import StatsDock from "./components/StatsDock";
 import AuthScreen from "./components/AuthScreen";
@@ -52,6 +53,31 @@ function Game() {
     setMerged((cur) => (cur ? mergeCells(cur, cells) : cur));
   });
   const geo = useGeolocation((fix) => exploration.push(fix), tracking);
+
+  // live position for check-ins — reuses the tracker, falls back to a fresh read
+  const getFix = useCallback(async (): Promise<{
+    lat: number;
+    lng: number;
+    accuracy_m: number;
+  }> => {
+    if (geo.pos && Date.now() - geo.pos.ts < 20_000) {
+      return { lat: geo.pos.lat, lng: geo.pos.lng, accuracy_m: geo.pos.accuracy };
+    }
+    return new Promise((resolve, reject) => {
+      if (!("geolocation" in navigator)) return reject(new Error("No GPS available"));
+      navigator.geolocation.getCurrentPosition(
+        (p) =>
+          resolve({ lat: p.coords.latitude, lng: p.coords.longitude, accuracy_m: p.coords.accuracy }),
+        (e) =>
+          reject(
+            new Error(
+              e.code === 1 ? "Location permission denied" : "Could not get your location",
+            ),
+          ),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 },
+      );
+    });
+  }, [geo.pos]);
 
   const stats = useQuery<Stats>({
     queryKey: ["stats"],
@@ -104,6 +130,13 @@ function Game() {
   }, [selected, creating, nearbyOpen, profileOpen]);
 
   const discoveries = useMemo(() => nearby.data ?? [], [nearby.data]);
+
+  // distance shown in the detail sheet is always from *you* (display-only)
+  const selectedWithDist = useMemo(() => {
+    if (!selected) return null;
+    if (!geo.pos) return selected;
+    return { ...selected, distance_m: haversineM(geo.pos, selected) };
+  }, [selected, geo.pos]);
 
   if (loading) {
     return (
@@ -176,8 +209,8 @@ function Game() {
         />
       )}
 
-      {selected && (
-        <DiscoverySheet discovery={selected} onClose={() => setSelected(null)} />
+      {selectedWithDist && (
+        <DiscoverySheet discovery={selectedWithDist} onClose={() => setSelected(null)} getFix={getFix} />
       )}
       {nearbyOpen && (
         <NearbySheet
