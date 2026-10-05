@@ -31,7 +31,7 @@ export default function XPFX() {
           return (
             <div
               key={item.id}
-              className="fx-xp font-display text-[26px] font-bold text-lime drop-shadow-[0_0_18px_rgba(200,241,53,0.65)]"
+              className="fx-xp font-display text-[26px] font-bold text-brand drop-shadow-[0_0_18px_rgba(242,236,218,0.65)]"
             >
               <span className="inline-flex items-center gap-1.5">
                 <Zap size={20} strokeWidth={2.6} /> +{item.amount} XP
@@ -56,9 +56,9 @@ export default function XPFX() {
             <div
               key={item.id}
               className="toast glass rounded-2xl px-6 py-4 text-center"
-              style={{ borderColor: "rgba(200,241,53,.5)" }}
+              style={{ borderColor: "rgba(242,236,218,.5)" }}
             >
-              <div className="hud-label text-lime">Level up</div>
+              <div className="hud-label text-brand">Level up</div>
               <div className="font-display text-[24px] font-bold">Level {item.level}</div>
             </div>
           );

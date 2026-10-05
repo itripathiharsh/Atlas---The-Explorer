@@ -8,7 +8,7 @@
 import puppeteer from "puppeteer-core";
 import { mkdirSync, existsSync } from "node:fs";
 
-const BASE = process.argv[2] ?? "https://localhost:5173";
+const BASE = process.argv[2] ?? "http://localhost:5173";
 const OUT = "../data/shots";
 mkdirSync(OUT, { recursive: true });
 
@@ -51,14 +51,14 @@ await sleep(800);
 await shot("02-onboarding-1");
 
 // 3 — onboarding step 2 (hexes lighting up)
-const nextBtn = await page.waitForSelector("button.btn-lime", { timeout: 5000 });
+const nextBtn = await page.waitForSelector("button.btn-brand", { timeout: 5000 });
 await nextBtn.click();
 await sleep(1600);
 await shot("03-onboarding-2");
 
 // 4 — finish onboarding, land on the map (click the CTA only while onboarding is up)
 for (let i = 0; i < 4; i++) {
-  const b = await page.$('[data-onboarding] button.btn-lime');
+  const b = await page.$('[data-onboarding] button.btn-brand');
   if (!b) break;
   await b.click();
   await sleep(700);

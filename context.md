@@ -5,7 +5,7 @@
 
 ---
 
-## Current State (updated: Iteration 6)
+## Current State (updated: Iteration 10)
 
 - **What works:** everything from iteration 5, plus the three floating map
   buttons are fully functional with clear feedback (see iteration 6).
@@ -21,6 +21,27 @@
 ---
 
 ## Iteration Log
+
+## Iteration 10 — 2026-10-06 — owner: brand logo + UI re-theme
+- **Milestone:** polish (owner-provided brand asset)
+- **Asset:** `logo\Atlas main logo.png` — navy + ivory "ATLAS — Explore · Unlock · Discover".
+- **Done:**
+  - Extracted exact brand colors with Pillow: navy `#061623`, ivory `#fcf8f0`.
+  - Generated assets: emblem crop (gap-detected, clean) → `public\icons\icon-{512,192,64,32}.png`;
+    full lockup → `public\logo.png`; favicon, apple-touch-icon, PWA manifest
+    (192/512) all now use the logo; theme-color → navy.
+  - Re-themed the entire UI: `lime` token renamed to `brand` across src, values
+    replaced (navy void, ivory accents, warm-gray mute); map reveal fill/lines,
+    pin sprites, me-marker, XP glow, HUD level badge (cream gradient, navy
+    numeral), buttons/chips/onboarding hexes — all navy/ivory now. Auth screen
+    wears the emblem + "Explore · Unlock · Discover" lockup.
+  - Port fix discovered mid-pass: port 8000 was taken over by the owner's other
+    project (a movie app) → ATLAS backend moved to **8014** (vite proxy,
+    dev.ps1, README). The other project was left untouched.
+- **Verified:** build clean; full screenshot pass on http (shots 01–07) — auth,
+  onboarding, fog map, sheet, profile all in brand. QA scripts' selectors
+  updated for the renamed `btn-brand` class.
+- **Commit:** see git log
 
 ## Iteration 9 — 2026-10-06 — owner feedback: "reveal nearby does nothing; how to add my location"
 - **Milestone:** polish (owner-reported, testing from Mairwa — outside the seeded city)

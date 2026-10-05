@@ -57,7 +57,7 @@ export default function NearbySheet({ center, onClose, onSelect, onJumpLucknow }
             <p className="mt-1 text-[13px] leading-relaxed text-mute">
               Be the first — hit + and add what others are missing.
             </p>
-            <button onClick={onJumpLucknow} className="btn-lime mt-4 px-6 py-3 text-[12px]">
+            <button onClick={onJumpLucknow} className="btn-brand mt-4 px-6 py-3 text-[12px]">
               Take me to Lucknow instead
             </button>
           </div>
@@ -68,7 +68,7 @@ export default function NearbySheet({ center, onClose, onSelect, onJumpLucknow }
             <button
               key={d.id}
               onClick={() => onSelect(d)}
-              className="fade-in flex w-full items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.03] p-3.5 text-left transition hover:border-lime/40 hover:bg-white/[0.05]"
+              className="fade-in flex w-full items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.03] p-3.5 text-left transition hover:border-brand/40 hover:bg-white/[0.05]"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">

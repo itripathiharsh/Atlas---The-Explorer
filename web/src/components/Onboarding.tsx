@@ -22,7 +22,7 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
 
   const steps = [
     {
-      icon: <Compass size={26} className="text-lime" />,
+      icon: <Compass size={26} className="text-brand" />,
       title: "THE WORLD IS DARK",
       body: (
         <div className="hex-grid mx-auto mt-6">
@@ -34,7 +34,7 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
       hint: "Every street, park and hidden corner — locked.",
     },
     {
-      icon: <Footprints size={26} className="text-lime" />,
+      icon: <Footprints size={26} className="text-brand" />,
       title: "WALK TO REVEAL IT",
       body: (
         <div className="hex-grid mx-auto mt-6">
@@ -46,7 +46,7 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
       hint: "Physically move and the map lights up around you.",
     },
     {
-      icon: <Gem size={26} className="text-lime" />,
+      icon: <Gem size={26} className="text-brand" />,
       title: "FIND WHAT OTHERS MISS",
       body: (
         <div className="glass mx-auto mt-6 max-w-[260px] rounded-2xl p-4 text-left">
@@ -68,7 +68,7 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
     <div data-onboarding className="fade-in absolute inset-0 z-40 flex flex-col items-center justify-between bg-[#06080d]/97 px-6 py-12 backdrop-blur">
       <div />
       <div className="flex flex-col items-center text-center">
-        <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl border border-lime/40 bg-lime/10">
+        <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl border border-brand/40 bg-brand/10">
           {s.icon}
         </div>
         <h2 className="font-display text-[26px] font-bold tracking-tight">{s.title}</h2>
@@ -80,13 +80,13 @@ export default function Onboarding({ onDone }: { onDone: () => void }) {
           {steps.map((_, i) => (
             <div
               key={i}
-              className={`h-1 w-6 rounded-full transition ${i === step ? "bg-lime" : "bg-white/15"}`}
+              className={`h-1 w-6 rounded-full transition ${i === step ? "bg-brand" : "bg-white/15"}`}
             />
           ))}
         </div>
         <button
           onClick={() => (step < steps.length - 1 ? setStep(step + 1) : onDone())}
-          className="btn-lime w-full py-3.5 text-[14px]"
+          className="btn-brand w-full py-3.5 text-[14px]"
         >
           {step < steps.length - 1 ? "Next" : "Start exploring"}
         </button>

@@ -67,7 +67,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
         type: "fill",
         source: "explored",
         paint: {
-          "fill-color": "#b8e83c",
+          "fill-color": "#f2ecd9",
           "fill-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0.34, 16, 0.24],
         },
       });
@@ -76,7 +76,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
         type: "line",
         source: "explored",
         paint: {
-          "line-color": "#e4ff8a",
+          "line-color": "#fdfaf0",
           "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 16, 1.8],
           "line-opacity": 0.9,
         },
@@ -87,7 +87,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
         id: "pulse-fill",
         type: "fill",
         source: "pulse",
-        paint: { "fill-color": "#eaff9e", "fill-opacity": 0 },
+        paint: { "fill-color": "#ffffff", "fill-opacity": 0 },
       });
 
       map.addSource("discoveries", { type: "geojson", data: EMPTY_FC });
@@ -96,7 +96,7 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
         type: "symbol",
         source: "discoveries",
         layout: {
-          "icon-image": ["case", ["==", ["get", "rec"], true], "pin-gold", "pin-lime"],
+          "icon-image": ["case", ["==", ["get", "rec"], true], "pin-gold", "pin-brand"],
           "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.42, 15, 0.62, 18, 0.8],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,

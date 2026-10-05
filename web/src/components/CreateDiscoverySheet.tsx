@@ -91,7 +91,7 @@ export default function CreateDiscoverySheet({ pos, maxAccuracyM, onClose, onCre
           <button
             onClick={submit}
             disabled={busy || name.trim().length < 3 || !category || pos.accuracy > maxAccuracyM}
-            className="btn-lime w-full py-3.5 text-[13px]"
+            className="btn-brand w-full py-3.5 text-[13px]"
           >
             {busy ? "Publishing…" : "Publish discovery"}
           </button>

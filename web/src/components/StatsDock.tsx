@@ -33,7 +33,7 @@ export default function StatsDock({ stats, summary, onRecenter, onNearby, onNear
           <div className="flex gap-5 pb-1 text-right">
             <div>
               <div className="hud-label">Cells</div>
-              <div className="font-display text-lg font-bold leading-tight text-lime">
+              <div className="font-display text-lg font-bold leading-tight text-brand">
                 {stats?.cells_unlocked ?? "—"}
               </div>
             </div>
@@ -48,7 +48,7 @@ export default function StatsDock({ stats, summary, onRecenter, onNearby, onNear
 
         <button
           onClick={onNearby}
-          className="btn-lime mt-3 flex w-full items-center justify-center gap-2 py-3 text-[13px]"
+          className="btn-brand mt-3 flex w-full items-center justify-center gap-2 py-3 text-[13px]"
         >
           <Compass size={15} strokeWidth={2.6} />
           Reveal what's nearby
@@ -58,15 +58,15 @@ export default function StatsDock({ stats, summary, onRecenter, onNearby, onNear
       <div className="flex flex-col gap-2">
         <button
           onClick={onRecenter}
-          className="glass grid h-12 w-12 place-items-center rounded-2xl transition hover:border-lime/50"
+          className="glass grid h-12 w-12 place-items-center rounded-2xl transition hover:border-brand/50"
           aria-label="Center on me"
           title="Center on me"
         >
-          <Crosshair size={19} className="text-lime" />
+          <Crosshair size={19} className="text-brand" />
         </button>
         <button
           onClick={onNearbyList}
-          className="glass grid h-12 w-12 place-items-center rounded-2xl transition hover:border-lime/50"
+          className="glass grid h-12 w-12 place-items-center rounded-2xl transition hover:border-brand/50"
           aria-label="Discoveries nearby"
           title="Discoveries near map view"
         >

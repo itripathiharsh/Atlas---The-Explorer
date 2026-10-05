@@ -30,7 +30,7 @@ await page.type('input[placeholder^="Password"]', "probepass1");
 await page.click("button[type=submit]");
 await sleep(1200);
 for (let i = 0; i < 4; i++) {
-  const btn = await page.$("[data-onboarding] button.btn-lime");
+  const btn = await page.$("[data-onboarding] button.btn-brand");
   if (!btn) break;
   await btn.click();
   await sleep(500);

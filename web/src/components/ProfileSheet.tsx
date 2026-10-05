@@ -26,7 +26,7 @@ export default function ProfileSheet({ user, onClose }: { user: User; onClose: (
             <div className="hud-label">Explorer</div>
             <h2 className="font-display text-[28px] font-bold leading-tight">{user.username}</h2>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-display text-[15px] font-bold text-lime">
+              <span className="font-display text-[15px] font-bold text-brand">
                 Level {stats.data?.level ?? user.level}
               </span>
               <span className="text-[12px] text-mute">
@@ -34,7 +34,7 @@ export default function ProfileSheet({ user, onClose }: { user: User; onClose: (
               </span>
             </div>
             <div className="mt-2 h-[5px] w-44 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full rounded-full bg-lime transition-[width] duration-700" style={{ width: `${pct}%` }} />
+              <div className="h-full rounded-full bg-brand transition-[width] duration-700" style={{ width: `${pct}%` }} />
             </div>
           </div>
           <button onClick={onClose} className="grid h-9 w-9 place-items-center rounded-full border border-white/10">
@@ -62,7 +62,7 @@ export default function ProfileSheet({ user, onClose }: { user: User; onClose: (
                 </div>
                 <div className="h-[5px] overflow-hidden rounded-full bg-white/10">
                   <div
-                    className="h-full rounded-full bg-lime transition-[width] duration-700"
+                    className="h-full rounded-full bg-brand transition-[width] duration-700"
                     style={{ width: `${Math.min(100, c.pct)}%` }}
                   />
                 </div>
@@ -111,7 +111,7 @@ function Stat({ label, value, accent }: { label: string; value: number | undefin
   return (
     <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-3.5">
       <div className="hud-label">{label}</div>
-      <div className={`mt-0.5 font-display text-[22px] font-bold leading-none ${accent ? "text-lime" : ""}`}>
+      <div className={`mt-0.5 font-display text-[22px] font-bold leading-none ${accent ? "text-brand" : ""}`}>
         {value ?? "—"}
       </div>
     </div>

@@ -182,11 +182,11 @@ function Game() {
       {/* add discovery */}
       <button
         onClick={() => (geo.pos ? setCreating(true) : gpsHint())}
-        className="glass absolute right-3 top-1/2 z-20 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl transition hover:border-lime/50"
+        className="glass absolute right-3 top-1/2 z-20 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl transition hover:border-brand/50"
         aria-label="Add discovery"
         title="Add a discovery here"
       >
-        <Plus size={20} className="text-lime" />
+        <Plus size={20} className="text-brand" />
       </button>
 
       {/* GPS status pill */}

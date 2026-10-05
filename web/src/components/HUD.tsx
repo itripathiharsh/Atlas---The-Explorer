@@ -16,23 +16,23 @@ export default function HUD({ user, stats, onProfile }: { user: User; stats: Sta
           className="grid h-10 w-9 place-items-center font-[600]"
           style={{
             clipPath: "polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%)",
-            background: "linear-gradient(180deg, #d9ff54, #93b321)",
+            background: "linear-gradient(180deg, #f7f2e3, #b6ad97)",
           }}
         >
-          <span className="font-display text-[15px] font-bold text-[#0a0d05]">{level}</span>
+          <span className="font-display text-[15px] font-bold text-[#061623]">{level}</span>
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between gap-2">
             <span className="hud-label">Explorer</span>
-            <span className="font-display text-[11px] font-semibold text-lime">
+            <span className="font-display text-[11px] font-semibold text-brand">
               {xp.toLocaleString()} XP
             </span>
           </div>
           <div className="mt-1 h-[5px] w-full overflow-hidden rounded-full bg-white/10">
             <div
-              className="h-full rounded-full bg-lime transition-[width] duration-700 ease-out"
-              style={{ width: `${pct}%`, boxShadow: "0 0 8px rgba(200,241,53,.7)" }}
+              className="h-full rounded-full bg-brand transition-[width] duration-700 ease-out"
+              style={{ width: `${pct}%`, boxShadow: "0 0 8px rgba(242,236,218,.7)" }}
             />
           </div>
         </div>

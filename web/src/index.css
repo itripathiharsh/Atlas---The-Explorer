@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-void: #06080d;
-  --color-ink: #eef2ea;
-  --color-mute: #8b94a3;
-  --color-lime: #c8f135;
-  --color-limedim: #4d5f18;
+  --color-void: #061623;
+  --color-ink: #f5f2e9;
+  --color-mute: #8496a9;
+  --color-brand: #f2ecd9;
+  --color-branddim: #565040;
   --color-gold: #ffc24b;
   --color-danger: #ff5d5d;
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
@@ -30,7 +30,7 @@ body {
 /* ---------- surfaces ---------- */
 
 .glass {
-  background: color-mix(in srgb, #0b0f16 78%, transparent);
+  background: color-mix(in srgb, #0a1a2b 78%, transparent);
   backdrop-filter: blur(18px) saturate(1.2);
   -webkit-backdrop-filter: blur(18px) saturate(1.2);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -46,23 +46,23 @@ body {
   color: var(--color-mute);
 }
 
-.btn-lime {
+.btn-brand {
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: var(--color-lime);
-  color: #0a0d05;
+  background: var(--color-brand);
+  color: #061623;
   border-radius: 999px;
   transition: transform 0.12s ease, filter 0.12s ease;
 }
-.btn-lime:hover {
+.btn-brand:hover {
   filter: brightness(1.06);
 }
-.btn-lime:active {
+.btn-brand:active {
   transform: scale(0.97);
 }
-.btn-lime:disabled {
+.btn-brand:disabled {
   filter: grayscale(0.6) brightness(0.7);
   cursor: not-allowed;
 }
@@ -93,9 +93,9 @@ body {
   color: var(--color-mute);
 }
 .chip.active {
-  background: var(--color-lime);
-  color: #0a0d05;
-  border-color: var(--color-lime);
+  background: var(--color-brand);
+  color: #061623;
+  border-color: var(--color-brand);
 }
 
 input,
@@ -113,8 +113,8 @@ select {
 }
 input:focus,
 textarea:focus {
-  border-color: rgba(200, 241, 53, 0.55);
-  box-shadow: 0 0 0 3px rgba(200, 241, 53, 0.12);
+  border-color: rgba(242, 236, 218, 0.55);
+  box-shadow: 0 0 0 3px rgba(242, 236, 218, 0.12);
 }
 input::placeholder,
 textarea::placeholder {
@@ -131,8 +131,8 @@ textarea::placeholder {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(2, 4, 8, 0.55) 100%),
-    linear-gradient(to bottom, rgba(2, 4, 8, 0.35), transparent 18%, transparent 78%, rgba(2, 4, 8, 0.5));
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(3, 9, 17, 0.6) 100%),
+    linear-gradient(to bottom, rgba(3, 9, 17, 0.4), transparent 18%, transparent 78%, rgba(3, 9, 17, 0.55));
 }
 
 .me-marker {
@@ -145,7 +145,7 @@ textarea::placeholder {
   position: absolute;
   inset: -14px;
   border-radius: 999px;
-  border: 1.5px solid rgba(200, 241, 53, 0.55);
+  border: 1.5px solid rgba(242, 236, 218, 0.55);
   animation: me-pulse 2.4s ease-out infinite;
 }
 .me-marker::after {
@@ -153,8 +153,8 @@ textarea::placeholder {
   position: absolute;
   inset: 4px;
   border-radius: 999px;
-  background: var(--color-lime);
-  box-shadow: 0 0 14px rgba(200, 241, 53, 0.9), 0 0 3px rgba(200, 241, 53, 1);
+  background: var(--color-brand);
+  box-shadow: 0 0 14px rgba(242, 236, 218, 0.9), 0 0 3px rgba(200, 241, 53, 1);
 }
 
 @keyframes me-pulse {
@@ -277,8 +277,8 @@ textarea::placeholder {
   border: none;
 }
 .hex.on {
-  background: var(--color-lime);
-  box-shadow: 0 0 12px rgba(200, 241, 53, 0.5);
+  background: var(--color-brand);
+  box-shadow: 0 0 12px rgba(242, 236, 218, 0.5);
   transition: background 0.4s ease;
 }
 

@@ -127,7 +127,7 @@ export default function DiscoverySheet({ discovery, onClose, getFix, visitRadius
           </div>
           <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-3 text-center">
             <div className="hud-label">Worth it</div>
-            <div className={`font-display text-lg font-bold ${d.score_pct !== null && d.score_pct >= 70 ? "text-lime" : "text-ink"}`}>
+            <div className={`font-display text-lg font-bold ${d.score_pct !== null && d.score_pct >= 70 ? "text-brand" : "text-ink"}`}>
               {d.score_pct === null ? "—" : `${d.score_pct}%`}
             </div>
           </div>
@@ -152,8 +152,8 @@ export default function DiscoverySheet({ discovery, onClose, getFix, visitRadius
         {/* actions */}
         <div className="mt-4 flex gap-2 pb-2">
           {d.visited_by_me ? (
-            <div className="btn-ghost flex flex-1 items-center justify-center gap-2 border-lime/50 py-3.5 text-[13px] text-lime">
-              <Star size={15} className="fill-lime" /> Visited ✓
+            <div className="btn-ghost flex flex-1 items-center justify-center gap-2 border-brand/50 py-3.5 text-[13px] text-brand">
+              <Star size={15} className="fill-brand" /> Visited ✓
             </div>
           ) : tooFar ? (
             <div
@@ -163,7 +163,7 @@ export default function DiscoverySheet({ discovery, onClose, getFix, visitRadius
               Walk closer to check in
             </div>
           ) : (
-            <button onClick={visit} disabled={busy !== null} className="btn-lime flex-1 py-3.5 text-[13px]">
+            <button onClick={visit} disabled={busy !== null} className="btn-brand flex-1 py-3.5 text-[13px]">
               {busy === "visit" ? "Verifying…" : "I'm here — mark visited"}
             </button>
           )}

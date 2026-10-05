@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Compass } from "lucide-react";
 import { useAuth } from "../state/auth";
 import { emitFx } from "../state/fx";
 
@@ -34,18 +33,23 @@ export default function AuthScreen() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(60% 40% at 50% 0%, rgba(200,241,53,0.09), transparent 70%), radial-gradient(50% 35% at 50% 100%, rgba(200,241,53,0.05), transparent 70%)",
+            "radial-gradient(60% 40% at 50% 0%, rgba(242,236,218,0.08), transparent 70%), radial-gradient(50% 35% at 50% 100%, rgba(242,236,218,0.04), transparent 70%)",
         }}
       />
       <div className="relative w-full max-w-sm">
-        <div className="mb-10 text-center">
-          <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl border border-lime/40 bg-lime/10">
-            <Compass size={30} className="text-lime" strokeWidth={2.2} />
-          </div>
-          <h1 className="font-display text-[44px] font-bold leading-none tracking-tight">
+        <div className="mb-8 text-center">
+          <img
+            src="/icons/icon-192.png"
+            alt="ATLAS"
+            className="mx-auto h-24 w-24 rounded-3xl border border-white/10"
+          />
+          <h1 className="mt-5 font-display text-[42px] font-bold leading-none tracking-[0.08em]">
             ATLAS
           </h1>
-          <p className="mt-3 text-[14px] leading-relaxed text-mute">
+          <p className="mt-2 font-display text-[10px] font-semibold uppercase tracking-[0.35em] text-mute">
+            Explore · Unlock · Discover
+          </p>
+          <p className="mt-5 text-[14px] leading-relaxed text-mute">
             The world starts unexplored.
             <br />
             <span className="text-ink">Walk to reveal it.</span>
@@ -100,7 +104,7 @@ export default function AuthScreen() {
 
           {error && <p className="text-[13px] text-danger">{error}</p>}
 
-          <button type="submit" disabled={busy} className="btn-lime w-full py-3.5 text-[14px]">
+          <button type="submit" disabled={busy} className="btn-brand w-full py-3.5 text-[14px]">
             {busy ? "…" : mode === "register" ? "Begin expedition" : "Continue"}
           </button>
         </form>

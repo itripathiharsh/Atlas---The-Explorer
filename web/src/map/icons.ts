@@ -42,8 +42,8 @@ function drawPin(ctx: CanvasRenderingContext2D, s: number, core: string, glow: s
 }
 
 export function registerSprites(map: maplibregl.Map) {
-  if (!map.hasImage("pin-lime")) {
-    map.addImage("pin-lime", makeSprite((c, s) => drawPin(c, s, "#C8F135", "#C8F135"), 44));
+  if (!map.hasImage("pin-brand")) {
+    map.addImage("pin-brand", makeSprite((c, s) => drawPin(c, s, "#f2ecd9", "#f2ecd9"), 44));
   }
   if (!map.hasImage("pin-gold")) {
     map.addImage("pin-gold", makeSprite((c, s) => drawPin(c, s, "#FFC24B", "#FFC24B"), 48));
