@@ -7,10 +7,11 @@ interface Props {
   center: { lat: number; lng: number };
   onClose: () => void;
   onSelect: (d: Discovery) => void;
+  onJumpLucknow: () => void;
 }
 
 /** What's worth seeing around wherever you're looking on the map. */
-export default function NearbySheet({ center, onClose, onSelect }: Props) {
+export default function NearbySheet({ center, onClose, onSelect, onJumpLucknow }: Props) {
   const key = `${center.lat.toFixed(2)},${center.lng.toFixed(2)}`;
   const nearby = useQuery<Discovery[]>({
     queryKey: ["nearby-list", key],
@@ -54,10 +55,11 @@ export default function NearbySheet({ center, onClose, onSelect }: Props) {
           <div className="mt-8 mb-4 text-center">
             <p className="font-display text-[15px] font-bold">Nothing recorded here yet</p>
             <p className="mt-1 text-[13px] leading-relaxed text-mute">
-              Pan somewhere richer, or be the first —
-              <br />
-              hit + and add what others are missing.
+              Be the first — hit + and add what others are missing.
             </p>
+            <button onClick={onJumpLucknow} className="btn-lime mt-4 px-6 py-3 text-[12px]">
+              Take me to Lucknow instead
+            </button>
           </div>
         )}
 

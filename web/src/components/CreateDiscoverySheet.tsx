@@ -7,11 +7,12 @@ const CATEGORIES = ["Viewpoint", "Park", "Monument", "Culture", "Nature", "Food"
 
 interface Props {
   pos: { lat: number; lng: number; accuracy: number };
+  maxAccuracyM: number;
   onClose: () => void;
   onCreated: (lat: number, lng: number) => void;
 }
 
-export default function CreateDiscoverySheet({ pos, onClose, onCreated }: Props) {
+export default function CreateDiscoverySheet({ pos, maxAccuracyM, onClose, onCreated }: Props) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [description, setDescription] = useState("");
@@ -62,10 +63,10 @@ export default function CreateDiscoverySheet({ pos, onClose, onCreated }: Props)
         <p className="mt-1 text-[12.5px] text-mute">
           Pinned at your current location ({Math.round(pos.accuracy)} m GPS accuracy).
         </p>
-        {pos.accuracy > 45 && (
+        {pos.accuracy > maxAccuracyM && (
           <p className="mt-2 rounded-xl border border-gold/30 bg-gold/[0.07] px-3 py-2 text-[12.5px] leading-relaxed text-gold">
-            GPS is too weak to publish (needs ≤ 45 m). Step outside or near a window,
-            then come back — this keeps fake places off the map.
+            GPS is too weak to publish (needs ≤ {Math.round(maxAccuracyM)} m). Step outside or
+            near a window, then come back — this keeps fake places off the map.
           </p>
         )}
 
@@ -89,7 +90,7 @@ export default function CreateDiscoverySheet({ pos, onClose, onCreated }: Props)
           {error && <p className="text-[13px] text-danger">{error}</p>}
           <button
             onClick={submit}
-            disabled={busy || name.trim().length < 3 || !category || pos.accuracy > 45}
+            disabled={busy || name.trim().length < 3 || !category || pos.accuracy > maxAccuracyM}
             className="btn-lime w-full py-3.5 text-[13px]"
           >
             {busy ? "Publishing…" : "Publish discovery"}

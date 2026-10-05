@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { AuthProvider, useAuth } from "./state/auth";
 import { emitFx } from "./state/fx";
 import { api } from "./api/client";
-import type { Discovery, GeoFC, MapSummary, Stats, UnlockedCell } from "./api/types";
+import type { ApiConfig, Discovery, GeoFC, MapSummary, Stats, UnlockedCell } from "./api/types";
 import { useGeolocation } from "./hooks/useGeolocation";
 import { useExploration } from "./hooks/useExploration";
 import MapCanvas from "./map/MapCanvas";
@@ -83,6 +83,12 @@ function Game() {
     queryKey: ["stats"],
     queryFn: () => api("/me/stats"),
     enabled: !!user,
+  });
+  const gameConfig = useQuery<ApiConfig>({
+    queryKey: ["config"],
+    queryFn: () => api("/config"),
+    enabled: !!user,
+    staleTime: Infinity,
   });
   const summary = useQuery<MapSummary>({
     queryKey: ["summary"],
@@ -169,10 +175,7 @@ function Game() {
           if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
           else gpsHint();
         }}
-        onNearby={() => {
-          if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 16.5 });
-          else gpsHint();
-        }}
+        onNearby={() => setNearbyOpen(true)}
         onNearbyList={() => setNearbyOpen(true)}
       />
 
@@ -210,7 +213,12 @@ function Game() {
       )}
 
       {selectedWithDist && (
-        <DiscoverySheet discovery={selectedWithDist} onClose={() => setSelected(null)} getFix={getFix} />
+        <DiscoverySheet
+          discovery={selectedWithDist}
+          onClose={() => setSelected(null)}
+          getFix={getFix}
+          visitRadiusM={gameConfig.data?.visit_radius_m ?? 150}
+        />
       )}
       {nearbyOpen && (
         <NearbySheet
@@ -221,11 +229,16 @@ function Game() {
             setSelected(d);
             setFlyTo({ lat: d.lat, lng: d.lng, zoom: 16 });
           }}
+          onJumpLucknow={() => {
+            setFlyTo({ lat: 26.8467, lng: 80.9462, zoom: 13.5 });
+            emitFx({ kind: "toast", text: "Flying to Lucknow — where the story starts" });
+          }}
         />
       )}
       {creating && geo.pos && (
         <CreateDiscoverySheet
           pos={{ lat: geo.pos.lat, lng: geo.pos.lng, accuracy: geo.pos.accuracy }}
+          maxAccuracyM={gameConfig.data?.max_accuracy_m ?? 50}
           onClose={() => setCreating(false)}
           onCreated={() => {
             setCreating(false);

@@ -73,6 +73,9 @@ node scripts\shot.mjs    # drives the app in headless Edge with simulated GPS wa
 ## Notes for this machine
 
 - **Port 5432 is blocked by security software** → PostgreSQL runs on **5433**.
+- **Desktop demo mode** (`GPS_DEV_MODE=true` in `.env`): relaxes the 50 m GPS
+  gate to 5 km so the full loop is playable from a laptop. Tests always run in
+  strict mode regardless. Leave unset for real exploration.
 - Everything (venv, node_modules, DB cluster, uploads, caches) lives inside this
   folder on D: — see `RULES.md` Rule 1.
 - Map basemap: OpenFreeMap dark (free, keyless). Set `VITE_MAPTILER_KEY` for

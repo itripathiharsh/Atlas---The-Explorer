@@ -16,15 +16,14 @@ interface Props {
   onClose: () => void;
   /** Live position from the map's tracker — no fresh GPS prompt needed. */
   getFix: () => Promise<Fix3>;
+  visitRadiusM: number;
 }
-
-const VISIT_RADIUS_M = 150;
 
 function fmtDist(m: number): string {
   return m >= 1000 ? `${(m / 1000).toFixed(m >= 10_000 ? 0 : 1)} km` : `${Math.round(m)} m`;
 }
 
-export default function DiscoverySheet({ discovery, onClose, getFix }: Props) {
+export default function DiscoverySheet({ discovery, onClose, getFix, visitRadiusM }: Props) {
   const qc = useQueryClient();
   const [d, setD] = useState<Discovery>(discovery);
   const [busy, setBusy] = useState<string | null>(null);
@@ -88,7 +87,7 @@ export default function DiscoverySheet({ discovery, onClose, getFix }: Props) {
     }
   }
 
-  const tooFar = d.distance_m !== null && d.distance_m > VISIT_RADIUS_M;
+  const tooFar = d.distance_m !== null && d.distance_m > visitRadiusM;
 
   return (
     <>
@@ -102,7 +101,7 @@ export default function DiscoverySheet({ discovery, onClose, getFix }: Props) {
             {d.distance_m !== null && (
               <p className="mt-1 text-[13px] text-mute">
                 {tooFar
-                  ? `${fmtDist(d.distance_m)} away — you need to be within ${VISIT_RADIUS_M} m`
+                  ? `${fmtDist(d.distance_m)} away — you need to be within ${visitRadiusM} m`
                   : `${fmtDist(d.distance_m)} away`}
               </p>
             )}

@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     visit_radius_m: float = 150.0
     create_radius_m: float = 300.0
 
+    # Desktop demo mode: relaxes the GPS accuracy gate so the full loop is
+    # playable from a laptop (Wi-Fi positioning is ~km-level). Off by default —
+    # real exploration must use real GPS (set GPS_DEV_MODE=true in .env).
+    gps_dev_mode: bool = False
+
     # XP values (PLAN.md D9)
     xp_unlock: int = 10
     xp_visit: int = 15
@@ -41,6 +46,11 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def eff_max_accuracy_m() -> float:
+    s = get_settings()
+    return 5000.0 if s.gps_dev_mode else s.max_accuracy_m
 
 
 def level_for_xp(xp: int) -> int:

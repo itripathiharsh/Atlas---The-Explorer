@@ -85,3 +85,10 @@ export interface GeoFC {
     properties: { h3: string };
   }[];
 }
+
+export interface ApiConfig {
+  gps_dev_mode: boolean;
+  max_accuracy_m: number;
+  visit_radius_m: number;
+  create_radius_m: number;
+}

@@ -7,6 +7,8 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://explorer:explorer@localhost:5433/worldgame_test")
 os.environ.setdefault("PING_MIN_INTERVAL_S", "0")
+# tests always run in strict-GPS mode regardless of the developer's .env
+os.environ["GPS_DEV_MODE"] = "false"
 
 from sqlalchemy import create_engine, text  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402

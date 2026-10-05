@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from .api import admin, auth, discoveries, exploration, me, map as map_api, reports
+from .api import admin, auth, config, discoveries, exploration, me, map as map_api, reports
 from .config import get_settings
 
 settings = get_settings()
@@ -26,6 +26,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/api")
+app.include_router(config.router, prefix="/api")
 app.include_router(me.router, prefix="/api")
 app.include_router(map_api.router, prefix="/api")
 app.include_router(exploration.router, prefix="/api")

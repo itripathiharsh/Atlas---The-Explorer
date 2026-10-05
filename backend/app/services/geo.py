@@ -6,7 +6,7 @@ from datetime import datetime
 import h3
 from sqlalchemy.orm import Session
 
-from ..config import get_settings
+from ..config import eff_max_accuracy_m, get_settings
 from ..models import Cell, City
 
 
@@ -46,7 +46,7 @@ def fix_issues(
     """Validation pipeline from PLAN.md §6. Empty list = accepted."""
     s = get_settings()
     issues: list[str] = []
-    if accuracy_m > s.max_accuracy_m:
+    if accuracy_m > eff_max_accuracy_m():
         issues.append("accuracy")
     age = (now - recorded_at).total_seconds()
     if age > s.max_fix_age_s or age < -30:

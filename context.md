@@ -22,6 +22,27 @@
 
 ## Iteration Log
 
+## Iteration 9 — 2026-10-06 — owner feedback: "reveal nearby does nothing; how to add my location"
+- **Milestone:** polish (owner-reported, testing from Mairwa — outside the seeded city)
+- **Fixed:**
+  - "Reveal what's nearby" CTA now opens the Discoveries-nearby list (was only
+    nudging the camera — invisible effect).
+  - NearbySheet empty state gained a "Take me to Lucknow instead" jump.
+  - **Desktop demo mode**: `GPS_DEV_MODE=true` in `.env` relaxes the 50 m GPS
+    gate to 5 km so the whole loop is playable from a laptop; default stays
+    strict. Tests pin strict mode via conftest and a dedicated test covers the
+    relaxed path (37/37 green).
+  - New `GET /api/config` (auth) exposes the server's verification thresholds —
+    the frontend now uses them instead of duplicated magic numbers.
+  - Found + fixed: the running uvicorn had NOT hot-reloaded (stale code served —
+    /api/config 404'd); restarted it. Rule for the future: backend .env changes
+    need a manual uvicorn restart.
+- **Verified** (`web\scripts\verify_mairwa.mjs`, shots 30–34): from Mairwa with
+  800 m-accuracy GPS → cell unlocked (+10 XP, hex revealed) → nearby list empty
+  state → "Take me to Lucknow" → Lucknow list fills → created "Mairwa Ghat at
+  dusk" via + → appears at 0 m in the nearby list with its pin on the map.
+- **Commit:** see git log
+
 ## Iteration 8 — 2026-10-06 — owner feedback: "check whether the sheet actions work"
 - **Milestone:** polish (owner-reported)
 - **Feedback (owner, screenshot):** detail sheet showed "Could not get your
