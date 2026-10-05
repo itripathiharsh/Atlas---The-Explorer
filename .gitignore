@@ -1,0 +1,28 @@
+# Rule 1: all project data stays inside this folder on D:. Nothing in C:\.
+
+# databases, uploads, caches (never commit, always on D:)
+data/
+.venv/
+node_modules/
+.npm-cache/
+.pip-cache/
+
+# build output
+dist/
+build/
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# env & secrets
+.env
+.env.*
+
+# misc
+*.log
+.DS_Store
+.expo/
