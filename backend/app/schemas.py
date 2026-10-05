@@ -117,8 +117,12 @@ class DiscoveryIn(BaseModel):
     name: str = Field(min_length=3, max_length=120)
     category: str = Field(min_length=3, max_length=40)
     description: str = Field(default="", max_length=2000)
+    # pinned discovery position (may be up to create_radius_m from the player)
     lat: float = Field(ge=-90, le=90)
     lng: float = Field(ge=-180, le=180)
+    # the player's own GPS fix proving presence
+    fix_lat: float = Field(ge=-90, le=90)
+    fix_lng: float = Field(ge=-180, le=180)
     accuracy_m: float = Field(gt=0)
     recorded_at: datetime
 
