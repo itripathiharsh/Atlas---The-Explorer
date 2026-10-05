@@ -6,10 +6,10 @@ interface Props {
   summary: MapSummary | undefined;
   onRecenter: () => void;
   onNearby: () => void;
-  hasPos: boolean;
+  onNearbyList: () => void;
 }
 
-export default function StatsDock({ stats, summary, onRecenter, onNearby, hasPos }: Props) {
+export default function StatsDock({ stats, summary, onRecenter, onNearby, onNearbyList }: Props) {
   const city = summary?.cities?.[0];
   const pct = city ? city.pct : summary ? null : undefined;
 
@@ -58,15 +58,20 @@ export default function StatsDock({ stats, summary, onRecenter, onNearby, hasPos
       <div className="flex flex-col gap-2">
         <button
           onClick={onRecenter}
-          disabled={!hasPos}
-          className="glass grid h-12 w-12 place-items-center rounded-2xl transition hover:border-white/30 disabled:opacity-40"
+          className="glass grid h-12 w-12 place-items-center rounded-2xl transition hover:border-lime/50"
           aria-label="Center on me"
+          title="Center on me"
         >
           <Crosshair size={19} className="text-lime" />
         </button>
-        <div className="glass grid h-12 w-12 place-items-center rounded-2xl">
-          <MapPin size={17} className="text-mute" />
-        </div>
+        <button
+          onClick={onNearbyList}
+          className="glass grid h-12 w-12 place-items-center rounded-2xl transition hover:border-lime/50"
+          aria-label="Discoveries nearby"
+          title="Discoveries near map view"
+        >
+          <MapPin size={17} className="text-ink" />
+        </button>
       </div>
     </div>
   );

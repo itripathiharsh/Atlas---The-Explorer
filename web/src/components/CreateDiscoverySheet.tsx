@@ -62,6 +62,12 @@ export default function CreateDiscoverySheet({ pos, onClose, onCreated }: Props)
         <p className="mt-1 text-[12.5px] text-mute">
           Pinned at your current location ({Math.round(pos.accuracy)} m GPS accuracy).
         </p>
+        {pos.accuracy > 45 && (
+          <p className="mt-2 rounded-xl border border-gold/30 bg-gold/[0.07] px-3 py-2 text-[12.5px] leading-relaxed text-gold">
+            GPS is too weak to publish (needs ≤ 45 m). Step outside or near a window,
+            then come back — this keeps fake places off the map.
+          </p>
+        )}
 
         <div className="mt-4 space-y-3">
           <input placeholder="Name — e.g. Rooftop with a view" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
@@ -83,7 +89,7 @@ export default function CreateDiscoverySheet({ pos, onClose, onCreated }: Props)
           {error && <p className="text-[13px] text-danger">{error}</p>}
           <button
             onClick={submit}
-            disabled={busy || name.trim().length < 3 || !category}
+            disabled={busy || name.trim().length < 3 || !category || pos.accuracy > 45}
             className="btn-lime w-full py-3.5 text-[13px]"
           >
             {busy ? "Publishing…" : "Publish discovery"}

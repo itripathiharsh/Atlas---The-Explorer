@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { AuthProvider, useAuth } from "./state/auth";
+import { emitFx } from "./state/fx";
 import { api } from "./api/client";
 import type { Discovery, GeoFC, MapSummary, Stats, UnlockedCell } from "./api/types";
 import { useGeolocation } from "./hooks/useGeolocation";
@@ -13,6 +14,7 @@ import AuthScreen from "./components/AuthScreen";
 import Onboarding from "./components/Onboarding";
 import DiscoverySheet from "./components/DiscoverySheet";
 import CreateDiscoverySheet from "./components/CreateDiscoverySheet";
+import NearbySheet from "./components/NearbySheet";
 import ProfileSheet from "./components/ProfileSheet";
 import XPFX from "./components/XPFX";
 
@@ -26,9 +28,21 @@ function Game() {
   const [selected, setSelected] = useState<Discovery | null>(null);
   const [creating, setCreating] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [nearbyOpen, setNearbyOpen] = useState(false);
+  const [mapCenter, setMapCenter] = useState({ lat: 26.8467, lng: 80.9462 });
   const [pulse, setPulse] = useState<UnlockedCell[]>([]);
   const [merged, setMerged] = useState<GeoFC | null>(null);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom?: number } | null>(null);
+
+  const gpsHint = () =>
+    emitFx({
+      kind: "toast",
+      text:
+        geo.status === "denied"
+          ? "Location blocked — enable GPS in your browser"
+          : "Finding your location…",
+      tone: geo.status === "denied" ? "bad" : "good",
+    });
 
   const showOnboarding = !!user && !onboarded;
   const tracking = !!user && onboarded;
@@ -76,6 +90,19 @@ function Game() {
     }
   }, [geo.pos]);
 
+  // Escape closes the top-most sheet (desktop nicety)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (selected) setSelected(null);
+      else if (creating) setCreating(false);
+      else if (nearbyOpen) setNearbyOpen(false);
+      else if (profileOpen) setProfileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selected, creating, nearbyOpen, profileOpen]);
+
   const discoveries = useMemo(() => nearby.data ?? [], [nearby.data]);
 
   if (loading) {
@@ -97,6 +124,7 @@ function Game() {
         userPos={geo.pos}
         onSelectDiscovery={setSelected}
         flyTo={flyTo}
+        onMove={setMapCenter}
       />
 
       <HUD user={user} stats={stats.data} onProfile={() => setProfileOpen(true)} />
@@ -104,19 +132,23 @@ function Game() {
       <StatsDock
         stats={stats.data}
         summary={summary.data}
-        hasPos={!!geo.pos}
-        onRecenter={() =>
-          geo.pos && setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 })
-        }
-        onNearby={() => geo.pos && setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 16.5 })}
+        onRecenter={() => {
+          if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
+          else gpsHint();
+        }}
+        onNearby={() => {
+          if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 16.5 });
+          else gpsHint();
+        }}
+        onNearbyList={() => setNearbyOpen(true)}
       />
 
       {/* add discovery */}
       <button
-        onClick={() => (geo.pos ? setCreating(true) : null)}
-        disabled={!geo.pos}
-        className="glass absolute right-3 top-1/2 z-20 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl transition hover:border-lime/50 disabled:opacity-40"
+        onClick={() => (geo.pos ? setCreating(true) : gpsHint())}
+        className="glass absolute right-3 top-1/2 z-20 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl transition hover:border-lime/50"
         aria-label="Add discovery"
+        title="Add a discovery here"
       >
         <Plus size={20} className="text-lime" />
       </button>
@@ -146,6 +178,17 @@ function Game() {
 
       {selected && (
         <DiscoverySheet discovery={selected} onClose={() => setSelected(null)} />
+      )}
+      {nearbyOpen && (
+        <NearbySheet
+          center={mapCenter}
+          onClose={() => setNearbyOpen(false)}
+          onSelect={(d) => {
+            setNearbyOpen(false);
+            setSelected(d);
+            setFlyTo({ lat: d.lat, lng: d.lng, zoom: 16 });
+          }}
+        />
       )}
       {creating && geo.pos && (
         <CreateDiscoverySheet

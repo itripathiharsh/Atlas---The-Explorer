@@ -14,15 +14,18 @@ interface Props {
   userPos: Fix | null;
   onSelectDiscovery: (d: Discovery) => void;
   flyTo: { lat: number; lng: number; zoom?: number } | null;
+  onMove?: (center: { lat: number; lng: number }) => void;
 }
 
-export default function MapCanvas({ explored, pulse, discoveries, userPos, onSelectDiscovery, flyTo }: Props) {
+export default function MapCanvas({ explored, pulse, discoveries, userPos, onSelectDiscovery, flyTo, onMove }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [ready, setReady] = useState(false);
   const selectRef = useRef(onSelectDiscovery);
   selectRef.current = onSelectDiscovery;
+  const onMoveRef = useRef(onMove);
+  onMoveRef.current = onMove;
   const meMarker = useRef<maplibregl.Marker | null>(null);
 
   // --- create map once ---
@@ -41,6 +44,20 @@ export default function MapCanvas({ explored, pulse, discoveries, userPos, onSel
     mapRef.current = map;
     // dev/testing hook — screenshot scripts drive the map through this
     (window as unknown as { __map?: MlMap }).__map = map;
+
+    // report the viewport center (throttled to one update per frame)
+    const moveRef = onMoveRef;
+    let rafPending = false;
+    map.on("move", () => {
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(() => {
+        rafPending = false;
+        const c = map.getCenter();
+        moveRef.current?.({ lat: c.lat, lng: c.lng });
+      });
+    });
+
     map.on("load", () => {
       registerSprites(map);
 

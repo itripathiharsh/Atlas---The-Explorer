@@ -17,6 +17,7 @@ export function useExploration(enabled: boolean, onUnlocked: (cells: UnlockedCel
   const buffer = useRef<Fix[]>([]);
   const lastPing = useRef(0);
   const inFlight = useRef(false);
+  const lastWeakToast = useRef(0);
   const queryClient = useQueryClient();
   const cbRef = useRef(onUnlocked);
   cbRef.current = onUnlocked;
@@ -49,8 +50,12 @@ export function useExploration(enabled: boolean, onUnlocked: (cells: UnlockedCel
         emitFx({ kind: "achievement", name: a.name, description: a.description });
       }
       if (res.level_up) emitFx({ kind: "level", level: res.level });
-      if (res.rejected.some((r) => r.reasons.includes("accuracy"))) {
-        emitFx({ kind: "toast", text: "Weak GPS signal — move somewhere open", tone: "bad" });
+      if (
+        res.rejected.some((r) => r.reasons.includes("accuracy")) &&
+        Date.now() - lastWeakToast.current > 45_000
+      ) {
+        lastWeakToast.current = Date.now();
+        emitFx({ kind: "toast", text: "Weak GPS — move somewhere open for accurate unlocks", tone: "bad" });
       }
     } catch {
       // network hiccup — fixes are lost, the next batch will catch up

@@ -11,8 +11,8 @@ export type GeoStatus = "idle" | "locating" | "live" | "denied" | "error";
 
 /**
  * Wraps watchPosition. Calls `onFix` for every fresh fix while `enabled`.
- * Filters out anything wildly inaccurate (> 200 m) — the server enforces the
- * real thresholds, the client just avoids wasting battery and pings.
+ * Accepts any sane accuracy — the UI shows roughly where you are and lets the
+ * server decide what passes verification (the client surfaces its reasons).
  */
 export function useGeolocation(onFix: (f: Fix) => void, enabled: boolean) {
   const [status, setStatus] = useState<GeoStatus>("idle");
@@ -36,7 +36,7 @@ export function useGeolocation(onFix: (f: Fix) => void, enabled: boolean) {
           accuracy: p.coords.accuracy,
           ts: p.timestamp,
         };
-        if (fix.accuracy <= 200) {
+        if (fix.accuracy <= 10_000) {
           setPos(fix);
           setStatus("live");
           cbRef.current(fix);

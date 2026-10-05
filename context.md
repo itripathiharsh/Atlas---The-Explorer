@@ -5,15 +5,10 @@
 
 ---
 
-## Current State (updated: Iteration 5)
+## Current State (updated: Iteration 6)
 
-- **What works:** the full MVP loop, verified visually end-to-end with simulated
-  GPS in headless Edge: register → onboarding → dark map → live GPS tracking →
-  server-verified unlocks (+XP animations) → discovery pins → detail sheet →
-  stats/profile with achievements. Backend: 34/34 tests green. Frontend builds
-  clean (`npm run build`).
-- **Code:** `backend\` (FastAPI, all M0–M7 features), `web\` (React PWA, all
-  screens), `scripts\` (setup/dev/seed), seed data: 594 Lucknow cells + 44 places.
+- **What works:** everything from iteration 5, plus the three floating map
+  buttons are fully functional with clear feedback (see iteration 6).
 - **How to run:** `powershell -File scripts\setup_db.ps1` → seed via
   `backend\.venv\Scripts\python.exe scripts\seed_db.py` →
   `powershell -File scripts\dev.ps1`. App at https://localhost:5173 (LAN: same
@@ -21,11 +16,35 @@
 - **Not yet done (needs a human outside):** PRD §40's physical walk (steps 5–8)
   with a real phone; PWA icon PNGs (SVG only for now); code-splitting the 1 MB
   maplibre bundle.
-- **Next milestone:** M8 leftovers above, or owner feedback from first real play.
+- **Next milestone:** owner feedback from first real play.
 
 ---
 
 ## Iteration Log
+
+## Iteration 6 — 2026-10-06 — owner feedback: map buttons not functional
+- **Milestone:** polish (owner-reported)
+- **Feedback (owner, with screenshot):** the floating map buttons (+, crosshair,
+  pin) "are not functionally working".
+- **Diagnosis:** pin button was decorative (never wired — bug); + and crosshair
+  silently disabled without a GPS fix; on desktop, Wi-Fi positioning gives
+  ~800 m+ accuracy and the client dropped all fixes > 200 m, so on desktop the
+  buttons were permanently dead with no explanation.
+- **Fixed:**
+  - Pin button → opens a **NearbySheet**: discoveries around the current map
+    view (not just around you), sorted by distance, tap → detail + fly-to.
+  - MapCanvas now reports viewport center (`onMove`, rAF-throttled).
+  - + and crosshair never silently dead: tapping without a fix shows a toast
+    ("Finding your location…" / "Location blocked — enable GPS").
+  - Client accepts any sane accuracy (≤10 km) so desktop users see their rough
+    position; the server still enforces the real thresholds.
+  - Create-discovery sheet: inline amber warning when accuracy > 45 m and
+    publish disabled with the reason shown (instead of a mystery server error).
+  - Weak-GPS unlock toast rate-limited to once per 45 s (was every ping).
+  - Escape closes the top-most sheet (desktop nicety).
+- **Verified:** build clean; headless-Edge probes of nearby list + weak-GPS
+  create state (data\shots\08, 09).
+- **Commit:** see git log
 
 ## Iteration 5 — 2026-10-06 — M2–M8: full frontend + visual QA pass
 - **Milestone:** M2–M8
