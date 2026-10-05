@@ -5,7 +5,7 @@
 
 ---
 
-## Current State (updated: Iteration 10)
+## Current State (updated: Iteration 11)
 
 - **What works:** everything from iteration 5, plus the three floating map
   buttons are fully functional with clear feedback (see iteration 6).

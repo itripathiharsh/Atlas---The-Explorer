@@ -191,13 +191,13 @@ function Game() {
 
       {/* GPS status pill */}
       {tracking && geo.status !== "live" && (
-        <div className="glass absolute left-3 top-[76px] z-20 rounded-full px-3.5 py-1.5">
-          <span className="hud-label">
+        <div className="glass absolute left-3 top-[76px] z-20 max-w-[75%] rounded-2xl px-3.5 py-2">
+          <span className="hud-label leading-relaxed">
             {geo.status === "denied"
-              ? "Location blocked — enable GPS"
-              : geo.status === "locating"
-                ? "Finding you…"
-                : "Waiting for GPS…"}
+              ? "Location blocked — allow it from the address bar, then reload"
+              : geo.status === "error"
+                ? "No GPS fix yet — try Chrome/Edge, or check Windows location settings"
+                : "Finding your location…"}
           </span>
         </div>
       )}
