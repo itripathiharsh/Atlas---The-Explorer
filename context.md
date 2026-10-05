@@ -22,6 +22,20 @@
 
 ## Iteration Log
 
+## Iteration 7 — 2026-10-06 — owner feedback: cert error in the in-app browser
+- **Milestone:** polish (owner-reported)
+- **Feedback (owner, screenshot):** "This site's HTTPS certificate is not
+  trusted" (ERR_CERT_AUTHORITY_INVALID) when opening the app.
+- **Diagnosis:** dev server ran with a self-signed cert (for LAN phone testing);
+  the ZCode in-app browser has no "proceed anyway" bypass. But localhost is a
+  secure context per spec — desktop use never needed HTTPS.
+- **Fixed:** `npm run dev` is now plain HTTP (no cert friction on desktop);
+  `npm run dev:host` enables HTTPS for phone-over-LAN testing (real mobile
+  browsers offer Advanced → Proceed). Restarted the dev server on HTTP;
+  verified `isSecureContext === true` and working geolocation on
+  http://localhost:5173 (data\shots\10).
+- **Commit:** see git log
+
 ## Iteration 6 — 2026-10-06 — owner feedback: map buttons not functional
 - **Milestone:** polish (owner-reported)
 - **Feedback (owner, with screenshot):** the floating map buttons (+, crosshair,

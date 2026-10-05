@@ -25,12 +25,14 @@ backend\.venv\Scripts\python.exe scripts\seed_db.py
 powershell -File scripts\dev.ps1
 ```
 
-Open **https://localhost:5173** (self-signed cert — accept it; HTTPS is required
-for geolocation). Register, finish onboarding, and walk.
+Open **http://localhost:5173** — plain HTTP, no certificate warnings
+(localhost is a trusted context, so geolocation just works). Register, finish
+onboarding, and walk.
 
-**On a phone:** both dev servers listen on the LAN. Open
-`https://<your-lan-ip>:5173` on the phone (same Wi-Fi), accept the cert warning,
-allow location. Frontend dev mode enables HTTPS automatically for this.
+**On a phone:** run `npm run dev:host` in `web\` instead (HTTPS via self-signed
+cert, required because a LAN IP is not a trusted origin). Then open
+`https://<your-lan-ip>:5173` on the phone, accept the cert warning
+(Chrome: Advanced → Proceed), and allow location.
 
 ## Layout
 
