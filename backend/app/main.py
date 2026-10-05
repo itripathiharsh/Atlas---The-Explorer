@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import auth, me
+from .api import auth, exploration, me, map as map_api
 from .config import get_settings
 
 settings = get_settings()
@@ -26,6 +26,8 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/api")
 app.include_router(me.router, prefix="/api")
+app.include_router(map_api.router, prefix="/api")
+app.include_router(exploration.router, prefix="/api")
 
 
 @app.get("/health")

@@ -175,7 +175,7 @@ class XpEvent(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     kind: Mapped[str] = mapped_column(String(40))
     amount: Mapped[int] = mapped_column(Integer)
-    ref_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    ref_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 

@@ -121,7 +121,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('kind', sa.String(length=40), nullable=False),
     sa.Column('amount', sa.Integer(), nullable=False),
-    sa.Column('ref_id', sa.Integer(), nullable=True),
+    sa.Column('ref_id', sa.BigInteger(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')

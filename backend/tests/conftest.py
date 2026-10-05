@@ -6,12 +6,14 @@ import pytest
 # Test database must be configured before app modules import settings.
 ROOT = Path(__file__).resolve().parents[2]
 os.environ.setdefault("DATABASE_URL", "postgresql+psycopg://explorer:explorer@localhost:5433/worldgame_test")
+os.environ.setdefault("PING_MIN_INTERVAL_S", "0")
 
 from sqlalchemy import create_engine, text  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402
 
 from app.db import Base  # noqa: E402
 from app.main import app  # noqa: E402
+from app.seed.base import seed_achievements, seed_city_cells, seed_cities  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 ADMIN_DB = "postgresql+psycopg://explorer:explorer@localhost:5433/postgres"
@@ -29,7 +31,14 @@ def test_database():
             returncode=1,
         )
     with admin.connect() as conn:
-        conn.execute(text("CREATE DATABASE worldgame_test"))
+        exists = conn.execute(
+            text("SELECT 1 FROM pg_database WHERE datname = 'worldgame_test'")
+        ).scalar()
+        if not exists:
+            conn.execute(text("CREATE DATABASE worldgame_test"))
+        else:
+            conn.execute(text("DROP DATABASE worldgame_test WITH (FORCE)"))
+            conn.execute(text("CREATE DATABASE worldgame_test"))
     admin.dispose()
 
     engine = create_engine(TEST_DB_URL)
@@ -74,6 +83,15 @@ def register(client, username="harsh", email="harsh@example.com", password="hunt
     )
     assert r.status_code == 200, r.text
     return r.json()
+
+
+@pytest.fixture()
+def city(db):
+    """Lucknow with its res-8 cells polyfilled + achievements seeded."""
+    (lucknow,) = seed_cities(db)
+    seed_city_cells(db, lucknow)
+    seed_achievements(db)
+    return lucknow
 
 
 def auth_headers(client, **kwargs):
