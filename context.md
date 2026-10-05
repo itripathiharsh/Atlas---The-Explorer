@@ -7,20 +7,37 @@
 
 ## Current State (updated: Iteration 11)
 
-- **What works:** everything from iteration 5, plus the three floating map
-  buttons are fully functional with clear feedback (see iteration 6).
+- **What works:** the full MVP loop (auth, fog map, GPS unlocks with desktop
+  demo mode, discoveries, recommendations, photos, reports, profile), ATLAS
+  branding (navy/ivory, logo icons), hybrid GPS acquisition that can't stall.
+  Backend tests 37/37; frontend builds clean.
 - **How to run:** `powershell -File scripts\setup_db.ps1` → seed via
   `backend\.venv\Scripts\python.exe scripts\seed_db.py` →
-  `powershell -File scripts\dev.ps1`. App at https://localhost:5173 (LAN: same
-  URL with machine IP; HTTPS is auto-enabled in dev for phone geolocation).
-- **Not yet done (needs a human outside):** PRD §40's physical walk (steps 5–8)
-  with a real phone; PWA icon PNGs (SVG only for now); code-splitting the 1 MB
-  maplibre bundle.
+  `powershell -File scripts\dev.ps1`. App at **http://localhost:5173**;
+  backend on **:8014** (8000 belongs to the owner's other project).
+- **Not yet done (needs a human outside):** PRD §40's physical walk with a real
+  phone; code-splitting the 1 MB maplibre bundle.
 - **Next milestone:** owner feedback from first real play.
 
 ---
 
 ## Iteration Log
+
+## Iteration 11 — 2026-10-06 — owner feedback: stuck on "Finding your location"
+- **Milestone:** polish (owner-reported)
+- **Feedback (owner):** status pill stuck on "Finding your location…" despite
+  granting location access (desktop).
+- **Diagnosis:** the app relied solely on `watchPosition`, which on desktops can
+  stall indefinitely (Windows location service off, embedded webview quirks)
+  even when permission is granted.
+- **Fixed:** hybrid acquisition in `useGeolocation` — the watch plus a
+  `getCurrentPosition` retry every 8 s (whichever delivers wins); status only
+  becomes "denied" on an explicit denial and "error" after 3 failed attempts.
+  Status pill now explains each state with the actual remedy.
+- **Verified:** headless run — pill clears once a fix arrives, XP flow works.
+- **Owner checklist given:** Windows location service on, browser site
+  permission, real Chrome/Edge instead of the in-app browser, phone for real GPS.
+- **Commit:** see git log
 
 ## Iteration 10 — 2026-10-06 — owner: brand logo + UI re-theme
 - **Milestone:** polish (owner-provided brand asset)
