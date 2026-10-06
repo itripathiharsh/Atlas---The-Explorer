@@ -18,7 +18,7 @@ export default function StatsDock({
   onCityList,
   onAlignNorth,
 }: Props) {
-  const city = summary?.cities?.[0];
+  const city = summary?.current_city || summary?.cities?.[0];
   const pct = city ? city.pct : summary ? null : undefined;
   const displayPct = pct === undefined ? "—" : pct === null ? `${summary!.world_pct}%` : `${pct}%`;
 
@@ -74,7 +74,7 @@ export default function StatsDock({
               title="Click to view all cities"
             >
               <span className="hud-label text-[9px] group-hover:text-emerald-300 transition-colors">
-                {city ? city.display_name : "World"} Explored ⌄
+                {city ? city.display_name.split(",")[0] : "World"} Explored 🗺️
               </span>
               <span className="font-display text-base font-extrabold text-white mt-0.5">
                 {displayPct}

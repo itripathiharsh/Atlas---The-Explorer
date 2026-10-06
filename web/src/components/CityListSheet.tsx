@@ -54,7 +54,9 @@ export default function CityListSheet({ summary, onClose, onFly }: Props) {
 
         {/* Cities List */}
         <div className="space-y-2.5">
-          {cities.map((c) => (
+          {cities.map((c) => {
+            const isCurrent = summary?.current_city?.name === c.name;
+            return (
             <button
               key={c.name}
               onClick={() => {
@@ -63,17 +65,30 @@ export default function CityListSheet({ summary, onClose, onFly }: Props) {
                   onClose();
                 }
               }}
-              className="w-full flex items-center gap-4 rounded-2xl border border-emerald-950/70 bg-[#0e2621]/60 hover:bg-[#0e2621] p-3.5 text-left transition hover:border-emerald-500/50 active:scale-[0.99] group"
+              className={`w-full flex items-center gap-4 rounded-2xl border p-3.5 text-left transition active:scale-[0.99] group ${
+                isCurrent
+                  ? "border-emerald-500/80 bg-[#0e2621] shadow-lg shadow-emerald-950/40 ring-1 ring-emerald-500/50"
+                  : "border-emerald-950/70 bg-[#0e2621]/60 hover:bg-[#0e2621] hover:border-emerald-500/50"
+              }`}
             >
-              <div className="w-10 h-10 rounded-xl bg-[#0F2D20] border border-emerald-600/40 flex items-center justify-center text-emerald-400 group-hover:text-amber-300 transition-colors">
+              <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-colors ${
+                isCurrent ? "bg-emerald-600/30 border-emerald-400 text-amber-300" : "bg-[#0F2D20] border-emerald-600/40 text-emerald-400 group-hover:text-amber-300"
+              }`}>
                 <Navigation size={18} />
               </div>
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-display text-[15px] font-bold text-white group-hover:text-emerald-300 transition-colors">
-                    {c.display_name}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-display text-[15px] font-bold text-white group-hover:text-emerald-300 transition-colors">
+                      {c.display_name}
+                    </span>
+                    {isCurrent && (
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-300 bg-emerald-900/80 px-2 py-0.5 rounded-full border border-emerald-500/50">
+                        Current
+                      </span>
+                    )}
+                  </div>
                   <span
                     className={`font-mono text-xs font-bold ${
                       c.pct > 0 ? "text-amber-300" : "text-stone-400"
@@ -91,7 +106,7 @@ export default function CityListSheet({ summary, onClose, onFly }: Props) {
                 </div>
               </div>
             </button>
-          ))}
+          );})}
         </div>
       </main>
     </>

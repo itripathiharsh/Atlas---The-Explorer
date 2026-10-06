@@ -105,6 +105,25 @@ def nearby(
         )
         .all()
     )
+    # If the area is sparse or new, dynamically discover notable places around this coordinate
+    if len(candidates) < 4:
+        try:
+            from ..services.places import fetch_and_populate_global_discoveries
+            fetch_and_populate_global_discoveries(db, lat, lng, radius_m=radius_m, user_id=user.id)
+            candidates = (
+                db.query(Discovery)
+                .filter(
+                    Discovery.status == "active",
+                    Discovery.lat >= lat - lat_deg,
+                    Discovery.lat <= lat + lat_deg,
+                    Discovery.lng >= lng - lng_deg,
+                    Discovery.lng <= lng + lng_deg,
+                )
+                .all()
+            )
+        except Exception:
+            pass
+
     scored = sorted(
         ((haversine_m(lat, lng, d.lat, d.lng), d) for d in candidates),
         key=lambda t: t[0],

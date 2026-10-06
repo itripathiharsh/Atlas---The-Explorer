@@ -89,6 +89,13 @@ def get_or_create_cell(db: Session, lat: float, lng: float) -> Cell:
     city_id = next(
         (c.id for c in city if point_in_ring(center_lng, center_lat, c.boundary)), None
     )
+    if city_id is None:
+        try:
+            from .places import resolve_or_create_city
+            c = resolve_or_create_city(db, center_lat, center_lng)
+            city_id = c.id
+        except Exception:
+            city_id = None
     cell = Cell(
         h3_index=h_int,
         resolution=get_settings().h3_resolution,

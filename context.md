@@ -5,7 +5,7 @@
 
 ---
 
-## Current State (updated: Iteration 13)
+## Current State (updated: Iteration 14)
 
 - **What works:** Complete "Gamified Expedition" design system implementation across all 5 phases based on the Stitch reference system (`design refrcnes/` and `DESIGN.md`), mapped end-to-end to backend:
   - Phase 1: Tokens & Styling System: Abyssal Forest palette (`#071714`), warm parchment sheets (`#F4F1EA`), radiant gold accents (`#D4AF37`), hexagonal clip-paths (`.hex-cell`, `.hex-shape`), radar beacons (`.me-marker`, `.ping-ring`), reticle camera brackets (`.reticle-corner`).
@@ -21,6 +21,25 @@
 ---
 
 ## Iteration Log
+
+## Iteration 14 — 2026-10-07 — Dynamic Worldwide Discovery Engine & Auto-Territories
+- **Milestone:** M3/M4 (World Coverage & Dynamic Exploration)
+- **Done:**
+  - Solved the 11-14 hardcoded city limitation: ATLAS now works dynamically anywhere on Earth.
+  - Built on-demand POI engine (`backend/app/services/places.py`): fetches real, high-quality encyclopedic places from Wikipedia GeoSearch API on the fly for any `(lat, lng)`, complete with thumbnail images, summaries, and category classification.
+  - Implemented reverse-geocoded territory resolution (`resolve_or_create_city`): resolves real city/region names via OpenStreetMap Nominatim and automatically provisions exploration territories with custom boundaries.
+  - Hooked `GET /api/discoveries/nearby` to auto-spawn discoveries whenever local candidates are sparse (< 4).
+  - Enhanced `GET /api/map/summary` to accept GPS coordinates (`lat`, `lng`), resolve `current_city`, and compute real-time local territory percentage.
+  - Linked `get_or_create_cell` in `geo.py` with dynamic territory creation so every unlocked H3 cell globally accrues to local city progress.
+  - Frontend: Connected `App.tsx` live GPS fixes to `/map/summary`, updated `StatsDock.tsx` to dynamically display `{current_city} Explored %`, and added a glowing `Current Territory` indicator in `CityListSheet.tsx`.
+  - Added new integration test suite (`tests/test_dynamic_world.py`).
+  - Verified: 42/42 backend tests passing, frontend `npm run build` clean with 0 errors.
+- **Decided:**
+  - Auto-created territories use an octagon boundary (~25 km radius) with 1,200 nominal cells to provide meaningful local progression anywhere in the world.
+  - Wikipedia GeoSearch is used as the primary source of truth for POIs with photo thumbnails; places are saved to PostgreSQL with `source="seed"` so they persist permanently once discovered.
+- **Not working / known issues:** none.
+- **Next:** Real-world GPS walk with mobile device.
+- **Commit:** none
 
 ## Iteration 13 — 2026-10-07 — Gamified Expedition Design System (Phases 1-5)
 - **Milestone:** Complete implementation of the Stitch design system (`design refrcnes/` + `DESIGN.md`) into ATLAS.

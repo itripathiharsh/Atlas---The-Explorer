@@ -51,22 +51,52 @@ def explored(user: UserDep, db: DbDep, bbox: str | None = Query(None)):
 
 
 @router.get("/summary", response_model=MapSummaryOut)
-def summary(user: UserDep, db: DbDep):
+def summary(
+    user: UserDep,
+    db: DbDep,
+    lat: float | None = Query(None, ge=-90, le=90),
+    lng: float | None = Query(None, ge=-180, le=180),
+):
     s = get_settings()
+    target_lat = lat if lat is not None else user.last_lat
+    target_lng = lng if lng is not None else user.last_lng
+
+    current_city_out = None
+    if target_lat is not None and target_lng is not None:
+        try:
+            from ..services.places import resolve_or_create_city
+            curr_c = resolve_or_create_city(db, target_lat, target_lng)
+            if curr_c:
+                current_city_out = {
+                    "name": curr_c.name,
+                    "display_name": curr_c.display_name,
+                    "pct": city_percent(db, user.id, curr_c),
+                    "center_lat": curr_c.center_lat,
+                    "center_lng": curr_c.center_lng,
+                }
+        except Exception:
+            pass
+
     cities = db.query(City).all()
     cells = (
         db.query(func.count(UserCell.id)).filter(UserCell.user_id == user.id).scalar() or 0
     )
+    city_items = [
+        {
+            "name": c.name,
+            "display_name": c.display_name,
+            "pct": city_percent(db, user.id, c),
+            "center_lat": c.center_lat,
+            "center_lng": c.center_lng,
+        }
+        for c in cities
+    ]
+    if current_city_out:
+        city_items = [c for c in city_items if c["name"] != current_city_out["name"]]
+        city_items.insert(0, current_city_out)
+
     return MapSummaryOut(
-        cities=[
-            {
-                "name": c.name,
-                "display_name": c.display_name,
-                "pct": city_percent(db, user.id, c),
-                "center_lat": c.center_lat,
-                "center_lng": c.center_lng,
-            }
-            for c in cities
-        ],
+        cities=city_items,
         world_pct=round(cells / s.world_total_cells * 100, 4),
+        current_city=current_city_out,
     )

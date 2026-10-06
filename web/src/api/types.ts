@@ -86,6 +86,7 @@ export interface Discovery {
 export interface MapSummary {
   cities: CityPct[];
   world_pct: number;
+  current_city?: CityPct | null;
 }
 
 export interface GeoFC {

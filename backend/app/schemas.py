@@ -90,6 +90,7 @@ class CityPctOut(BaseModel):
 class MapSummaryOut(BaseModel):
     cities: list[CityPctOut]
     world_pct: float
+    current_city: CityPctOut | None = None
 
 
 class StatsOut(BaseModel):

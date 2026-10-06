@@ -103,8 +103,11 @@ function Game() {
     staleTime: Infinity,
   });
   const summary = useQuery<MapSummary>({
-    queryKey: ["summary"],
-    queryFn: () => api("/map/summary"),
+    queryKey: ["summary", geo.pos ? `${geo.pos.lat.toFixed(2)},${geo.pos.lng.toFixed(2)}` : "none"],
+    queryFn: () =>
+      geo.pos
+        ? api(`/map/summary?lat=${geo.pos.lat}&lng=${geo.pos.lng}`)
+        : api("/map/summary"),
     enabled: !!user,
   });
   const explored = useQuery<GeoFC>({
