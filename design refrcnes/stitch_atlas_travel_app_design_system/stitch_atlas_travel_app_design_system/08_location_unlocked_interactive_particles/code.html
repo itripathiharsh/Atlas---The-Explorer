@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Location Unlocked</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            atlas: {
+              dark: '#071714',
+              forest: '#132822',
+              cream: '#EFECE6',
+              gold: '#E5A93C',
+              'gold-light': '#FAD67B',
+              surface: 'rgba(255, 255, 255, 0.08)'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+<!-- Custom Styles for Hexagon Clip and Ambient Glows -->
+<style data-purpose="custom-effects">
+    /* Hexagonal clip-path shape */
+    .hexagon-shape {
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    /* Ambient pulse & glow animations */
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.95; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    @keyframes rotate-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float-levitate {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    @keyframes gleam-sweep {
+      0% { transform: translateX(-150%) skewX(-20deg); }
+      50%, 100% { transform: translateX(250%) skewX(-20deg); }
+    }
+
+    @keyframes ripple-wave {
+      0% { transform: scale(0.2); opacity: 0.9; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    .ambient-glow {
+      animation: pulse-subtle 4.5s ease-in-out infinite;
+    }
+
+    .badge-levitate {
+      animation: float-levitate 5s ease-in-out infinite;
+    }
+
+    .rotating-sunburst {
+      animation: rotate-slow 35s linear infinite;
+    }
+
+    /* Gleam shimmer effect */
+    .gleam-effect::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 235, 175, 0.45), transparent);
+      animation: gleam-sweep 3.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Spring bounce micro-interaction */
+    .badge-spring {
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .badge-spring:active {
+      transform: scale(0.94);
+    }
+
+    /* Fine golden particle sparkle simulation */
+    .gold-radial-light {
+      background: radial-gradient(circle at center, rgba(235, 175, 65, 0.48) 0%, rgba(200, 140, 40, 0.2) 45%, rgba(7, 23, 20, 0) 70%);
+    }
+
+    /* Shockwave circle styling */
+    .shockwave-ring {
+      position: absolute;
+      border-radius: 9999px;
+      pointer-events: none;
+      border: 2px solid rgba(250, 214, 123, 0.85);
+      box-shadow: 0 0 20px rgba(229, 169, 60, 0.6);
+      transform: translate(-50%, -50%);
+      animation: ripple-wave 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ambient-glow, .badge-levitate, .rotating-sunburst, .gleam-effect::after {
+        animation: none !important;
+      }
+      .badge-spring {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-atlas-dark text-atlas-cream font-sans min-h-screen flex items-center justify-center p-0 md:p-4 selection:bg-atlas-gold selection:text-atlas-dark antialiased overflow-hidden select-none">
+<!-- BEGIN: MobileContainer -->
+<!-- Mimics an iOS Device Frame (390 x 844 aspect) -->
+<div class="relative w-full max-w-[400px] h-[100dvh] max-h-[880px] bg-atlas-dark overflow-hidden flex flex-col justify-between shadow-2xl md:rounded-[44px] border border-white/5" data-purpose="mobile-viewport" id="mobileContainer">
+<!-- BEGIN: Particle Canvas for Ambient Sparks and Tap Bursts -->
+<canvas class="absolute inset-0 w-full h-full pointer-events-none z-15" id="particleCanvas"></canvas>
+<!-- END: Particle Canvas -->
+<!-- BEGIN: AtmosphericBackground -->
+<div class="absolute inset-0 pointer-events-none z-0" data-purpose="background-layers">
+<!-- Dark mountain aesthetic backdrop gradient -->
+<div class="absolute inset-0 bg-gradient-to-b from-[#0a201b] via-[#081814] to-[#040e0c]"></div>
+<!-- Mountain silhouettes using layered SVG vectors -->
+<div class="absolute inset-x-0 bottom-1/3 opacity-30 h-64 overflow-hidden">
+<svg class="w-full h-full text-[#112d26] fill-current" preserveaspectratio="none" viewbox="0 0 500 250">
+<polygon points="0,250 80,140 180,210 270,110 390,190 500,120 500,250"></polygon>
+</svg>
+</div>
+<div class="absolute inset-x-0 bottom-1/4 opacity-40 h-72 overflow-hidden">
+<svg class="w-full h-full text-[#0a1e19] fill-current" preserveaspectratio="none" viewbox="0 0 500 250">
+<polygon points="0,250 120,120 220,180 340,90 440,160 500,100 500,250"></polygon>
+</svg>
+</div>
+<!-- Glowing Center Ambient Sun/Exploration Aura -->
+<div class="ambient-glow absolute top-[36%] left-1/2 w-80 h-80 gold-radial-light blur-2xl rounded-full"></div>
+<!-- Rotating Subtle Sunburst Shimmer Rays -->
+<div class="rotating-sunburst absolute top-[36%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] opacity-15 pointer-events-none">
+<svg class="w-full h-full text-atlas-gold-light fill-current" viewbox="0 0 200 200">
+<g transform="translate(100,100)">
+<polygon points="0,-100 4,-20 -4,-20"></polygon>
+<polygon points="0,100 4,20 -4,20"></polygon>
+<polygon points="-100,0 -20,4 -20,-4"></polygon>
+<polygon points="100,0 20,4 20,-4"></polygon>
+<polygon points="70,-70 16,-12 12,-16"></polygon>
+<polygon points="-70,70 -16,12 -12,16"></polygon>
+<polygon points="70,70 16,12 12,16"></polygon>
+<polygon points="-70,-70 -16,-12 -12,-16"></polygon>
+<polygon opacity="0.6" points="38,-92 10,-18 5,-19"></polygon>
+<polygon opacity="0.6" points="-38,92 -10,18 -5,19"></polygon>
+<polygon opacity="0.6" points="92,-38 18,-10 19,-5"></polygon>
+<polygon opacity="0.6" points="-92,38 -18,10 -19,5"></polygon>
+<polygon opacity="0.6" points="92,38 18,10 19,5"></polygon>
+<polygon opacity="0.6" points="-92,-38 -18,-10 -19,-5"></polygon>
+<polygon opacity="0.6" points="38,92 10,18 5,19"></polygon>
+<polygon opacity="0.6" points="-38,-92 -10,-18 -5,-19"></polygon>
+</g>
+</svg>
+</div>
+<!-- Golden Floating Bokeh Dots -->
+<div class="absolute top-[28%] left-[22%] w-1.5 h-1.5 bg-atlas-gold-light rounded-full opacity-60 blur-[0.5px]"></div>
+<div class="absolute top-[22%] right-[24%] w-2 h-2 bg-atlas-gold rounded-full opacity-50 blur-[0.5px]"></div>
+<div class="absolute top-[48%] left-[16%] w-1 h-1 bg-atlas-gold-light rounded-full opacity-70"></div>
+<div class="absolute top-[44%] right-[18%] w-1.5 h-1.5 bg-atlas-gold rounded-full opacity-70"></div>
+</div>
+<!-- END: AtmosphericBackground -->
+<!-- BEGIN: iOSStatusBar -->
+<header class="relative z-20 flex justify-between items-center px-7 pt-4 pb-2 text-atlas-cream/90 text-sm font-semibold tracking-tight" data-purpose="status-bar">
+<span>9:41</span>
+<!-- Close / Back Button with smooth tap and hover rotation -->
+<button aria-label="Dismiss screen" class="group w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 active:rotate-90 hover:rotate-90 backdrop-blur-md transition-all duration-300 text-white/80 cursor-pointer" id="closeBtn" type="button">
+<svg class="w-4 h-4 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</button>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: CelebrationHeroSection -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-2 pb-6" data-purpose="hero-celebration">
+<!-- Hexagonal Landmark Emblem Container with levitation & bounce -->
+<div class="relative flex items-center justify-center my-auto badge-levitate" data-purpose="hexagon-badge-container">
+<!-- Interactive Hexagon wrapper with spring click bounce -->
+<div class="badge-spring relative flex items-center justify-center cursor-pointer select-none" id="badgeTarget" title="Tap to celebrate">
+<!-- Radiant Background Halo Burst -->
+<div class="absolute inset-0 scale-125 bg-amber-500/25 blur-xl rounded-full transition-transform duration-500"></div>
+<!-- Radiating Geometric Crosshair Lines -->
+<div class="absolute -inset-6 flex items-center justify-center pointer-events-none opacity-40">
+<div class="w-full h-[1px] bg-gradient-to-r from-transparent via-atlas-gold to-transparent"></div>
+<div class="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-atlas-gold to-transparent"></div>
+</div>
+<!-- Outer Hexagon Border Layer -->
+<div class="relative w-56 h-64 p-[3px] bg-gradient-to-b from-atlas-gold-light via-atlas-gold to-amber-700/60 hexagon-shape flex items-center justify-center filter drop-shadow-[0_10px_25px_rgba(229,169,60,0.35)] hover:drop-shadow-[0_12px_32px_rgba(250,214,123,0.5)] transition-all duration-300">
+<!-- Inner Hexagon Gap / Border Framing -->
+<div class="w-full h-full p-[3px] bg-atlas-dark hexagon-shape flex items-center justify-center">
+<!-- Hexagonal Image Holder with Scenic Sunset Point Backdrop -->
+<div class="relative w-full h-full hexagon-shape overflow-hidden">
+<img alt="Sunset Point mountain landscape illuminated with golden sunlight" class="w-full h-full object-cover object-center scale-105 transition-transform duration-700 hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPZfn-PJQZfsY2_fyYEZhzsQnY9s5F27453YmnzRs1RHLtgeF-UR7XzqttRcdL6U84osXeqNW1dqSZcI7vYjmFFviSp-n5fTeaBYwzppSZ1vQBQMUJcay4QgRzFDXr5-edSBSUtj3fXy-KF4yakIZ3OszHqCZCIfKews7QbWslLEdqtABXwRLXsnX5cBKGVGTqKYWr-bnp1xyEgHx4D4eVuUzm6NV6XMyxw7lhj8"/>
+<!-- Warm Sunset Golden Gradient Filter Over Image -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-amber-500/20"></div>
+<!-- Center Explorer Icon Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-atlas-gold/40 flex items-center justify-center text-atlas-gold shadow-lg transition-transform duration-300 group-hover:scale-110">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Typography Callout and Milestone Details -->
+<section class="text-center w-full mt-4 mb-2 flex flex-col items-center select-none" data-purpose="reward-details">
+<!-- Milestone Headline -->
+<h1 class="text-[26px] font-bold tracking-tight text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]">
+          Location Unlocked!
+        </h1>
+<!-- Landmark Subtitle -->
+<p class="text-base text-atlas-cream/75 mt-1 font-medium tracking-wide">
+          Sunset Point
+        </p>
+<!-- XP Reward Badge with continuous gleam and interactive micro-sparkles -->
+<button class="badge-spring gleam-effect relative overflow-hidden mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-atlas-gold/15 border border-atlas-gold/45 shadow-[0_0_16px_rgba(229,169,60,0.3)] hover:shadow-[0_0_22px_rgba(250,214,123,0.55)] cursor-pointer active:scale-95 transition-all" id="xpBadgeTarget" type="button">
+<svg class="w-4 h-4 text-atlas-gold" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v3H6a1 1 0 100 2h3v3a1 1 0 102 0v-3h3a1 1 0 100-2h-3V6z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-lg font-bold tracking-wide text-atlas-gold">
+            +50 XP
+          </span>
+</button>
+</section>
+</main>
+<!-- END: CelebrationHeroSection -->
+<!-- BEGIN: ActionButtonsFooter -->
+<footer class="relative z-10 px-6 pb-9 pt-2 space-y-3" data-purpose="action-buttons">
+<!-- Primary Action: View on Map with Tactile Ripple Feedback -->
+<button class="relative overflow-hidden w-full py-4 px-6 rounded-full bg-atlas-cream hover:bg-white text-atlas-dark font-semibold text-[15px] tracking-tight shadow-lg shadow-black/40 active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer" id="btnViewMap" type="button">
+<svg class="w-4 h-4 text-atlas-forest" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+<line x1="8" x2="8" y1="2" y2="18"></line>
+<line x1="16" x2="16" y1="6" y2="22"></line>
+</svg>
+<span>View on Map</span>
+</button>
+<!-- Secondary Action: Share Discovery with Tactile Ripple Feedback -->
+<button class="relative overflow-hidden w-full py-3.5 px-6 rounded-full bg-white/10 hover:bg-white/15 text-white/90 font-medium text-[15px] tracking-tight backdrop-blur-md border border-white/10 active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer" id="btnShare" type="button">
+<svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="18" cy="5" r="3"></circle>
+<circle cx="6" cy="12" r="3"></circle>
+<circle cx="18" cy="19" r="3"></circle>
+<line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+<line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+</svg>
+<span>Share</span>
+</button>
+<!-- Home Indicator Line for iOS devices -->
+<div class="pt-2 flex justify-center">
+<div class="w-32 h-1 bg-white/25 rounded-full"></div>
+</div>
+</footer>
+<!-- END: ActionButtonsFooter -->
+</div>
+<!-- END: MobileContainer -->
+<!-- Particle Engine and Interactive Effects Script -->
+<script data-purpose="motion-celebration-engine">
+  (function () {
+    const container = document.getElementById('mobileContainer');
+    const canvas = document.getElementById('particleCanvas');
+    if (!canvas || !container) return;
+    const ctx = canvas.getContext('2d');
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let width = 0;
+    let height = 0;
+    let dpr = window.devicePixelRatio || 1;
+
+    function resizeCanvas() {
+      const rect = container.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Particle arrays
+    const ambientParticles = [];
+    const burstParticles = [];
+
+    const GOLD_COLORS = [
+      '#FAD67B', // gold-light
+      '#E5A93C', // atlas-gold
+      '#FFD166', // warm radiant
+      '#FFF4D2', // sparkle white-gold
+      '#CCA830', // deep amber
+      '#94D4B2'  // soft emerald glimmer
+    ];
+
+    // Seed ambient drifting luminous embers
+    const AMBIENT_COUNT = reducedMotion ? 8 : 28;
+    for (let i = 0; i < AMBIENT_COUNT; i++) {
+      ambientParticles.push({
+        x: Math.random() * (width || 390),
+        y: Math.random() * (height || 844),
+        radius: Math.random() * 1.8 + 0.6,
+        alpha: Math.random() * 0.7 + 0.2,
+        speedY: -(Math.random() * 0.45 + 0.15),
+        speedX: (Math.random() - 0.5) * 0.3,
+        twinkleSpeed: Math.random() * 0.03 + 0.015,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        color: GOLD_COLORS[Math.floor(Math.random() * 4)]
+      });
+    }
+
+    // Spawn shockwave ring DOM element
+    function spawnShockwave(x, y, scale = 1) {
+      if (reducedMotion) return;
+      const ring = document.createElement('div');
+      ring.className = 'shockwave-ring';
+      const size = Math.floor(110 * scale);
+      ring.style.width = size + 'px';
+      ring.style.height = size + 'px';
+      ring.style.left = x + 'px';
+      ring.style.top = y + 'px';
+      container.appendChild(ring);
+      setTimeout(() => ring.remove(), 850);
+    }
+
+    // Dynamic celebration burst at (x, y)
+    function createCelebrationBurst(x, y, count = 45, power = 1) {
+      if (reducedMotion) return;
+      spawnShockwave(x, y, power);
+
+      const shardCount = Math.floor(count * power);
+      for (let i = 0; i < shardCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = (Math.random() * 4.8 + 1.8) * power;
+        const type = Math.random() > 0.45 ? 'shard' : 'spark'; // geometric shard or round glowing spark
+
+        burstParticles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * velocity + (Math.random() - 0.5) * 0.8,
+          vy: Math.sin(angle) * velocity - (Math.random() * 1.5 + 0.5),
+          gravity: 0.12,
+          drag: 0.965,
+          color: GOLD_COLORS[Math.floor(Math.random() * GOLD_COLORS.length)],
+          alpha: 1,
+          decay: Math.random() * 0.018 + 0.012,
+          size: type === 'shard' ? (Math.random() * 5 + 3) : (Math.random() * 3 + 1.2),
+          type: type,
+          rotation: Math.random() * Math.PI * 2,
+          vRotation: (Math.random() - 0.5) * 0.22
+        });
+      }
+    }
+
+    // Animation Loop
+    let lastTime = performance.now();
+
+    function renderLoop(time) {
+      const delta = Math.min((time - lastTime) / 16.66, 2.5);
+      lastTime = time;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Render & update ambient floating particles
+      for (let i = 0; i < ambientParticles.length; i++) {
+        const p = ambientParticles[i];
+        p.y += p.speedY * delta;
+        p.x += p.speedX * delta;
+        p.twinkleOffset += p.twinkleSpeed * delta;
+
+        // Wrap around boundaries
+        if (p.y < -10) p.y = height + 10;
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
+
+        const currentAlpha = Math.max(0.1, p.alpha * (0.65 + 0.35 * Math.sin(p.twinkleOffset)));
+
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = currentAlpha;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Render & update celebration burst particles
+      for (let i = burstParticles.length - 1; i >= 0; i--) {
+        const bp = burstParticles[i];
+        bp.vx *= bp.drag;
+        bp.vy *= bp.drag;
+        bp.vy += bp.gravity * delta;
+        bp.x += bp.vx * delta;
+        bp.y += bp.vy * delta;
+        bp.rotation += bp.vRotation * delta;
+        bp.alpha -= bp.decay * delta;
+
+        if (bp.alpha <= 0) {
+          burstParticles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.translate(bp.x, bp.y);
+        ctx.rotate(bp.rotation);
+        ctx.fillStyle = bp.color;
+        ctx.globalAlpha = Math.max(0, bp.alpha);
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = bp.color;
+
+        if (bp.type === 'shard') {
+          // Draw diamond / angular confetti shard
+          const w = bp.size;
+          const h = bp.size * 0.65;
+          ctx.beginPath();
+          ctx.moveTo(0, -h);
+          ctx.lineTo(w, 0);
+          ctx.lineTo(0, h);
+          ctx.lineTo(-w, 0);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          // Glow spark
+          ctx.beginPath();
+          ctx.arc(0, 0, bp.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
+
+    // Initial Grand Celebration on Load radiating from hexagon badge center
+    function launchInitialBurst() {
+      const badge = document.getElementById('badgeTarget');
+      if (badge) {
+        const cRect = container.getBoundingClientRect();
+        const bRect = badge.getBoundingClientRect();
+        const centerX = (bRect.left + bRect.width / 2) - cRect.left;
+        const centerY = (bRect.top + bRect.height / 2) - cRect.top;
+
+        // Radiate two successive celebration rings
+        createCelebrationBurst(centerX, centerY, 55, 1.25);
+        setTimeout(() => {
+          createCelebrationBurst(centerX, centerY, 35, 0.9);
+        }, 220);
+      }
+    }
+
+    // Trigger initial celebration after quick delay
+    setTimeout(launchInitialBurst, 350);
+
+    // Helper to get touch/mouse coordinates relative to container
+    function getContainerCoords(e) {
+      const rect = container.getBoundingClientRect();
+      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    // Interaction 1: Tap on Hexagon Badge
+    const badgeTarget = document.getElementById('badgeTarget');
+    if (badgeTarget) {
+      badgeTarget.addEventListener('pointerdown', (e) => {
+        const coords = getContainerCoords(e);
+        createCelebrationBurst(coords.x, coords.y, 45, 1.15);
+      });
+    }
+
+    // Interaction 2: Tap on XP Badge
+    const xpBadgeTarget = document.getElementById('xpBadgeTarget');
+    if (xpBadgeTarget) {
+      xpBadgeTarget.addEventListener('pointerdown', (e) => {
+        const coords = getContainerCoords(e);
+        createCelebrationBurst(coords.x, coords.y, 32, 0.95);
+      });
+    }
+
+    // Interaction 3: Tap anywhere on screen background
+    container.addEventListener('pointerdown', (e) => {
+      // Don't duplicate if already target element handled
+      if (e.target.closest('#badgeTarget') || e.target.closest('#xpBadgeTarget') || e.target.closest('button')) {
+        return;
+      }
+      const coords = getContainerCoords(e);
+      createCelebrationBurst(coords.x, coords.y, 22, 0.7);
+    });
+
+    // Tactile button ripple helper
+    function attachRippleEffect(button, rippleColor = 'rgba(255, 255, 255, 0.35)') {
+      button.addEventListener('pointerdown', function (e) {
+        const rect = button.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        const diameter = Math.max(rect.width, rect.height);
+        const radius = diameter / 2;
+
+        const x = (e.clientX || (rect.left + rect.width / 2)) - rect.left - radius;
+        const y = (e.clientY || (rect.top + rect.height / 2)) - rect.top - radius;
+
+        ripple.style.position = 'absolute';
+        ripple.style.width = ripple.style.height = `${diameter}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.style.borderRadius = '50%';
+        ripple.style.backgroundColor = rippleColor;
+        ripple.style.transform = 'scale(0)';
+        ripple.style.animation = 'ripple-wave 0.65s ease-out forwards';
+        ripple.style.pointerEvents = 'none';
+
+        button.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 700);
+
+        // Small spark burst near button click
+        const cRect = container.getBoundingClientRect();
+        const ptX = (e.clientX || (rect.left + rect.width / 2)) - cRect.left;
+        const ptY = (e.clientY || (rect.top + rect.height / 2)) - cRect.top;
+        createCelebrationBurst(ptX, ptY, 14, 0.6);
+      });
+    }
+
+    const btnViewMap = document.getElementById('btnViewMap');
+    const btnShare = document.getElementById('btnShare');
+    const closeBtn = document.getElementById('closeBtn');
+
+    if (btnViewMap) attachRippleEffect(btnViewMap, 'rgba(19, 40, 34, 0.2)');
+    if (btnShare) attachRippleEffect(btnShare, 'rgba(255, 255, 255, 0.25)');
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        container.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        container.style.opacity = '0.4';
+        container.style.transform = 'scale(0.97)';
+        setTimeout(() => {
+          container.style.opacity = '1';
+          container.style.transform = 'scale(1)';
+        }, 600);
+      });
+    }
+  })();
+</script>
+</body></html>

@@ -14,9 +14,10 @@ interface Props {
   discoveries: WorldPin[];
   userPos: Fix | null;
   onSelectDiscovery: (id: number) => void;
-  flyTo: { lat: number; lng: number; zoom?: number } | null;
+  flyTo: { lat: number; lng: number; zoom?: number; bearing?: number; pitch?: number } | null;
   onMove?: (center: { lat: number; lng: number }) => void;
   categoryFilter: string | null;
+  selectedId: number | null;
 }
 
 export default function MapCanvas({
@@ -28,6 +29,7 @@ export default function MapCanvas({
   flyTo,
   onMove,
   categoryFilter,
+  selectedId,
 }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
@@ -83,6 +85,16 @@ export default function MapCanvas({
         },
       });
       map.addLayer({
+        id: "explored-glow",
+        type: "line",
+        source: "explored",
+        paint: {
+          "line-color": "#f2ecd9",
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 6, 16, 14],
+          "line-opacity": 0.16,
+        },
+      });
+      map.addLayer({
         id: "explored-line",
         type: "line",
         source: "explored",
@@ -109,6 +121,17 @@ export default function MapCanvas({
         cluster: true,
         clusterMaxZoom: 12,
         clusterRadius: 45,
+      });
+      map.addLayer({
+        id: "cluster-halo",
+        type: "circle",
+        source: "discoveries",
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-color": "#f2ecd9",
+          "circle-opacity": 0.1,
+          "circle-radius": ["step", ["get", "point_count"], 24, 10, 32, 40, 42],
+        },
       });
       map.addLayer({
         id: "clusters",
@@ -142,6 +165,18 @@ export default function MapCanvas({
         filter: ["!", ["has", "point_count"]],
         layout: {
           "icon-image": ["case", ["==", ["get", "rec"], true], "pin-gold", "pin-brand"],
+          "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.42, 15, 0.62, 18, 0.8],
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        },
+      });
+      map.addLayer({
+        id: "disc-active",
+        type: "symbol",
+        source: "discoveries",
+        filter: ["!", ["has", "point_count"]],
+        layout: {
+          "icon-image": "pin-active",
           "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.42, 15, 0.62, 18, 0.8],
           "icon-allow-overlap": true,
           "icon-ignore-placement": true,
@@ -259,7 +294,38 @@ export default function MapCanvas({
       : ["!", ["has", "point_count"]]) as unknown as maplibregl.FilterSpecification;
     map.setFilter("disc-layer", catExpr);
     map.setFilter("disc-label", catExpr);
-  }, [discoveries, loaded, categoryFilter]);
+    map.setFilter("disc-active", [
+      "all",
+      ["!", ["has", "point_count"]],
+      ["==", ["get", "id"], selectedId ?? -1],
+    ]);
+  }, [discoveries, loaded, categoryFilter, selectedId]);
+
+  // selected pin swaps to the active sprite
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loaded) return;
+    map.setFilter("disc-active", [
+      "all",
+      ["!", ["has", "point_count"]],
+      ["==", ["get", "id"], selectedId ?? -1],
+    ]);
+  }, [selectedId, loaded]);
+
+  // pins fade in on their first arrival
+  const pinsShown = useRef(false);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loaded || pinsShown.current || discoveries.length === 0) return;
+    pinsShown.current = true;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.max(0, Math.min(1, (now - start) / 450));
+      map.setPaintProperty("disc-layer", "icon-opacity", t);
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [discoveries, loaded]);
 
   // --- user marker ---
   useEffect(() => {
@@ -281,7 +347,13 @@ export default function MapCanvas({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !loaded || !flyTo) return;
-    map.easeTo({ center: [flyTo.lng, flyTo.lat], zoom: flyTo.zoom ?? 15.5, duration: 900 });
+    map.easeTo({
+      center: [flyTo.lng, flyTo.lat],
+      zoom: flyTo.zoom ?? 15.5,
+      bearing: flyTo.bearing ?? 0,
+      pitch: flyTo.pitch ?? 0,
+      duration: 900,
+    });
   }, [flyTo, loaded]);
 
   return (
@@ -289,8 +361,11 @@ export default function MapCanvas({
       <div ref={container} style={{ position: "absolute", inset: 0 }} />
       <div className="vignette" />
       {!ready && (
-        <div className="absolute inset-0 grid place-items-center bg-[#061623]">
-          <div className="hud-label animate-pulse">Mapping the world…</div>
+        <div className="splash absolute inset-0 z-50 grid place-items-center bg-[#061623]">
+          <div className="flex flex-col items-center gap-5">
+            <img src="/icons/icon-192.png" alt="" className="h-20 w-20 rounded-3xl splash-pulse" />
+            <div className="hud-label animate-pulse">Charting the world</div>
+          </div>
         </div>
       )}
     </div>

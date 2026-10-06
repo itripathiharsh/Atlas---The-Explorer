@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Location Unlocked &amp; World Map Focus</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            atlas: {
+              dark: '#071714',
+              forest: '#132822',
+              emerald: '#0F2D20',
+              cream: '#EFECE6',
+              gold: '#E5A93C',
+              'gold-light': '#FAD67B',
+              surface: 'rgba(255, 255, 255, 0.08)'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+<!-- Custom Styles for Hexagon Clip, Map Topography, Fog Preview and Ambient Glows -->
+<style data-purpose="custom-effects">
+    /* Hexagonal clip-path shape */
+    .hexagon-shape {
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    /* Ambient pulse & glow animations */
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.95; transform: translate(-50%, -50%) scale(1.1); }
+    }
+
+    @keyframes rotate-slow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes float-levitate {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-7px); }
+    }
+
+    @keyframes gleam-sweep {
+      0% { transform: translateX(-150%) skewX(-20deg); }
+      50%, 100% { transform: translateX(250%) skewX(-20deg); }
+    }
+
+    @keyframes ripple-wave {
+      0% { transform: scale(0.2); opacity: 0.9; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    @keyframes radar-sweep {
+      0% { transform: scale(0.85); opacity: 0.9; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    @keyframes beacon-ping {
+      0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(245, 197, 74, 0.8); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 16px rgba(245, 197, 74, 0); }
+      100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(245, 197, 74, 0); }
+    }
+
+    @keyframes dash-flow {
+      to {
+        stroke-dashoffset: -40;
+      }
+    }
+
+    @keyframes sonar-wave {
+      0% { transform: scale(0.4); opacity: 1; border-width: 3px; }
+      70% { opacity: 0.8; }
+      100% { transform: scale(2.8); opacity: 0; border-width: 1px; }
+    }
+
+    /* Fog swirl and scouting ring effects */
+    @keyframes mist-drift {
+      0% { transform: scale(1) rotate(0deg); opacity: 0.85; filter: blur(3px); }
+      50% { transform: scale(1.18) rotate(180deg); opacity: 0.35; filter: blur(6px); }
+      100% { transform: scale(1.3) rotate(360deg); opacity: 0.1; filter: blur(10px); }
+    }
+
+    @keyframes scout-shimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes gauge-glow {
+      0%, 100% { filter: drop-shadow(0 0 4px #e5a93c); }
+      50% { filter: drop-shadow(0 0 12px #94d4b2); }
+    }
+
+    .sonar-active-ring {
+      animation: sonar-wave 1.8s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
+    }
+
+    .survey-dash-active {
+      stroke-dasharray: 6 5;
+      animation: dash-flow 1.4s linear infinite;
+    }
+
+    .ambient-glow {
+      animation: pulse-subtle 4.5s ease-in-out infinite;
+    }
+
+    .badge-levitate {
+      animation: float-levitate 5s ease-in-out infinite;
+    }
+
+    .rotating-sunburst {
+      animation: rotate-slow 35s linear infinite;
+    }
+
+    /* Gleam shimmer effect */
+    .gleam-effect::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 235, 175, 0.45), transparent);
+      animation: gleam-sweep 3.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Spring bounce micro-interaction */
+    .badge-spring {
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .badge-spring:active {
+      transform: scale(0.94);
+    }
+
+    /* Fine golden particle sparkle simulation */
+    .gold-radial-light {
+      background: radial-gradient(circle at center, rgba(235, 175, 65, 0.48) 0%, rgba(200, 140, 40, 0.2) 45%, rgba(7, 23, 20, 0) 70%);
+    }
+
+    /* Shockwave circle styling */
+    .shockwave-ring {
+      position: absolute;
+      border-radius: 9999px;
+      pointer-events: none;
+      border: 2px solid rgba(250, 214, 123, 0.85);
+      box-shadow: 0 0 20px rgba(229, 169, 60, 0.6);
+      transform: translate(-50%, -50%);
+      animation: ripple-wave 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    .beacon-pulse {
+      animation: beacon-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    .radar-pulse-ring {
+      animation: radar-sweep 2.4s cubic-bezier(0.15, 0.85, 0.35, 1) infinite;
+    }
+
+    /* Dynamic Fog Clearing Preview State */
+    .sector-fog-clearing .locked-fog-layer {
+      opacity: 0.12 !important;
+      transform: scale(1.22) rotate(15deg) !important;
+      filter: blur(8px) !important;
+    }
+
+    .sector-fog-clearing .terrain-preview-layer {
+      opacity: 0.95 !important;
+      transform: scale(1) !important;
+    }
+
+    .sector-fog-clearing .scout-sonar-ring {
+      opacity: 1 !important;
+      animation: sonar-wave 1.2s cubic-bezier(0.1, 0.7, 0.3, 1) infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ambient-glow, .badge-levitate, .rotating-sunburst, .gleam-effect::after, .beacon-pulse, .radar-pulse-ring, .survey-dash-active, .sonar-active-ring {
+        animation: none !important;
+      }
+      .badge-spring {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#040e0c] text-atlas-cream font-sans min-h-screen flex items-center justify-center p-0 md:p-4 selection:bg-atlas-gold selection:text-atlas-dark antialiased overflow-hidden select-none">
+<!-- BEGIN: MobileContainer -->
+<!-- Mimics an iOS Device Frame (390 x 844 aspect) -->
+<div class="relative w-full max-w-[400px] h-[100dvh] max-h-[880px] bg-atlas-dark overflow-hidden shadow-2xl md:rounded-[44px] border border-white/5" data-purpose="mobile-viewport" id="mobileContainer">
+<!-- ========================================== -->
+<!-- SCREEN 1: CELEBRATION UNLOCKED MODAL VIEW   -->
+<!-- ========================================== -->
+<div class="absolute inset-0 z-20 flex flex-col justify-between transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]" id="celebrationView">
+<!-- BEGIN: Particle Canvas for Ambient Sparks and Tap Bursts -->
+<canvas class="absolute inset-0 w-full h-full pointer-events-none z-15" id="particleCanvas"></canvas>
+<!-- END: Particle Canvas -->
+<!-- BEGIN: AtmosphericBackground -->
+<div class="absolute inset-0 pointer-events-none z-0" data-purpose="background-layers">
+<!-- Dark mountain aesthetic backdrop gradient -->
+<div class="absolute inset-0 bg-gradient-to-b from-[#0a201b] via-[#081814] to-[#040e0c]"></div>
+<!-- Mountain silhouettes using layered SVG vectors -->
+<div class="absolute inset-x-0 bottom-1/3 opacity-30 h-64 overflow-hidden">
+<svg class="w-full h-full text-[#112d26] fill-current" preserveaspectratio="none" viewbox="0 0 500 250">
+<polygon points="0,250 80,140 180,210 270,110 390,190 500,120 500,250"></polygon>
+</svg>
+</div>
+<div class="absolute inset-x-0 bottom-1/4 opacity-40 h-72 overflow-hidden">
+<svg class="w-full h-full text-[#0a1e19] fill-current" preserveaspectratio="none" viewbox="0 0 500 250">
+<polygon points="0,250 120,120 220,180 340,90 440,160 500,100 500,250"></polygon>
+</svg>
+</div>
+<!-- Glowing Center Ambient Sun/Exploration Aura -->
+<div class="ambient-glow absolute top-[36%] left-1/2 w-80 h-80 gold-radial-light blur-2xl rounded-full"></div>
+<!-- Rotating Subtle Sunburst Shimmer Rays -->
+<div class="rotating-sunburst absolute top-[36%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] opacity-15 pointer-events-none">
+<svg class="w-full h-full text-atlas-gold-light fill-current" viewbox="0 0 200 200">
+<g transform="translate(100,100)">
+<polygon points="0,-100 4,-20 -4,-20"></polygon>
+<polygon points="0,100 4,20 -4,20"></polygon>
+<polygon points="-100,0 -20,4 -20,-4"></polygon>
+<polygon points="100,0 20,4 20,-4"></polygon>
+<polygon points="70,-70 16,-12 12,-16"></polygon>
+<polygon points="-70,70 -16,12 -12,16"></polygon>
+<polygon points="70,70 16,12 12,16"></polygon>
+<polygon points="-70,-70 -16,-12 -12,-16"></polygon>
+<polygon opacity="0.6" points="38,-92 10,-18 5,-19"></polygon>
+<polygon opacity="0.6" points="-38,92 -10,18 -5,19"></polygon>
+<polygon opacity="0.6" points="92,-38 18,-10 19,-5"></polygon>
+<polygon opacity="0.6" points="-92,38 -18,10 -19,5"></polygon>
+<polygon opacity="0.6" points="92,38 18,10 19,5"></polygon>
+<polygon opacity="0.6" points="-92,-38 -18,-10 -19,-5"></polygon>
+<polygon opacity="0.6" points="38,92 10,18 5,19"></polygon>
+<polygon opacity="0.6" points="-38,-92 -10,-18 -5,-19"></polygon>
+</g>
+</svg>
+</div>
+<!-- Golden Floating Bokeh Dots -->
+<div class="absolute top-[28%] left-[22%] w-1.5 h-1.5 bg-atlas-gold-light rounded-full opacity-60 blur-[0.5px]"></div>
+<div class="absolute top-[22%] right-[24%] w-2 h-2 bg-atlas-gold rounded-full opacity-50 blur-[0.5px]"></div>
+<div class="absolute top-[48%] left-[16%] w-1 h-1 bg-atlas-gold-light rounded-full opacity-70"></div>
+<div class="absolute top-[44%] right-[18%] w-1.5 h-1.5 bg-atlas-gold rounded-full opacity-70"></div>
+</div>
+<!-- END: AtmosphericBackground -->
+<!-- BEGIN: iOSStatusBar -->
+<header class="relative z-20 flex justify-between items-center px-7 pt-4 pb-2 text-atlas-cream/90 text-sm font-semibold tracking-tight" data-purpose="status-bar">
+<span>9:41</span>
+<!-- Close / Back Button which smoothly transitions to World Map -->
+<button aria-label="Go to Map" class="group w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-90 active:rotate-90 hover:rotate-90 backdrop-blur-md transition-all duration-300 text-white/80 cursor-pointer" id="closeBtn" type="button">
+<svg class="w-4 h-4 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</button>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: CelebrationHeroSection -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-2 pb-6" data-purpose="hero-celebration">
+<!-- Hexagonal Landmark Emblem Container with levitation & bounce -->
+<div class="relative flex items-center justify-center my-auto badge-levitate" data-purpose="hexagon-badge-container">
+<!-- Interactive Hexagon wrapper with spring click bounce -->
+<div class="badge-spring relative flex items-center justify-center cursor-pointer select-none" id="badgeTarget" title="Tap to celebrate">
+<!-- Radiant Background Halo Burst -->
+<div class="absolute inset-0 scale-125 bg-amber-500/25 blur-xl rounded-full transition-transform duration-500"></div>
+<!-- Radiating Geometric Crosshair Lines -->
+<div class="absolute -inset-6 flex items-center justify-center pointer-events-none opacity-40">
+<div class="w-full h-[1px] bg-gradient-to-r from-transparent via-atlas-gold to-transparent"></div>
+<div class="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-atlas-gold to-transparent"></div>
+</div>
+<!-- Outer Hexagon Border Layer -->
+<div class="relative w-56 h-64 p-[3px] bg-gradient-to-b from-atlas-gold-light via-atlas-gold to-amber-700/60 hexagon-shape flex items-center justify-center filter drop-shadow-[0_10px_25px_rgba(229,169,60,0.35)] hover:drop-shadow-[0_12px_32px_rgba(250,214,123,0.5)] transition-all duration-300">
+<!-- Inner Hexagon Gap / Border Framing -->
+<div class="w-full h-full p-[3px] bg-atlas-dark hexagon-shape flex items-center justify-center">
+<!-- Hexagonal Image Holder with Scenic Sunset Point Backdrop -->
+<div class="relative w-full h-full hexagon-shape overflow-hidden bg-[#0c241c]">
+<img alt="Sunset Point mountain landscape illuminated with golden sunlight" class="w-full h-full object-cover object-center scale-105 transition-transform duration-700 hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPZfn-PJQZfsY2_fyYEZhzsQnY9s5F27453YmnzRs1RHLtgeF-UR7XzqttRcdL6U84osXeqNW1dqSZcI7vYjmFFviSp-n5fTeaBYwzppSZ1vQBQMUJcay4QgRzFDXr5-edSBSUtj3fXy-KF4yakIZ3OszHqCZCIfKews7QbWslLEdqtABXwRLXsnX5cBKGVGTqKYWr-bnp1xyEgHx4D4eVuUzm6NV6XMyxw7lhj8"/>
+<!-- Warm Sunset Golden Gradient Filter Over Image -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-amber-500/20"></div>
+<!-- Center Explorer Icon Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-atlas-gold/40 flex items-center justify-center text-atlas-gold shadow-lg transition-transform duration-300 group-hover:scale-110">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Typography Callout and Milestone Details -->
+<section class="text-center w-full mt-4 mb-2 flex flex-col items-center select-none" data-purpose="reward-details">
+<!-- Milestone Headline -->
+<h1 class="text-[26px] font-bold tracking-tight text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]">
+          Location Unlocked!
+        </h1>
+<!-- Landmark Subtitle -->
+<p class="text-base text-atlas-cream/75 mt-1 font-medium tracking-wide">
+          Sunset Point
+        </p>
+<!-- XP Reward Badge with continuous gleam and interactive micro-sparkles -->
+<button class="badge-spring gleam-effect relative overflow-hidden mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-atlas-gold/15 border border-atlas-gold/45 shadow-[0_0_16px_rgba(229,169,60,0.3)] hover:shadow-[0_0_22px_rgba(250,214,123,0.55)] cursor-pointer active:scale-95 transition-all" id="xpBadgeTarget" type="button">
+<svg class="w-4 h-4 text-atlas-gold" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v3H6a1 1 0 100 2h3v3a1 1 0 102 0v-3h3a1 1 0 100-2h-3V6z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-lg font-bold tracking-wide text-atlas-gold">
+            +50 XP
+          </span>
+</button>
+</section>
+</main>
+<!-- END: CelebrationHeroSection -->
+<!-- BEGIN: ActionButtonsFooter -->
+<footer class="relative z-10 px-6 pb-9 pt-2 space-y-3" data-purpose="action-buttons">
+<!-- Primary Action: View on Map with Tactile Ripple Feedback -->
+<button class="relative overflow-hidden w-full py-4 px-6 rounded-full bg-atlas-cream hover:bg-white text-atlas-dark font-semibold text-[15px] tracking-tight shadow-lg shadow-black/40 active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer group" id="btnViewMap" type="button">
+<svg class="w-4 h-4 text-atlas-forest transition-transform group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+<line x1="8" x2="8" y1="2" y2="18"></line>
+<line x1="16" x2="16" y1="6" y2="22"></line>
+</svg>
+<span>View on Map</span>
+</button>
+<!-- Secondary Action: Share Discovery with Tactile Ripple Feedback -->
+<button class="relative overflow-hidden w-full py-3.5 px-6 rounded-full bg-white/10 hover:bg-white/15 text-white/90 font-medium text-[15px] tracking-tight backdrop-blur-md border border-white/10 active:scale-[0.97] transition-all flex items-center justify-center gap-2 cursor-pointer" id="btnShare" type="button">
+<svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="18" cy="5" r="3"></circle>
+<circle cx="6" cy="12" r="3"></circle>
+<circle cx="18" cy="19" r="3"></circle>
+<line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+<line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+</svg>
+<span>Share</span>
+</button>
+<!-- Home Indicator Line for iOS devices -->
+<div class="pt-2 flex justify-center">
+<div class="w-32 h-1 bg-white/25 rounded-full"></div>
+</div>
+</footer>
+<!-- END: ActionButtonsFooter -->
+</div>
+<!-- ========================================== -->
+<!-- SCREEN 2: WORLD MAP SCREEN VIEW (INTEGRATED)-->
+<!-- ========================================== -->
+<div class="absolute inset-0 z-10 flex flex-col justify-between opacity-0 pointer-events-none scale-105 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] bg-[#071714]" id="worldMapView">
+<!-- Map Canvas & Hex Grid Terrain Layer -->
+<div class="absolute inset-0 overflow-hidden" id="mapCameraPort">
+<div class="absolute -inset-16 w-[130%] h-[130%] transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" id="mapWorldCanvas" style="transform: scale(1.15) translate(-6%, -4%);">
+<!-- Topographic Contour Lines SVG Background -->
+<svg class="absolute inset-0 w-full h-full opacity-20 pointer-events-none stroke-[#83c2a1]" fill="none" stroke-width="1.2">
+<path d="M-50,150 Q100,50 250,120 T550,80 T750,220"></path>
+<path d="M-50,230 Q80,140 260,200 T600,160 T800,280"></path>
+<path d="M-50,330 Q120,240 300,320 T650,260 T850,380"></path>
+<path d="M-50,440 Q150,350 340,430 T700,380 T900,500"></path>
+<path d="M-50,560 Q180,480 380,550 T750,500 T950,620"></path>
+<path d="M-50,690 Q220,600 420,680 T800,620 T1000,740"></path>
+<path d="M-50,820 Q260,730 460,810 T850,750 T1050,870"></path>
+</svg>
+<!-- SVG Dynamic Survey Lines Overlay connecting central sector to adjacent locked sectors -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-15 opacity-0 transition-opacity duration-700" id="surveyLinesLayer" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="surveyGradGold" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#E5A93C" stop-opacity="0.9"></stop>
+<stop offset="100%" stop-color="#94D4B2" stop-opacity="0.8"></stop>
+</lineargradient>
+<filter id="glowLine">
+<fegaussianblur result="coloredBlur" stddeviation="0.4"></fegaussianblur>
+<femerge>
+<femergenode in="coloredBlur"></femergenode>
+<femergenode in="SourceGraphic"></femergenode>
+</femerge>
+</filter>
+</defs>
+<!-- Line 1: Center to Whispering Woods (NW) -->
+<line class="survey-dash-active" filter="url(#glowLine)" id="surveyLine1" stroke="url(#surveyGradGold)" stroke-width="0.45" x1="48%" x2="22%" y1="41%" y2="24%"></line>
+<!-- Line 2: Center to Bhatta Falls (NE) -->
+<line class="survey-dash-active" filter="url(#glowLine)" id="surveyLine2" stroke="url(#surveyGradGold)" stroke-width="0.45" x1="48%" x2="72%" y1="41%" y2="25%"></line>
+<!-- Line 3: Center to Cloud Peak (SW) -->
+<line class="survey-dash-active" filter="url(#glowLine)" id="surveyLine3" stroke="url(#surveyGradGold)" stroke-width="0.45" x1="48%" x2="24%" y1="41%" y2="60%"></line>
+</svg>
+<!-- World Hexagonal Map Grid -->
+<div class="relative w-full h-full pt-16 pl-6 select-none" id="hexGridContainer">
+<!-- Sector 1: Whispering Woods (North-West Locked Mystery Sector) -->
+<div class="locked-mystery-sector cursor-pointer absolute top-[16%] left-[12%] w-38 h-44 z-20 group transition-all duration-300" data-sector="woods" id="sectorWhisperingWoods">
+<!-- Interactive Circular Scouting Gauge SVG (Fills upon hold) -->
+<div class="absolute -inset-2.5 pointer-events-none z-30 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 120 120">
+<circle cx="60" cy="60" fill="none" r="54" stroke="rgba(255,255,255,0.08)" stroke-width="3"></circle>
+<circle class="scout-progress-ring transition-all duration-75" cx="60" cy="60" fill="none" r="54" stroke="url(#surveyGradGold)" stroke-dasharray="339.29" stroke-dashoffset="339.29" stroke-linecap="round" stroke-width="3.5"></circle>
+</svg>
+</div>
+<!-- Scouting Sonar Ripple Rings -->
+<div class="scout-sonar-ring absolute inset-0 rounded-full border border-emerald-400/80 opacity-0 pointer-events-none"></div>
+<div class="relative w-36 h-40 hexagon-shape bg-[#071d18]/90 border border-amber-400/25 p-[2px] transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.6)]" id="borderWhisperingWoods">
+<div class="w-full h-full hexagon-shape bg-[#081b16] flex flex-col items-center justify-center p-2 backdrop-blur-sm relative overflow-hidden">
+<!-- Topographical Preview Ethereal Layer (Revealed when fog clears) -->
+<div class="terrain-preview-layer absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none flex flex-col items-center justify-center bg-gradient-to-b from-[#0f3426] to-[#082218]">
+<svg class="absolute inset-0 w-full h-full stroke-emerald-300/40 opacity-70" fill="none" stroke-width="1.2">
+<path d="M-10,20 Q40,60 80,30 T160,50"></path>
+<path d="M-10,60 Q50,90 90,60 T160,80"></path>
+<path d="M-10,100 Q40,130 90,100 T160,120"></path>
+</svg>
+<span class="text-2xl filter drop-shadow-[0_0_8px_#34d399] z-10 mb-1">🌲</span>
+<span class="text-[9px] font-bold text-emerald-300 uppercase tracking-widest z-10">Hidden Grove</span>
+</div>
+<!-- Fog overlay inside hex with smooth dissipate transform -->
+<div class="locked-fog-layer absolute inset-0 bg-gradient-to-b from-[#0a231d]/95 via-[#061914]/90 to-[#040e0c]/98 transition-all duration-500"></div>
+<!-- Icon & Text Content -->
+<div class="relative z-10 flex flex-col items-center pointer-events-none">
+<div class="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-400/40 flex items-center justify-center mb-1 transition-all duration-300 group-hover:bg-amber-500/20" id="iconWhisperingWoods">
+<svg class="w-4 h-4 text-amber-300/80" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-[11px] font-bold text-atlas-cream/90 tracking-wide text-center">Whispering Woods</span>
+<span class="text-[9px] text-amber-300/80 font-medium">Locked • Hold to Scout</span>
+</div>
+</div>
+</div>
+<!-- Floating Clue Hint Badge Pill -->
+<div class="clue-pill absolute -bottom-5 -left-10 right-0 mx-auto w-48 opacity-0 pointer-events-none transition-all duration-500 transform translate-y-2 z-30" id="pillWhisperingWoods">
+<div class="bg-[#0b241c]/95 border border-atlas-gold/60 shadow-[0_4px_16px_rgba(229,169,60,0.35)] backdrop-blur-md rounded-xl px-2.5 py-1.5 flex items-start gap-1.5">
+<span class="w-2 h-2 mt-1 rounded-full bg-atlas-gold flex-shrink-0 animate-ping"></span>
+<div>
+<div class="text-[9px] font-bold text-atlas-gold tracking-wide uppercase">Clue Discovered</div>
+<p class="text-[10px] text-atlas-cream/90 leading-tight">Follow ancient pine markers under dawn fog • Required: 200m closer</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sector: Granite Valley (Explored) -->
+<div class="absolute top-[52%] left-[12%] w-36 h-40 hexagon-shape bg-[#0e271c] border-2 border-emerald-500/25 flex flex-col items-center justify-center p-2 opacity-80 shadow-[inset_0_0_20px_rgba(15,45,32,0.8)]">
+<svg class="w-5 h-5 text-emerald-400/70 mb-1" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M3 21h18M5 21l7-14 7 14M9 21l3-6 3 6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[11px] font-bold text-atlas-cream/80 tracking-wide">Granite Valley</span>
+<span class="text-[9px] text-emerald-300/60">Explored</span>
+</div>
+<!-- Sector: Emerald Plateau (Explored) -->
+<div class="absolute top-[60%] left-[45%] w-36 h-40 hexagon-shape bg-[#0f2d20] border-2 border-emerald-500/30 flex flex-col items-center justify-center p-2 opacity-85 shadow-[inset_0_0_20px_rgba(15,45,32,0.8)]">
+<span class="text-[11px] font-bold text-atlas-cream/90 tracking-wide">Plateau Mist</span>
+<span class="text-[9px] text-emerald-300/75">Explored</span>
+</div>
+<!-- Sector 2: Bhatta Falls (North-East Locked Mystery Sector) -->
+<div class="locked-mystery-sector cursor-pointer absolute top-[16%] left-[64%] w-38 h-44 z-20 group transition-all duration-300" data-sector="falls" id="sectorBhattaFalls">
+<!-- Interactive Circular Scouting Gauge SVG -->
+<div class="absolute -inset-2.5 pointer-events-none z-30 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 120 120">
+<circle cx="60" cy="60" fill="none" r="54" stroke="rgba(255,255,255,0.08)" stroke-width="3"></circle>
+<circle class="scout-progress-ring transition-all duration-75" cx="60" cy="60" fill="none" r="54" stroke="url(#surveyGradGold)" stroke-dasharray="339.29" stroke-dashoffset="339.29" stroke-linecap="round" stroke-width="3.5"></circle>
+</svg>
+</div>
+<div class="scout-sonar-ring absolute inset-0 rounded-full border border-teal-300/80 opacity-0 pointer-events-none"></div>
+<div class="relative w-36 h-40 hexagon-shape bg-[#071d18]/90 border border-teal-400/25 p-[2px] transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.6)]" id="borderBhattaFalls">
+<div class="w-full h-full hexagon-shape bg-[#081a17] flex flex-col items-center justify-center p-2 backdrop-blur-sm relative overflow-hidden">
+<!-- Topographical Preview Ethereal Layer -->
+<div class="terrain-preview-layer absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none flex flex-col items-center justify-center bg-gradient-to-b from-[#0a3832] to-[#06201c]">
+<svg class="absolute inset-0 w-full h-full stroke-teal-300/40 opacity-70" fill="none" stroke-width="1.2">
+<path d="M-10,30 C30,10 70,60 160,20"></path>
+<path d="M-10,70 C50,40 80,100 160,60"></path>
+<path d="M-10,110 C40,80 90,130 160,100"></path>
+</svg>
+<span class="text-2xl filter drop-shadow-[0_0_8px_#2dd4bf] z-10 mb-1">🌊</span>
+<span class="text-[9px] font-bold text-teal-300 uppercase tracking-widest z-10">Cascade Gorge</span>
+</div>
+<div class="locked-fog-layer absolute inset-0 bg-gradient-to-b from-[#0a231d]/95 via-[#061914]/90 to-[#040e0c]/98 transition-all duration-500"></div>
+<div class="relative z-10 flex flex-col items-center pointer-events-none">
+<div class="w-8 h-8 rounded-full bg-teal-500/10 border border-teal-400/40 flex items-center justify-center mb-1 transition-all duration-300 group-hover:bg-teal-500/20" id="iconBhattaFalls">
+<svg class="w-4 h-4 text-teal-300/80" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-[11px] font-bold text-atlas-cream/90 tracking-wide text-center">Bhatta Falls</span>
+<span class="text-[9px] text-teal-300/80 font-medium">Locked • Hold to Scout</span>
+</div>
+</div>
+</div>
+<!-- Floating Clue Hint Badge Pill -->
+<div class="clue-pill absolute -bottom-5 -left-8 right-0 mx-auto w-48 opacity-0 pointer-events-none transition-all duration-500 transform translate-y-2 z-30" id="pillBhattaFalls">
+<div class="bg-[#0b241c]/95 border border-teal-400/60 shadow-[0_4px_16px_rgba(45,212,191,0.35)] backdrop-blur-md rounded-xl px-2.5 py-1.5 flex items-start gap-1.5">
+<span class="w-2 h-2 mt-1 rounded-full bg-teal-300 flex-shrink-0 animate-ping"></span>
+<div>
+<div class="text-[9px] font-bold text-teal-300 tracking-wide uppercase">Clue Discovered</div>
+<p class="text-[10px] text-atlas-cream/90 leading-tight">Listen for rushing cascades near cliff gorge • +75 XP when unlocked</p>
+</div>
+</div>
+</div>
+</div>
+<!-- ============================================== -->
+<!-- TARGET SECTOR: SUNSET POINT (UNLOCKED REVEAL) -->
+<!-- ============================================== -->
+<div class="absolute top-[35%] left-[42%] w-44 h-48 z-20 -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 ease-out cursor-pointer group" id="unlockedSector" style="left: 48%; top: 41%;" title="Tap to Scout Nearby Sectors">
+<!-- Sonar / Radar Scan Burst Waves Container -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center overflow-visible" id="sonarBurstContainer">
+<div class="sonar-active-ring absolute w-48 h-48 rounded-full border border-atlas-gold/80 opacity-0" id="radarSonarRing"></div>
+<div class="sonar-active-ring absolute w-48 h-48 rounded-full border border-emerald-400/70 opacity-0" id="radarSonarRing2" style="animation-delay: 0.6s;"></div>
+</div>
+<!-- Expanding Discovery Radar Rings -->
+<div class="absolute inset-0 -m-8 pointer-events-none flex items-center justify-center">
+<div class="w-64 h-64 rounded-full border border-atlas-gold/40 radar-pulse-ring"></div>
+<div class="absolute w-48 h-48 rounded-full border border-emerald-400/40 radar-pulse-ring" style="animation-delay: 0.8s;"></div>
+</div>
+<!-- Glowing Radiant Border & Sector Body -->
+<div class="relative w-full h-full p-[2.5px] hexagon-shape bg-gradient-to-b from-atlas-gold via-emerald-400 to-atlas-gold-light transition-all duration-700 shadow-[0_0_35px_rgba(229,169,60,0.5)] active:scale-95" id="unlockedHexBody">
+<div class="w-full h-full hexagon-shape bg-[#0c2e22] relative overflow-hidden flex flex-col items-center justify-center p-3 text-center">
+<!-- Sector Scenic Imagery Substratum -->
+<div class="absolute inset-0 opacity-40 mix-blend-luminosity">
+<img alt="Terrain" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPZfn-PJQZfsY2_fyYEZhzsQnY9s5F27453YmnzRs1RHLtgeF-UR7XzqttRcdL6U84osXeqNW1dqSZcI7vYjmFFviSp-n5fTeaBYwzppSZ1vQBQMUJcay4QgRzFDXr5-edSBSUtj3fXy-KF4yakIZ3OszHqCZCIfKews7QbWslLEdqtABXwRLXsnX5cBKGVGTqKYWr-bnp1xyEgHx4D4eVuUzm6NV6XMyxw7lhj8"/>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#071714] via-[#0F2D20]/60 to-amber-500/20"></div>
+<!-- Animated Beacon Pin on Map -->
+<div class="relative z-10 mb-1 flex items-center justify-center">
+<div class="w-8 h-8 rounded-full bg-atlas-gold/20 flex items-center justify-center beacon-pulse">
+<div class="w-4 h-4 rounded-full bg-atlas-gold border-2 border-white shadow-md"></div>
+</div>
+</div>
+<div class="relative z-10 flex items-center gap-1 bg-atlas-gold/20 px-2 py-0.5 rounded-full border border-atlas-gold/50 mb-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-300 animate-ping"></span>
+<span class="text-[9px] font-bold text-atlas-gold-light tracking-wide uppercase">New Sector</span>
+</div>
+<div class="relative z-10 text-[13px] font-bold text-white tracking-tight drop-shadow">
+                  Sunset Point
+                </div>
+<div class="relative z-10 text-[10px] text-emerald-300/90 font-medium">
+                  Elevation 2,410m
+                </div>
+<!-- Tap to Scout Prompt badge -->
+<div class="relative z-10 mt-1 px-2 py-0.5 rounded bg-amber-400/20 border border-amber-400/40 text-[9px] font-bold text-atlas-gold group-hover:scale-105 transition-transform" id="scoutBadgeLabel">
+  Tap to Scout Radar 📡
+</div>
+</div>
+</div>
+<!-- Lock Fog that dissipates -->
+<div class="absolute inset-0 hexagon-shape bg-[#061512]/90 flex items-center justify-center transition-all duration-1000 ease-out pointer-events-none opacity-0" id="unlockedSectorFog">
+<svg class="w-6 h-6 text-white/40" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+</svg>
+</div>
+</div>
+<!-- Sector 3: Cloud Peak / Hidden Canyon (South-West Locked Mystery Sector) -->
+<div class="locked-mystery-sector cursor-pointer absolute top-[54%] left-[18%] w-38 h-44 z-20 group transition-all duration-300" data-sector="peak" id="sectorCloudPeak">
+<!-- Interactive Circular Scouting Gauge SVG -->
+<div class="absolute -inset-2.5 pointer-events-none z-30 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 120 120">
+<circle cx="60" cy="60" fill="none" r="54" stroke="rgba(255,255,255,0.08)" stroke-width="3"></circle>
+<circle class="scout-progress-ring transition-all duration-75" cx="60" cy="60" fill="none" r="54" stroke="url(#surveyGradGold)" stroke-dasharray="339.29" stroke-dashoffset="339.29" stroke-linecap="round" stroke-width="3.5"></circle>
+</svg>
+</div>
+<div class="scout-sonar-ring absolute inset-0 rounded-full border border-purple-400/80 opacity-0 pointer-events-none"></div>
+<div class="relative w-36 h-40 hexagon-shape bg-[#071d18]/90 border border-purple-400/25 p-[2px] transition-all duration-500 shadow-[0_0_15px_rgba(0,0,0,0.6)]" id="borderCloudPeak">
+<div class="w-full h-full hexagon-shape bg-[#091815] flex flex-col items-center justify-center p-2 backdrop-blur-sm relative overflow-hidden">
+<!-- Topographical Preview Ethereal Layer -->
+<div class="terrain-preview-layer absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none flex flex-col items-center justify-center bg-gradient-to-b from-[#251838] to-[#120a1f]">
+<svg class="absolute inset-0 w-full h-full stroke-purple-300/40 opacity-70" fill="none" stroke-width="1.2">
+<path d="M-10,25 Q50,75 100,25 T160,40"></path>
+<path d="M-10,65 Q60,110 110,65 T160,80"></path>
+<path d="M-10,105 Q50,145 100,105 T160,120"></path>
+</svg>
+<span class="text-2xl filter drop-shadow-[0_0_8px_#c084fc] z-10 mb-1">⛰️</span>
+<span class="text-[9px] font-bold text-purple-300 uppercase tracking-widest z-10">Summit Altar</span>
+</div>
+<div class="locked-fog-layer absolute inset-0 bg-gradient-to-b from-[#0a231d]/95 via-[#061914]/90 to-[#040e0c]/98 transition-all duration-500"></div>
+<div class="relative z-10 flex flex-col items-center pointer-events-none">
+<div class="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-400/40 flex items-center justify-center mb-1 transition-all duration-300 group-hover:bg-purple-500/20" id="iconCloudPeak">
+<svg class="w-4 h-4 text-purple-300/80" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-[11px] font-bold text-atlas-cream/90 tracking-wide text-center">Cloud Peak</span>
+<span class="text-[9px] text-purple-300/80 font-medium">Locked • Hold to Scout</span>
+</div>
+</div>
+</div>
+<!-- Floating Clue Hint Badge Pill -->
+<div class="clue-pill absolute -bottom-5 -left-10 right-0 mx-auto w-48 opacity-0 pointer-events-none transition-all duration-500 transform translate-y-2 z-30" id="pillCloudPeak">
+<div class="bg-[#0b241c]/95 border border-purple-400/60 shadow-[0_4px_16px_rgba(192,132,252,0.35)] backdrop-blur-md rounded-xl px-2.5 py-1.5 flex items-start gap-1.5">
+<span class="w-2 h-2 mt-1 rounded-full bg-purple-300 flex-shrink-0 animate-ping"></span>
+<div>
+<div class="text-[9px] font-bold text-purple-300 tracking-wide uppercase">Clue Discovered</div>
+<p class="text-[10px] text-atlas-cream/90 leading-tight">Ancient stone summit altar • Elevation &gt; 2,400m</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sector: Locked Shadow Ridge -->
+<div class="locked-mystery-sector cursor-pointer absolute top-[40%] left-[72%] w-36 h-40 group transition-all duration-300" data-sector="ridge" id="sectorShadowRidge">
+<div class="absolute -inset-2 pointer-events-none z-30 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 120 120">
+<circle cx="60" cy="60" fill="none" r="52" stroke="rgba(255,255,255,0.06)" stroke-width="2.5"></circle>
+<circle class="scout-progress-ring transition-all duration-75" cx="60" cy="60" fill="none" r="52" stroke="#adcebb" stroke-dasharray="326.72" stroke-dashoffset="326.72" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+</div>
+<div class="relative w-full h-full hexagon-shape bg-[#091512]/95 border border-white/10 flex flex-col items-center justify-center p-2 opacity-65 group-hover:opacity-90 overflow-hidden" id="borderShadowRidge">
+<div class="terrain-preview-layer absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none flex flex-col items-center justify-center bg-gradient-to-b from-[#132a22] to-[#081512]">
+<span class="text-xl mb-1">🦅</span>
+<span class="text-[8px] font-bold text-emerald-300 uppercase tracking-widest">Shadow Ridge</span>
+</div>
+<div class="locked-fog-layer absolute inset-0 bg-[#071512]/90 transition-all duration-500"></div>
+<div class="relative z-10 flex flex-col items-center pointer-events-none">
+<svg class="w-5 h-5 text-white/40 mb-1" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-[10px] text-white/50 tracking-wider uppercase font-semibold">Hold to Scout</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Fog of war vignette overlay with cleared center -->
+<div class="absolute inset-0 pointer-events-none transition-all duration-1000 ease-out" id="fogOverlay" style="background: radial-gradient(circle at 48% 41%, transparent 18%, rgba(6,22,19,0.55) 38%, rgba(4,14,12,0.92) 68%);"></div>
+</div>
+</div>
+<!-- Map UI Chrome: iOS Header -->
+<header class="relative z-30 flex justify-between items-center px-6 pt-4 pb-2 text-atlas-cream/90 text-sm font-semibold tracking-tight" data-purpose="map-status-bar">
+<span>9:41</span>
+<!-- Quick Toggle Back to Celebration -->
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/45 hover:bg-black/60 active:scale-95 border border-white/15 backdrop-blur-md text-xs font-medium text-atlas-cream tracking-wide transition-all cursor-pointer shadow-lg" id="btnBackToCelebration">
+<svg class="w-3.5 h-3.5 text-atlas-gold" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<polyline points="15 18 9 12 15 6"></polyline>
+</svg>
+<span>Celebration</span>
+</button>
+</header>
+<!-- Heads-up Scouting Preview Tooltip / Banner -->
+<div class="relative z-30 px-5 pt-1 transition-all duration-300 transform -translate-y-2 opacity-0 pointer-events-none" id="scoutRadarBanner">
+<div class="w-full bg-[#0a271e]/95 border border-atlas-gold/70 rounded-2xl p-3 shadow-[0_8px_25px_rgba(0,0,0,0.6)] backdrop-blur-md flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-lg bg-atlas-gold/20 border border-atlas-gold/50 flex items-center justify-center text-atlas-gold flex-shrink-0" id="scoutBannerIcon">
+<svg class="w-4 h-4 animate-spin text-atlas-gold" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9" stroke-dasharray="14 10" stroke-width="2"></circle>
+<path d="M12 7v5l3 3" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<div class="text-[11px] font-bold text-atlas-gold tracking-wide uppercase" id="scoutBannerTitle">Scouting Sector Preview</div>
+<p class="text-[11px] text-atlas-cream/90 font-medium" id="scoutBannerSubtitle">Dissolving dense fog... Hold to inspect clue</p>
+</div>
+</div>
+<div class="text-[10px] font-extrabold text-atlas-gold px-2 py-0.5 rounded-full bg-atlas-gold/15 border border-atlas-gold/30 ml-2" id="scoutChargeCounter">0%</div>
+</div>
+</div>
+<!-- Top Floating Milestone Pill Banner -->
+<div class="relative z-30 px-5 pt-1 transition-all duration-500 transform translate-y-0" id="mapMilestoneBanner">
+<div class="w-full bg-[#0d2a1f]/90 border border-emerald-400/40 rounded-2xl p-3.5 shadow-2xl backdrop-blur-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-atlas-gold to-amber-300 text-atlas-dark flex items-center justify-center font-black shadow-md">
+<svg class="w-5 h-5 text-[#071714]" fill="currentColor" viewbox="0 0 20 20">
+<path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v3H6a1 1 0 100 2h3v3a1 1 0 102 0v-3h3a1 1 0 100-2h-3V6z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h2 class="text-xs font-bold text-white tracking-wide uppercase">New Sector Cleared!</h2>
+<span class="text-[10px] px-1.5 py-0.2 bg-atlas-gold text-atlas-dark font-extrabold rounded-full">+50 XP</span>
+</div>
+<p class="text-xs text-atlas-cream/75 font-medium mt-0.5">Sunset Point • Terrain unmasked</p>
+</div>
+</div>
+<div class="text-right pl-2 border-l border-white/10">
+<div class="text-[14px] font-black text-emerald-300 tracking-tight">13%</div>
+<div class="text-[10px] text-white/50 uppercase font-semibold">Explored</div>
+</div>
+</div>
+</div>
+<!-- Bottom Controls & Sector Inspector Deck -->
+<footer class="relative z-30 px-5 pb-2 pt-2 space-y-2" data-purpose="map-bottom-tray">
+<!-- Sector Info Card (Interactive to trigger recon radar scan too) -->
+<div class="w-full bg-atlas-dark/95 border border-white/10 rounded-2xl p-3.5 backdrop-blur-xl shadow-2xl transition-all duration-300 hover:border-atlas-gold/40 cursor-pointer active:scale-[0.99]" id="sectorStatusCard" title="Tap to Scout Surrounding Region">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-2xl overflow-hidden hexagon-shape border border-atlas-gold/40 flex-shrink-0">
+<img alt="Sunset Point Landmark" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPZfn-PJQZfsY2_fyYEZhzsQnY9s5F27453YmnzRs1RHLtgeF-UR7XzqttRcdL6U84osXeqNW1dqSZcI7vYjmFFviSp-n5fTeaBYwzppSZ1vQBQMUJcay4QgRzFDXr5-edSBSUtj3fXy-KF4yakIZ3OszHqCZCIfKews7QbWslLEdqtABXwRLXsnX5cBKGVGTqKYWr-bnp1xyEgHx4D4eVuUzm6NV6XMyxw7lhj8"/>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-white tracking-tight">Sunset Point</span>
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span class="text-[9px] px-1.5 py-0.5 rounded-full bg-atlas-gold/20 text-atlas-gold font-bold">Tap to Scout</span>
+</div>
+<p class="text-[11px] text-atlas-cream/70 mt-0.5">Alpine Overlook • Sector 04-B</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 flex items-center justify-center text-atlas-gold transition-all cursor-pointer" id="btnRecenterTarget" title="Re-focus &amp; Sonar Radar">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="7"></circle>
+<line x1="12" x2="12" y1="2" y2="5"></line>
+<line x1="12" x2="12" y1="19" y2="22"></line>
+<line x1="2" x2="5" y1="12"></line>
+<line x1="19" x2="22" y1="12"></line>
+</svg>
+</button>
+</div>
+<!-- Exploration Stats Ribbon -->
+<div class="mt-2.5 grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-center">
+<div class="bg-white/5 py-1 px-1.5 rounded-xl">
+<div class="text-[9px] text-white/50 uppercase font-semibold">Total Places</div>
+<div class="text-xs font-bold text-atlas-cream">49 Places</div>
+</div>
+<div class="bg-white/5 py-1 px-1.5 rounded-xl">
+<div class="text-[9px] text-white/50 uppercase font-semibold">World XP</div>
+<div class="text-xs font-bold text-atlas-gold">1,450 XP</div>
+</div>
+<div class="bg-white/5 py-1 px-1.5 rounded-xl">
+<div class="text-[9px] text-white/50 uppercase font-semibold">Fog Cleared</div>
+<div class="text-xs font-bold text-emerald-400">+1 Hexagon</div>
+</div>
+</div>
+</div>
+<!-- 5-Tab iOS Navigation Bar -->
+<div class="w-full bg-[#081b16]/95 border border-white/10 rounded-2xl px-3 py-2 backdrop-blur-xl flex items-center justify-around shadow-xl">
+<button class="flex flex-col items-center gap-0.5 text-atlas-gold transition-transform active:scale-90">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+<span class="text-[9px] font-bold">Map</span>
+</button>
+<button class="flex flex-col items-center gap-0.5 text-white/50 hover:text-white transition-transform active:scale-90">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+<span class="text-[9px] font-medium">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-0.5 text-white/50 hover:text-white transition-transform active:scale-90">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+<span class="text-[9px] font-medium">Quests</span>
+</button>
+<button class="flex flex-col items-center gap-0.5 text-white/50 hover:text-white transition-transform active:scale-90">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+<span class="text-[9px] font-medium">Badges</span>
+</button>
+<button class="flex flex-col items-center gap-0.5 text-white/50 hover:text-white transition-transform active:scale-90">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+<span class="text-[9px] font-medium">Profile</span>
+</button>
+</div>
+<!-- Home Indicator Line for iOS devices -->
+<div class="pt-0.5 pb-1 flex justify-center">
+<div class="w-32 h-1 bg-white/25 rounded-full"></div>
+</div>
+</footer>
+<!-- Interactive Mystery Details Modal Sheet (Expands when tapping or fully holding locked sector) -->
+<div class="absolute inset-x-0 bottom-0 z-40 bg-[#071c17]/95 border-t border-atlas-gold/40 rounded-t-[32px] p-5 shadow-[0_-10px_40px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-all duration-500 transform translate-y-full opacity-0 pointer-events-none" id="mysteryDetailSheet">
+<div class="w-12 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center text-atlas-gold text-xl" id="mysteryIcon">
+        🔒
+      </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-base font-bold text-white tracking-tight" id="mysteryTitle">Whispering Woods</h3>
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 font-semibold" id="mysteryBadge">Locked Sector</span>
+</div>
+<p class="text-xs text-atlas-gold/90 font-medium" id="mysteryDistance">1.4 km North-West • Elev. 1,980m</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 flex items-center justify-center text-white/70" id="btnCloseMysterySheet">✕</button>
+</div>
+<div class="mt-4 p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+<div class="text-[10px] font-bold text-atlas-gold uppercase tracking-wider">Survey Lore &amp; Clue Snippet</div>
+<p class="text-xs text-atlas-cream/85 leading-relaxed" id="mysteryLore">
+      "Follow ancient pine markers under dawn fog. An abandoned timber watchtower holds the coordinates to the lost forestry ledger."
+    </p>
+</div>
+<div class="mt-3 p-3 rounded-2xl bg-[#0f2d20]/70 border border-emerald-400/30 flex items-center justify-between">
+<div>
+<span class="text-[10px] text-white/50 uppercase font-semibold block">Unlock Objective</span>
+<span class="text-xs font-semibold text-emerald-300" id="mysteryObjective">Visit and capture check-in photo to dispel fog</span>
+</div>
+<span class="text-xs font-bold text-atlas-gold bg-atlas-gold/15 px-2.5 py-1 rounded-full border border-atlas-gold/40" id="mysteryReward">+75 XP</span>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 py-3 rounded-xl bg-atlas-cream hover:bg-white text-atlas-dark text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-lg" id="btnTrackMystery">
+<svg class="w-3.5 h-3.5 text-atlas-dark" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+<span>Set Compass Waypoint</span>
+</button>
+<button class="px-4 py-3 rounded-xl bg-white/10 text-white/80 hover:text-white text-xs font-semibold transition-all active:scale-95" id="btnDismissMystery">
+      Close
+    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- END: MobileContainer -->
+<!-- Particle Engine and Interactive Effects Script -->
+<script data-purpose="motion-celebration-engine">
+  (function () {
+    const container = document.getElementById('mobileContainer');
+    const celebrationView = document.getElementById('celebrationView');
+    const worldMapView = document.getElementById('worldMapView');
+    const mapWorldCanvas = document.getElementById('mapWorldCanvas');
+    const unlockedSector = document.getElementById('unlockedSector');
+    const unlockedHexBody = document.getElementById('unlockedHexBody');
+    const unlockedSectorFog = document.getElementById('unlockedSectorFog');
+    const fogOverlay = document.getElementById('fogOverlay');
+    const btnBackToCelebration = document.getElementById('btnBackToCelebration');
+    const btnRecenterTarget = document.getElementById('btnRecenterTarget');
+
+    // Radar scan & mystery inspection elements
+    const surveyLinesLayer = document.getElementById('surveyLinesLayer');
+    const scoutRadarBanner = document.getElementById('scoutRadarBanner');
+    const scoutBannerTitle = document.getElementById('scoutBannerTitle');
+    const scoutBannerSubtitle = document.getElementById('scoutBannerSubtitle');
+    const scoutChargeCounter = document.getElementById('scoutChargeCounter');
+    const radarSonarRing = document.getElementById('radarSonarRing');
+    const radarSonarRing2 = document.getElementById('radarSonarRing2');
+    const sectorStatusCard = document.getElementById('sectorStatusCard');
+    const scoutBadgeLabel = document.getElementById('scoutBadgeLabel');
+
+    const pills = [
+      document.getElementById('pillWhisperingWoods'),
+      document.getElementById('pillBhattaFalls'),
+      document.getElementById('pillCloudPeak')
+    ];
+
+    // Mystery Sheet modal elements
+    const mysterySheet = document.getElementById('mysteryDetailSheet');
+    const btnCloseMysterySheet = document.getElementById('btnCloseMysterySheet');
+    const btnDismissMystery = document.getElementById('btnDismissMystery');
+    const btnTrackMystery = document.getElementById('btnTrackMystery');
+    const mysteryTitle = document.getElementById('mysteryTitle');
+    const mysteryBadge = document.getElementById('mysteryBadge');
+    const mysteryDistance = document.getElementById('mysteryDistance');
+    const mysteryLore = document.getElementById('mysteryLore');
+    const mysteryObjective = document.getElementById('mysteryObjective');
+    const mysteryReward = document.getElementById('mysteryReward');
+    const mysteryIcon = document.getElementById('mysteryIcon');
+
+    // Mystery sector definitions
+    const MYSTERY_DATA = {
+      woods: {
+        title: "Whispering Woods",
+        badge: "Locked Sector • NW",
+        distance: "1.4 km North-West • Elev. 1,980m",
+        lore: "Follow ancient pine markers under dawn fog. An abandoned timber watchtower holds the forgotten trail marker coordinates.",
+        objective: "Approach within 200m & capture check-in photo to dispel fog",
+        reward: "+50 XP",
+        icon: "🌲",
+        previewHint: "Ancient Pine Canopy Detected • Dawn fog thinning"
+      },
+      falls: {
+        title: "Bhatta Falls",
+        badge: "Locked Sector • NE",
+        distance: "2.1 km North-East • Elev. 1,650m",
+        lore: "Listen for rushing cascades echoing through the limestone cliff gorge. Ancient natural spring pools hide beneath the misty spray.",
+        objective: "Log sound vibration measurement near gorge trail",
+        reward: "+75 XP",
+        icon: "🌊",
+        previewHint: "Acoustic Cascade Hydro-Echo Detected (+75 XP)"
+      },
+      peak: {
+        title: "Cloud Peak & Canyon",
+        badge: "Locked Sector • SW",
+        distance: "3.2 km South-West • Elev. 2,490m",
+        lore: "An ancient weathered stone summit altar sits atop cloud-shrouded ridges. High elevation terrain winds through precipitous valleys.",
+        objective: "Ascend to altitude > 2,400m during daylight hours",
+        reward: "+100 XP",
+        icon: "⛰️",
+        previewHint: "High Altitude Summit Altar • Elevation > 2,400m"
+      },
+      ridge: {
+        title: "Shadow Ridge",
+        badge: "Locked Sector • E",
+        distance: "2.8 km East • Elev. 2,120m",
+        lore: "Steep granite crags guarded by mountain falcons. Hidden ridge trails link to unexplored cliff sanctuaries.",
+        objective: "Reach observation vista to unmask northern pass",
+        reward: "+60 XP",
+        icon: "🦅",
+        previewHint: "Granite Crags & Falcon Roosts Detected"
+      }
+    };
+
+    let isScoutingActive = false;
+
+    const canvas = document.getElementById('particleCanvas');
+    if (!canvas || !container) return;
+    const ctx = canvas.getContext('2d');
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let width = 0;
+    let height = 0;
+    let dpr = window.devicePixelRatio || 1;
+
+    function resizeCanvas() {
+      const rect = container.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Particle arrays
+    const ambientParticles = [];
+    const burstParticles = [];
+
+    const GOLD_COLORS = [
+      '#FAD67B', // gold-light
+      '#E5A93C', // atlas-gold
+      '#FFD166', // warm radiant
+      '#FFF4D2', // sparkle white-gold
+      '#CCA830', // deep amber
+      '#94D4B2'  // soft emerald glimmer
+    ];
+
+    // Seed ambient drifting luminous embers
+    const AMBIENT_COUNT = reducedMotion ? 8 : 28;
+    for (let i = 0; i < AMBIENT_COUNT; i++) {
+      ambientParticles.push({
+        x: Math.random() * (width || 390),
+        y: Math.random() * (height || 844),
+        radius: Math.random() * 1.8 + 0.6,
+        alpha: Math.random() * 0.7 + 0.2,
+        speedY: -(Math.random() * 0.45 + 0.15),
+        speedX: (Math.random() - 0.5) * 0.3,
+        twinkleSpeed: Math.random() * 0.03 + 0.015,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        color: GOLD_COLORS[Math.floor(Math.random() * 4)]
+      });
+    }
+
+    // Spawn shockwave ring DOM element
+    function spawnShockwave(x, y, scale = 1, borderColor = 'rgba(250, 214, 123, 0.85)', glowColor = 'rgba(229, 169, 60, 0.6)') {
+      if (reducedMotion) return;
+      const ring = document.createElement('div');
+      ring.className = 'shockwave-ring';
+      const size = Math.floor(110 * scale);
+      ring.style.width = size + 'px';
+      ring.style.height = size + 'px';
+      ring.style.left = x + 'px';
+      ring.style.top = y + 'px';
+      ring.style.borderColor = borderColor;
+      ring.style.boxShadow = `0 0 20px ${glowColor}`;
+      container.appendChild(ring);
+      setTimeout(() => ring.remove(), 850);
+    }
+
+    // Dynamic celebration burst at (x, y)
+    function createCelebrationBurst(x, y, count = 45, power = 1) {
+      if (reducedMotion) return;
+      spawnShockwave(x, y, power);
+
+      const shardCount = Math.floor(count * power);
+      for (let i = 0; i < shardCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = (Math.random() * 4.8 + 1.8) * power;
+        const type = Math.random() > 0.45 ? 'shard' : 'spark';
+
+        burstParticles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * velocity + (Math.random() - 0.5) * 0.8,
+          vy: Math.sin(angle) * velocity - (Math.random() * 1.5 + 0.5),
+          gravity: 0.12,
+          drag: 0.965,
+          color: GOLD_COLORS[Math.floor(Math.random() * GOLD_COLORS.length)],
+          alpha: 1,
+          decay: Math.random() * 0.018 + 0.012,
+          size: type === 'shard' ? (Math.random() * 5 + 3) : (Math.random() * 3 + 1.2),
+          type: type,
+          rotation: Math.random() * Math.PI * 2,
+          vRotation: (Math.random() - 0.5) * 0.22
+        });
+      }
+    }
+
+    // Animation Loop
+    let lastTime = performance.now();
+
+    function renderLoop(time) {
+      const delta = Math.min((time - lastTime) / 16.66, 2.5);
+      lastTime = time;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Render ambient floating particles
+      for (let i = 0; i < ambientParticles.length; i++) {
+        const p = ambientParticles[i];
+        p.y += p.speedY * delta;
+        p.x += p.speedX * delta;
+        p.twinkleOffset += p.twinkleSpeed * delta;
+
+        if (p.y < -10) p.y = height + 10;
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
+
+        const currentAlpha = Math.max(0.1, p.alpha * (0.65 + 0.35 * Math.sin(p.twinkleOffset)));
+
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = currentAlpha;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Render celebration burst particles
+      for (let i = burstParticles.length - 1; i >= 0; i--) {
+        const bp = burstParticles[i];
+        bp.vx *= bp.drag;
+        bp.vy *= bp.drag;
+        bp.vy += bp.gravity * delta;
+        bp.x += bp.vx * delta;
+        bp.y += bp.vy * delta;
+        bp.rotation += bp.vRotation * delta;
+        bp.alpha -= bp.decay * delta;
+
+        if (bp.alpha <= 0) {
+          burstParticles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.translate(bp.x, bp.y);
+        ctx.rotate(bp.rotation);
+        ctx.fillStyle = bp.color;
+        ctx.globalAlpha = Math.max(0, bp.alpha);
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = bp.color;
+
+        if (bp.type === 'shard') {
+          const w = bp.size;
+          const h = bp.size * 0.65;
+          ctx.beginPath();
+          ctx.moveTo(0, -h);
+          ctx.lineTo(w, 0);
+          ctx.lineTo(0, h);
+          ctx.lineTo(-w, 0);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, bp.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
+
+    function launchInitialBurst() {
+      const badge = document.getElementById('badgeTarget');
+      if (badge && celebrationView.classList.contains('z-20')) {
+        const cRect = container.getBoundingClientRect();
+        const bRect = badge.getBoundingClientRect();
+        const centerX = (bRect.left + bRect.width / 2) - cRect.left;
+        const centerY = (bRect.top + bRect.height / 2) - cRect.top;
+
+        createCelebrationBurst(centerX, centerY, 55, 1.25);
+        setTimeout(() => {
+          createCelebrationBurst(centerX, centerY, 35, 0.9);
+        }, 220);
+      }
+    }
+
+    setTimeout(launchInitialBurst, 350);
+
+    function getContainerCoords(e) {
+      const rect = container.getBoundingClientRect();
+      const clientX = e.touches && e.touches.length > 0 ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches && e.touches.length > 0 ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function attachRippleEffect(button, rippleColor = 'rgba(255, 255, 255, 0.35)') {
+      button.addEventListener('pointerdown', function (e) {
+        const rect = button.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        const diameter = Math.max(rect.width, rect.height);
+        const radius = diameter / 2;
+
+        const x = (e.clientX || (rect.left + rect.width / 2)) - rect.left - radius;
+        const y = (e.clientY || (rect.top + rect.height / 2)) - rect.top - radius;
+
+        ripple.style.position = 'absolute';
+        ripple.style.width = ripple.style.height = `${diameter}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.style.borderRadius = '50%';
+        ripple.style.backgroundColor = rippleColor;
+        ripple.style.transform = 'scale(0)';
+        ripple.style.animation = 'ripple-wave 0.65s ease-out forwards';
+        ripple.style.pointerEvents = 'none';
+
+        button.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 700);
+      });
+    }
+
+    // ==========================================
+    // RECON RADAR SCAN & SURROUNDING MYSTERY REVEAL
+    // ==========================================
+    function triggerReconSonarScan() {
+      isScoutingActive = true;
+
+      // 1. Sonar rings trigger
+      if (radarSonarRing) radarSonarRing.style.opacity = '1';
+      if (radarSonarRing2) radarSonarRing2.style.opacity = '1';
+
+      // 2. Central sector feedback
+      if (unlockedHexBody) {
+        unlockedHexBody.style.transform = 'scale(1.08)';
+        unlockedHexBody.style.boxShadow = '0 0 50px rgba(229,169,60,0.95), 0 0 30px rgba(148,212,178,0.85)';
+        setTimeout(() => {
+          unlockedHexBody.style.transform = 'scale(1)';
+          unlockedHexBody.style.boxShadow = '0 0 35px rgba(229,169,60,0.6)';
+        }, 500);
+      }
+
+      if (scoutBadgeLabel) {
+        scoutBadgeLabel.textContent = 'Radar Scanning... 📡';
+        scoutBadgeLabel.classList.add('bg-amber-400/40');
+      }
+
+      // 3. Central spark burst
+      if (unlockedSector) {
+        const cRect = container.getBoundingClientRect();
+        const sRect = unlockedSector.getBoundingClientRect();
+        const targetX = (sRect.left + sRect.width / 2) - cRect.left;
+        const targetY = (sRect.top + sRect.height / 2) - cRect.top;
+        createCelebrationBurst(targetX, targetY, 32, 1.0);
+        spawnShockwave(targetX, targetY, 1.35, 'rgba(250,214,123,0.95)', 'rgba(229,169,60,0.8)');
+      }
+
+      // 4. Reveal animated survey dashed lines with subtle stagger
+      setTimeout(() => {
+        if (surveyLinesLayer) {
+          surveyLinesLayer.style.opacity = '1';
+        }
+      }, 250);
+
+      // 5. Reveal Clue Pills and accentuate locked tiles
+      setTimeout(() => {
+        pills.forEach((pill, idx) => {
+          if (pill) {
+            setTimeout(() => {
+              pill.style.opacity = '1';
+              pill.style.transform = 'translateY(0)';
+              pill.style.pointerEvents = 'auto';
+            }, idx * 140);
+          }
+        });
+
+        // Glow the borders of the locked sectors
+        ['borderWhisperingWoods', 'borderBhattaFalls', 'borderCloudPeak'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.add('border-atlas-gold', 'shadow-[0_0_25px_rgba(229,169,60,0.55)]');
+          }
+        });
+
+        // Show Toast Notification banner
+        if (scoutRadarBanner) {
+          scoutBannerTitle.textContent = "Scouting Nearby Sectors";
+          scoutBannerSubtitle.textContent = "3 Clue Hints Discovered! Tap or Hold any locked sector.";
+          scoutChargeCounter.textContent = "Ready";
+          scoutRadarBanner.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+          scoutRadarBanner.classList.add('opacity-100', 'translate-y-0');
+        }
+
+        if (scoutBadgeLabel) {
+          scoutBadgeLabel.textContent = '3 Clues Found 🧭';
+        }
+      }, 450);
+    }
+
+    // Inspect Mystery Sector details modal
+    function openMysterySector(sectorKey) {
+      const data = MYSTERY_DATA[sectorKey];
+      if (!data) return;
+
+      mysteryTitle.textContent = data.title;
+      mysteryBadge.textContent = data.badge;
+      mysteryDistance.textContent = data.distance;
+      mysteryLore.textContent = `"${data.lore}"`;
+      mysteryObjective.textContent = data.objective;
+      mysteryReward.textContent = data.reward;
+      mysteryIcon.textContent = data.icon;
+
+      mysterySheet.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+      mysterySheet.classList.add('translate-y-0', 'opacity-100');
+
+      // Click ripple burst
+      const targetSector = document.getElementById(
+        sectorKey === 'woods' ? 'sectorWhisperingWoods' : (sectorKey === 'falls' ? 'sectorBhattaFalls' : (sectorKey === 'peak' ? 'sectorCloudPeak' : 'sectorShadowRidge'))
+      );
+      if (targetSector) {
+        const cRect = container.getBoundingClientRect();
+        const sRect = targetSector.getBoundingClientRect();
+        const tx = (sRect.left + sRect.width / 2) - cRect.left;
+        const ty = (sRect.top + sRect.height / 2) - cRect.top;
+        createCelebrationBurst(tx, ty, 24, 0.85);
+      }
+    }
+
+    function closeMysterySheet() {
+      mysterySheet.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+      mysterySheet.classList.remove('translate-y-0', 'opacity-100');
+    }
+
+    if (btnCloseMysterySheet) btnCloseMysterySheet.addEventListener('click', closeMysterySheet);
+    if (btnDismissMystery) btnDismissMystery.addEventListener('click', closeMysterySheet);
+
+    if (btnTrackMystery) {
+      attachRippleEffect(btnTrackMystery, 'rgba(0, 0, 0, 0.2)');
+      btnTrackMystery.addEventListener('click', () => {
+        btnTrackMystery.innerHTML = `<span>✓ Waypoint Marked!</span>`;
+        btnTrackMystery.classList.add('bg-emerald-300', 'text-atlas-dark');
+        setTimeout(() => {
+          closeMysterySheet();
+          setTimeout(() => {
+            btnTrackMystery.innerHTML = `
+              <svg class="w-3.5 h-3.5 text-atlas-dark" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+              <span>Set Compass Waypoint</span>
+            `;
+            btnTrackMystery.classList.remove('bg-emerald-300');
+          }, 1000);
+        }, 400);
+      });
+    }
+
+    // =========================================================================
+    // DYNAMIC FOG-CLEARING PREVIEW & HOLD-TO-SCOUT RECONNAISSANCE ENGINE
+    // =========================================================================
+    let activeScoutTile = null;
+    let holdTimer = null;
+    let holdProgress = 0;
+    let progressAnimId = null;
+    const HOLD_DURATION = 1200; // 1.2s to charge completely
+
+    function startFogClearingPreview(tileEl) {
+      if (activeScoutTile === tileEl) return;
+      activeScoutTile = tileEl;
+      const sectorKey = tileEl.getAttribute('data-sector');
+      const data = MYSTERY_DATA[sectorKey] || { title: "Uncharted Sector", previewHint: "Terrain contours detected" };
+
+      tileEl.classList.add('sector-fog-clearing');
+      tileEl.style.transform = 'scale(1.08)';
+
+      const progressRing = tileEl.querySelector('.scout-progress-ring');
+      const totalCircumference = progressRing ? parseFloat(progressRing.getAttribute('stroke-dasharray') || '339.29') : 339.29;
+
+      // Update banner preview heads-up
+      if (scoutRadarBanner) {
+        scoutBannerTitle.textContent = `🔍 Scouting... [${data.title}]`;
+        scoutBannerSubtitle.textContent = data.previewHint;
+        scoutChargeCounter.textContent = '0%';
+        scoutRadarBanner.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+        scoutRadarBanner.classList.add('opacity-100', 'translate-y-0');
+      }
+
+      // Small whisper mist sparks around the hex
+      const cRect = container.getBoundingClientRect();
+      const sRect = tileEl.getBoundingClientRect();
+      const centerX = (sRect.left + sRect.width / 2) - cRect.left;
+      const centerY = (sRect.top + sRect.height / 2) - cRect.top;
+      createCelebrationBurst(centerX, centerY, 12, 0.5);
+
+      const startTime = performance.now();
+
+      function updateGauge(now) {
+        const elapsed = now - startTime;
+        holdProgress = Math.min(elapsed / HOLD_DURATION, 1);
+        const percent = Math.floor(holdProgress * 100);
+
+        if (scoutChargeCounter) {
+          scoutChargeCounter.textContent = `${percent}%`;
+        }
+
+        if (progressRing) {
+          const offset = totalCircumference - (totalCircumference * holdProgress);
+          progressRing.style.strokeDashoffset = `${offset}`;
+        }
+
+        if (holdProgress < 1) {
+          progressAnimId = requestAnimationFrame(updateGauge);
+        } else {
+          // Full charge reached! Visual pulse flare & reveal mystery clue card
+          cancelAnimationFrame(progressAnimId);
+          createCelebrationBurst(centerX, centerY, 36, 1.1);
+          spawnShockwave(centerX, centerY, 1.4, '#94d4b2', '#e5a93c');
+          openMysterySector(sectorKey);
+          resetFogClearingPreview(tileEl);
+        }
+      }
+
+      progressAnimId = requestAnimationFrame(updateGauge);
+    }
+
+    function resetFogClearingPreview(tileEl) {
+      if (progressAnimId) cancelAnimationFrame(progressAnimId);
+      progressAnimId = null;
+
+      if (!tileEl) tileEl = activeScoutTile;
+      if (!tileEl) return;
+
+      tileEl.classList.remove('sector-fog-clearing');
+      tileEl.style.transform = '';
+
+      const progressRing = tileEl.querySelector('.scout-progress-ring');
+      if (progressRing) {
+        const totalCircumference = parseFloat(progressRing.getAttribute('stroke-dasharray') || '339.29');
+        progressRing.style.strokeDashoffset = `${totalCircumference}`;
+      }
+
+      // Hide preview banner unless overall recon is active
+      if (scoutRadarBanner && !isScoutingActive) {
+        scoutRadarBanner.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+        scoutRadarBanner.classList.remove('opacity-100', 'translate-y-0');
+      }
+
+      activeScoutTile = null;
+    }
+
+    // Attach Hold / Pointerdown / Hover event listeners to all locked mystery sectors
+    document.querySelectorAll('.locked-mystery-sector').forEach(sector => {
+      let isPointerHeld = false;
+
+      // Desktop Hover preview support
+      sector.addEventListener('mouseenter', () => {
+        if (!isPointerHeld) {
+          startFogClearingPreview(sector);
+        }
+      });
+
+      sector.addEventListener('mouseleave', () => {
+        if (!isPointerHeld) {
+          resetFogClearingPreview(sector);
+        }
+      });
+
+      // Pointer / Touch Hold support
+      sector.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        isPointerHeld = true;
+        startFogClearingPreview(sector);
+      });
+
+      const cancelHold = () => {
+        if (isPointerHeld) {
+          isPointerHeld = false;
+          resetFogClearingPreview(sector);
+        }
+      };
+
+      sector.addEventListener('pointerup', (e) => {
+        e.stopPropagation();
+        // If it was a quick tap (<300ms), let it open mystery sheet directly
+        if (isPointerHeld && holdProgress < 0.25) {
+          const key = sector.getAttribute('data-sector');
+          openMysterySector(key);
+        }
+        cancelHold();
+      });
+
+      sector.addEventListener('pointercancel', cancelHold);
+    });
+
+    // ==========================================
+    // CAMERA FOCUS & WORLD MAP TRANSITION ENGINE
+    // ==========================================
+    function transitionToWorldMap() {
+      // 1. Zoom and fade out celebration screen
+      celebrationView.style.transform = 'scale(0.92) translateY(-16px)';
+      celebrationView.style.opacity = '0';
+      celebrationView.style.pointerEvents = 'none';
+
+      // 2. Prepare Map Screen
+      worldMapView.classList.remove('pointer-events-none');
+      worldMapView.style.opacity = '1';
+      worldMapView.style.transform = 'scale(1) translateY(0)';
+      worldMapView.classList.remove('z-10');
+      worldMapView.classList.add('z-20');
+      celebrationView.classList.remove('z-20');
+      celebrationView.classList.add('z-10');
+
+      // 3. Smooth Camera Focus Pan & Zoom directly onto Sunset Point sector
+      mapWorldCanvas.style.transform = 'scale(1.4) translate(-10%, -6%)';
+
+      // 4. Sector Reveal Sequence
+      if (unlockedSectorFog) {
+        unlockedSectorFog.style.opacity = '0.9';
+        setTimeout(() => {
+          unlockedSectorFog.style.opacity = '0';
+          unlockedSectorFog.style.transform = 'scale(1.1)';
+        }, 300);
+      }
+
+      // Hexagon pulse glow celebration
+      setTimeout(() => {
+        if (unlockedHexBody) {
+          unlockedHexBody.style.transform = 'scale(1.08)';
+          unlockedHexBody.style.boxShadow = '0 0 50px rgba(229,169,60,0.9), 0 0 30px rgba(148,212,178,0.7)';
+          setTimeout(() => {
+            unlockedHexBody.style.transform = 'scale(1)';
+            unlockedHexBody.style.boxShadow = '0 0 28px rgba(229,169,60,0.5)';
+          }, 650);
+        }
+
+        // Trigger celebratory map burst at the sector coordinate
+        if (unlockedSector) {
+          const cRect = container.getBoundingClientRect();
+          const sRect = unlockedSector.getBoundingClientRect();
+          const targetX = (sRect.left + sRect.width / 2) - cRect.left;
+          const targetY = (sRect.top + sRect.height / 2) - cRect.top;
+          createCelebrationBurst(targetX, targetY, 40, 1.1);
+          spawnShockwave(targetX, targetY, 1.3, 'rgba(148,212,178,0.9)', 'rgba(229,169,60,0.8)');
+        }
+      }, 550);
+    }
+
+    function transitionBackToCelebration() {
+      closeMysterySheet();
+      worldMapView.style.opacity = '0';
+      worldMapView.style.transform = 'scale(1.05)';
+      worldMapView.classList.add('pointer-events-none');
+      worldMapView.classList.remove('z-20');
+      worldMapView.classList.add('z-10');
+
+      celebrationView.classList.remove('z-10');
+      celebrationView.classList.add('z-20');
+      celebrationView.style.pointerEvents = 'auto';
+      celebrationView.style.opacity = '1';
+      celebrationView.style.transform = 'scale(1) translateY(0)';
+
+      mapWorldCanvas.style.transform = 'scale(1.15) translate(-6%, -4%)';
+      launchInitialBurst();
+    }
+
+    // Connect View on Map and Close actions
+    const btnViewMap = document.getElementById('btnViewMap');
+    const closeBtn = document.getElementById('closeBtn');
+    const btnShare = document.getElementById('btnShare');
+
+    if (btnViewMap) {
+      attachRippleEffect(btnViewMap, 'rgba(19, 40, 34, 0.2)');
+      btnViewMap.addEventListener('click', (e) => {
+        const coords = getContainerCoords(e);
+        createCelebrationBurst(coords.x, coords.y, 16, 0.7);
+        setTimeout(transitionToWorldMap, 200);
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        transitionToWorldMap();
+      });
+    }
+
+    if (btnBackToCelebration) {
+      btnBackToCelebration.addEventListener('click', () => {
+        transitionBackToCelebration();
+      });
+    }
+
+    // Sector tap & Status card tap triggers the Radar Survey Recon Scan
+    if (unlockedSector) {
+      unlockedSector.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerReconSonarScan();
+      });
+    }
+
+    if (sectorStatusCard) {
+      sectorStatusCard.addEventListener('click', (e) => {
+        triggerReconSonarScan();
+      });
+    }
+
+    if (btnRecenterTarget) {
+      btnRecenterTarget.addEventListener('click', (e) => {
+        e.stopPropagation();
+        mapWorldCanvas.style.transform = 'scale(1.48) translate(-10%, -6%)';
+        triggerReconSonarScan();
+        setTimeout(() => {
+          mapWorldCanvas.style.transform = 'scale(1.4) translate(-10%, -6%)';
+        }, 350);
+      });
+    }
+
+    if (btnShare) {
+      attachRippleEffect(btnShare, 'rgba(255, 255, 255, 0.25)');
+      btnShare.addEventListener('pointerdown', (e) => {
+        const coords = getContainerCoords(e);
+        createCelebrationBurst(coords.x, coords.y, 25, 0.85);
+      });
+    }
+
+    // Hexagon Badge Tap Trigger in Celebration Screen
+    const badgeTarget = document.getElementById('badgeTarget');
+    if (badgeTarget) {
+      badgeTarget.addEventListener('pointerdown', (e) => {
+        const coords = getContainerCoords(e);
+        createCelebrationBurst(coords.x, coords.y, 45, 1.15);
+      });
+    }
+
+    // XP Badge Tap Trigger
+    const xpBadgeTarget = document.getElementById('xpBadgeTarget');
+    if (xpBadgeTarget) {
+      xpBadgeTarget.addEventListener('pointerdown', (e) => {
+        const coords = getContainerCoords(e);
+        createCelebrationBurst(coords.x, coords.y, 35, 1.0);
+      });
+    }
+
+    // General ambient canvas tap spark
+    container.addEventListener('pointerdown', (e) => {
+      if (
+        e.target.closest('#badgeTarget') ||
+        e.target.closest('#xpBadgeTarget') ||
+        e.target.closest('#unlockedSector') ||
+        e.target.closest('.locked-mystery-sector') ||
+        e.target.closest('#mysteryDetailSheet') ||
+        e.target.closest('button')
+      ) {
+        return;
+      }
+      // If clicking map canvas outside modal, dismiss sheet
+      if (!mysterySheet.classList.contains('translate-y-full')) {
+        closeMysterySheet();
+      }
+      const coords = getContainerCoords(e);
+      createCelebrationBurst(coords.x, coords.y, 16, 0.65);
+    });
+
+  })();
+</script>
+</body></html>

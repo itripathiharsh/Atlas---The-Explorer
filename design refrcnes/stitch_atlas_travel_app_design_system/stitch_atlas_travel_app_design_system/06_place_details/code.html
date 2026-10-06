@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Place Details</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Config -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            atlas: {
+              cream: '#F4F1EA',
+              darkGreen: '#0F2D20',
+              accentGreen: '#1F5E3B',
+              softGreen: '#E3ECE6',
+              gold: '#D97706',
+              softGold: '#FEF3C7',
+              charcoal: '#1A1C1A',
+              muted: '#737873'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+<!-- Style block for custom mobile scroll & base styling -->
+<style data-purpose="custom-mobile-styling">
+    /* Hide scrollbar for carousel while preserving smooth touch scrolling */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="bg-black text-atlas-charcoal antialiased flex justify-center items-center min-h-screen">
+<!-- BEGIN: MobileContainer -->
+<!-- iPhone / Mobile Canvas Simulation wrapper -->
+<main class="w-full max-w-sm sm:max-w-md h-[100dvh] bg-atlas-cream relative flex flex-col justify-between overflow-hidden shadow-2xl sm:rounded-[44px]">
+<!-- BEGIN: HeroSection -->
+<!-- Top Half: Scenic Hero Photography with Floating Navigation Controls -->
+<header class="relative w-full h-[45%] shrink-0 overflow-hidden" data-purpose="hero-image-header">
+<!-- High Resolution Waterfall Scenery representing Kempty Falls -->
+<img alt="Kempty Falls surrounded by lush green mountains" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYjTbH2OWVrF1CISS1dxvv2dLoFASWsou4yfqn4tNbMvbn_NnQQ0qHCBp8_0y3eJQRqrFQgVS7SsRJwRlCz60NevBYwg7Mz8whL1zY2bdW3jLW0uB-ckbD2OXGJHFr4LwYd8LT115Vh4PA_eoTZYl3NAYVYeHGWXcYYn9wWV5v9k_bJOpHxHphJsBtdDky6fnf5syqTbVFOQf0k44q3T7NSxkkNA7AzJBNV95ZET0"/>
+<!-- Subtle gradient vignette for readability of status bar & buttons -->
+<div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/20 pointer-events-none"></div>
+<!-- iOS Status Bar & Top Action Buttons -->
+<nav aria-label="Screen Navigation" class="absolute top-0 inset-x-0 pt-4 sm:pt-6 px-5 flex items-center justify-between z-10">
+<!-- Circular Back Button -->
+<button aria-label="Go back" class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition active:scale-95" type="button">
+<svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Right Action Controls (Bookmark & Share) -->
+<div class="flex items-center gap-2">
+<!-- Bookmark Action -->
+<button aria-label="Save to favorites" class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition active:scale-95" type="button">
+<svg class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Share Action -->
+<button aria-label="Share place" class="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/60 transition active:scale-95" type="button">
+<svg class="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8m-4-6l-4-4m0 0L8 6m4-4v12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</nav>
+</header>
+<!-- END: HeroSection -->
+<!-- BEGIN: BottomSheetContent -->
+<!-- Bottom Half: Content Sheet in Warm Cream (#EFECE6 / #F4F1EA) -->
+<section class="flex-1 bg-atlas-cream -mt-6 rounded-t-[32px] pt-6 pb-24 px-6 flex flex-col justify-between overflow-y-auto hide-scrollbar relative z-20 shadow-lg" data-purpose="place-details-sheet">
+<div>
+<!-- Drag Handle Indicator for visual sheet cue -->
+<div class="w-12 h-1 bg-stone-300 rounded-full mx-auto -mt-2 mb-4"></div>
+<!-- Header Titles & Location -->
+<div class="flex items-start justify-between">
+<div>
+<h1 class="text-2xl font-bold tracking-tight text-atlas-charcoal">Kempty Falls</h1>
+<p class="text-xs sm:text-sm text-atlas-muted flex items-center gap-1.5 mt-1 font-medium">
+<span>Mussoorie, Uttarakhand</span>
+<span class="inline-block w-1 h-1 rounded-full bg-atlas-muted/60"></span>
+<span class="flex items-center text-atlas-charcoal/80 font-semibold">
+<svg class="w-3.5 h-3.5 mr-0.5 text-atlas-accentGreen inline" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+                4.2 km
+              </span>
+</p>
+</div>
+</div>
+<!-- XP & Rating Badges -->
+<div class="flex items-center gap-2.5 mt-3.5" data-purpose="stat-badges">
+<!-- Worth Visiting Pill -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-atlas-accentGreen text-xs font-semibold">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 20 20">
+<path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a2 2 0 00-.8 1.6v.8z"></path>
+</svg>
+<span>94% Worth Visiting</span>
+</div>
+<!-- XP Earned Pill -->
+<div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-atlas-gold text-xs font-bold">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>50 XP</span>
+</div>
+</div>
+<!-- Segmented Navigation Tabs -->
+<nav aria-label="Place content tabs" class="flex border-b border-stone-200 mt-5 text-sm font-semibold">
+<!-- Active 'About' Tab -->
+<button class="pb-2.5 text-atlas-darkGreen border-b-2 border-atlas-darkGreen pr-5 font-bold transition" type="button">
+            About
+          </button>
+<!-- Inactive 'Photos' Tab -->
+<button class="pb-2.5 text-stone-400 hover:text-atlas-charcoal px-5 transition" type="button">
+            Photos
+          </button>
+<!-- Inactive 'Reviews' Tab -->
+<button class="pb-2.5 text-stone-400 hover:text-atlas-charcoal px-5 transition" type="button">
+            Reviews
+          </button>
+</nav>
+<!-- Place Description -->
+<article class="mt-3.5" data-purpose="place-description">
+<p class="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+            A beautiful waterfall surrounded by lush green hills. Great for a short trek and perfect for a weekend visit.
+          </p>
+</article>
+<!-- Thumbnail Photo Carousel -->
+<section aria-label="Place photo gallery preview" class="mt-4">
+<h2 class="sr-only">Photo Gallery</h2>
+<div class="flex items-center gap-2.5 overflow-x-auto hide-scrollbar pb-1">
+<!-- Thumbnail 1 -->
+<div class="w-20 h-16 shrink-0 rounded-xl overflow-hidden shadow-sm border border-stone-200/60">
+<img alt="Trail angle of waterfall" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6BHKl5mbPMyjXAUEys7ADOlOAA7etaP1SKdUJtouv_g092qJNyJGGMwWCa_-gLn3daEuPWbcaazON2tYkHRGtacc7k31HDEzon9RImQPBAouUbH3ancrPtLBB84GLN_kJMIZ5B--WU-OpMn-5fLxwmxHd08wH5hPaskEoQajzAPUlDcR_NyvMncaAIN-cBIySQ6BUnjQtMfYpBDwUDyDv-tKCx51WHNhJoro8fNo"/>
+</div>
+<!-- Thumbnail 2 -->
+<div class="w-20 h-16 shrink-0 rounded-xl overflow-hidden shadow-sm border border-stone-200/60">
+<img alt="Cascading river" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnrSPOYVt4BG_smKKume3KbCaRmlXh1JXwuDroEazW5VWqsyDaJCuHQS-5fJ0LOUnMdEfgdF32M43NdPqmlsvds64hbCoY-EVTartpN45JlE7NwsrfxxPPEpv64zczyIetLxTxpKC7F-DFtGirtD40fUTi0BH-pTZfUAuVj1sOmCSobIaQPqeYmFCkAm9SgLGYgkHa7oVIKD3aUUGRUDMorpVQsdzAtN4YffItNiQ"/>
+</div>
+<!-- Thumbnail 3 -->
+<div class="w-20 h-16 shrink-0 rounded-xl overflow-hidden shadow-sm border border-stone-200/60">
+<img alt="Mountain landscape view" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSjcQL3rCgb2bea74nrTV-LMQukbMOKYXQ-KuPuv-vqodEJvAOiHdtav7rvJH05bxY9-j4Ij9s1_ogc-Dz7F_kibHS8sBV9xv2oNmbJQOemo0gWNSSL5_-RS4_KNNqsI5SIZR_DHBusWGMWO_ySQygNxvzHdpQpHYos6k4utcXjW6fol3wT-a3o5d1Rofv9yXHTRy9mhG4IilxkIMHsCc7N2iUwjxdThUsIyfvln0"/>
+</div>
+<!-- Thumbnail 4 -->
+<div class="w-20 h-16 shrink-0 rounded-xl overflow-hidden shadow-sm border border-stone-200/60">
+<img alt="Lush green cliffs" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhN9k6ke6fqVptIOivSFKJnR_Dkv1xCfabLxVbpg3_xJN2sFf7pOiZaaDtLylq0M27UAHNuuAAd93NLFVzW2OchDWfSfyCHOKqQ108h2Ky9hKRJGSxDMJFMF6xNHUK2Py9wG5AaMOkatKy6T0gK-nrNlh4a_7wYESettgbQejOilg3U3eXz9LBKfyzZyuOVjOaC0wQ_C79oTsgQFbb_yDXRmMB9Gd2_aJ7U4DF120"/>
+</div>
+</div>
+</section>
+</div>
+</section>
+<!-- END: BottomSheetContent -->
+<!-- BEGIN: FixedBottomBar -->
+<!-- Fixed Primary CTA: Deep Forest Green (#0F2D20) Pill Button -->
+<footer class="absolute bottom-0 inset-x-0 bg-atlas-cream/95 backdrop-blur-md px-6 py-4 border-t border-stone-200/50 z-30" data-purpose="primary-action-bar">
+<button class="w-full py-3.5 px-6 bg-atlas-darkGreen text-white font-semibold text-sm sm:text-base rounded-full shadow-lg shadow-atlas-darkGreen/25 hover:bg-atlas-accentGreen active:scale-[0.98] transition flex items-center justify-center gap-2" type="button">
+<svg class="w-4 h-4 text-emerald-400 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Mark as Visited</span>
+</button>
+</footer>
+<!-- END: FixedBottomBar -->
+</main>
+<!-- END: MobileContainer -->
+</body></html>

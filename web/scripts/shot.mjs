@@ -3,7 +3,7 @@
  * and saves screenshots to data/shots/. Uses system Edge — nothing on C:.
  *
  * Run:  node scripts/shot.mjs [baseURL]
- * Requires backend (:8000) + vite dev server (:5173) running.
+ * Requires backend (:8777) + vite dev server (:5173) running.
  */
 import puppeteer from "puppeteer-core";
 import { mkdirSync, existsSync } from "node:fs";
@@ -32,100 +32,127 @@ const origin = new URL(BASE).origin;
 await browser.defaultBrowserContext().overridePermissions(origin, ["geolocation"]);
 await page.setGeolocation({ latitude: 26.8467, longitude: 80.9462, accuracy: 10 });
 
-const username = "shot" + Math.floor(Math.random() * 1e6);
+page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+page.on("pageerror", (err) => console.log("PAGE ERR:", err.message));
+page.on("requestfailed", (req) => console.log("REQ FAILED:", req.url(), req.failure()?.errorText));
+
+const username = "expedition" + Math.floor(Math.random() * 1e6);
 const shot = (name) => page.screenshot({ path: `${OUT}/${name}.png` });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// 1 — auth screen
+console.log("Navigating to", BASE);
 await page.goto(BASE, { waitUntil: "networkidle2", timeout: 60000 });
 await sleep(1500);
+
+// 1 — auth screen
 await shot("01-auth");
+console.log("Captured 01-auth");
 
 // 2 — register
-await page.type('input[placeholder="Username"]', username);
-await page.type('input[placeholder="Email"]', `${username}@example.com`);
-await page.type('input[placeholder^="Password"]', "shotshot123");
+await page.type('input[placeholder*="Username"]', username);
+await page.type('input[placeholder*="Email"]', `${username}@example.com`);
+await page.type('input[type="password"]', "password123");
 await page.click("button[type=submit]");
 await page.waitForSelector("h2", { timeout: 15000 });
 await sleep(800);
 await shot("02-onboarding-1");
+console.log("Captured 02-onboarding-1");
 
-// 3 — onboarding step 2 (hexes lighting up)
-const nextBtn = await page.waitForSelector("button.btn-brand", { timeout: 5000 });
-await nextBtn.click();
-await sleep(1600);
-await shot("03-onboarding-2");
-
-// 4 — finish onboarding, land on the map (click the CTA only while onboarding is up)
-for (let i = 0; i < 4; i++) {
-  const b = await page.$('[data-onboarding] button.btn-brand');
+// 3 — finish onboarding
+while (await page.$('[data-onboarding]')) {
+  const b = await page.$('[data-onboarding] button');
   if (!b) break;
   await b.click();
+  await sleep(900);
+}
+console.log("Onboarding completed, waiting for map canvas...");
+await page.waitForFunction(() => window.__map && window.__map.isStyleLoaded(), { timeout: 30000 });
+await sleep(3500);
+
+// 4 — Map screen: HUD + Controls + 3-Stat capsule + BottomNav
+await shot("04-map-screen");
+console.log("Captured 04-map-screen");
+
+// 5 — Explore Nearby sheet (via Explore tab in BottomNav)
+const exploreTab = await page.$('button[aria-label="Explore nearby discoveries"]');
+if (exploreTab) {
+  await exploreTab.click();
+  await sleep(1500);
+  await shot("05-nearby-sheet");
+  console.log("Captured 05-nearby-sheet");
+
+  // click the first discovery card to open the Place Details sheet
+  const firstCard = await page.waitForSelector('article.parchment-card', { timeout: 5000 }).catch(() => null);
+  if (firstCard) {
+    await firstCard.click();
+    await sleep(1500);
+    await shot("06-place-details-sheet");
+    console.log("Captured 06-place-details-sheet");
+
+    // Close detail sheet
+    const closeBtn = await page.$('section[aria-label="Discovery Detail"] button[aria-label="Close"]');
+    if (closeBtn) await closeBtn.click();
+    else await page.keyboard.press("Escape");
+    await sleep(700);
+  }
+
+  // Close nearby sheet
+  const closeNearby = await page.$('section[aria-label="Explore Nearby"] button[aria-label="Close"]');
+  if (closeNearby) await closeNearby.click();
+  else await page.keyboard.press("Escape");
   await sleep(700);
 }
-await page.waitForFunction(() => window.__map && window.__map.isStyleLoaded(), { timeout: 30000 });
-// wait for first ping → unlock → XP chip
-await sleep(6500);
-await shot("04-map-first-unlock");
 
-// 5 — open a discovery sheet by clicking a visible pin (before walking away)
-const diag = await page.evaluate(() => {
-  const m = window.__map;
-  const feats = m.querySourceFeatures("discoveries") ?? [];
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const proj = feats.map((f) => ({ f, p: m.project(f.geometry.coordinates) }));
-  const visible = proj.filter(({ p }) => p.x > 40 && p.x < w - 40 && p.y > 120 && p.y < h - 260);
-  return { total: feats.length, visible: visible.length, center: m.getCenter(), zoom: m.getZoom() };
-});
-console.log("pins:", JSON.stringify(diag));
-const pt = await page.evaluate(() => {
-  const m = window.__map;
-  const feats = m.querySourceFeatures("discoveries") ?? [];
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const visible = feats
-    .map((f) => ({ f, p: m.project(f.geometry.coordinates) }))
-    .filter(({ p }) => p.x > 40 && p.x < w - 40 && p.y > 120 && p.y < h - 260);
-  if (visible.length === 0) return null;
-  const { p } = visible[0];
-  return { x: p.x, y: p.y };
-});
-if (pt) {
-  await page.mouse.click(pt.x, pt.y);
+// 6 — World Cities sheet (via Cities tab in BottomNav)
+const citiesTab = await page.$('button[aria-label="World cities"]');
+if (citiesTab) {
+  await citiesTab.click();
   await sleep(1200);
-  await shot("06-discovery-sheet");
-  await page.keyboard.press("Escape");
-  await page.mouse.click(10, 300); // dismiss any overlay
-  await sleep(600);
-} else {
-  console.log("no discovery pins rendered");
+  await shot("07-world-cities-sheet");
+  console.log("Captured 07-world-cities-sheet");
+
+  const closeCities = await page.$('section[aria-label="World Expeditions"] button[aria-label="Close"]');
+  if (closeCities) await closeCities.click();
+  else await page.keyboard.press("Escape");
+  await sleep(700);
 }
 
-// 6 — simulate a walk (~110 km/h so the server's speed check accepts it)
+// 7 — Profile sheet (via Profile tab in BottomNav)
+const profileTab = await page.$('button[aria-label="Explorer profile"]');
+if (profileTab) {
+  await profileTab.click();
+  await sleep(1500);
+  await shot("08-profile-sheet");
+  console.log("Captured 08-profile-sheet");
+
+  const closeProfile = await page.$('section[aria-label="Explorer Profile"] button[aria-label="Close"]');
+  if (closeProfile) await closeProfile.click();
+  else await page.keyboard.press("Escape");
+  await sleep(700);
+}
+
+// 8 — Simulate exploration walk to trigger cell unlocks and map reveal
+console.log("Simulating exploration walk...");
 const WALK = [
   [26.8500, 80.9502],
   [26.8530, 80.9540],
   [26.8562, 80.9575],
   [26.8595, 80.9610],
   [26.8628, 80.9648],
-  [26.8660, 80.9685],
 ];
 for (const [lat, lng] of WALK) {
-  await page.setGeolocation({ latitude: lat, longitude: lng, accuracy: 9 });
-  await sleep(12000);
+  await page.setGeolocation({ latitude: lat, longitude: lng, accuracy: 8 });
+  await sleep(5000);
 }
-// pan the camera to where the walker ended up, wider view of the revealed cluster
+
 await page.evaluate(() => {
-  window.__map.easeTo({ center: [80.9605, 26.8600], zoom: 14.4, duration: 1600 });
+  if (window.__map) {
+    window.__map.easeTo({ center: [80.9605, 26.8600], zoom: 14.8, duration: 1200 });
+  }
 });
-await sleep(2200);
-await shot("05-map-explored");
+await sleep(2000);
+await shot("09-map-explored-reveal");
+console.log("Captured 09-map-explored-reveal");
 
-// 7 — profile
-await page.evaluate(() => document.querySelector('button[aria-label="Profile"]')?.click());
-await sleep(1000);
-await shot("07-profile");
-
-console.log("username:", username);
+console.log("Visual QA completed successfully! Explorer:", username);
 await browser.close();

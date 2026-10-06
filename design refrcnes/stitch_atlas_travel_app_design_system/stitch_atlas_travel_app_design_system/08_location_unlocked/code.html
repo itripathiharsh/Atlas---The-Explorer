@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Location Unlocked</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            atlas: {
+              dark: '#071714',
+              forest: '#132822',
+              cream: '#EFECE6',
+              gold: '#E5A93C',
+              'gold-light': '#FAD67B',
+              surface: 'rgba(255, 255, 255, 0.08)'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+<!-- Custom Styles for Hexagon Clip and Ambient Glows -->
+<style data-purpose="custom-effects">
+    /* Hexagonal clip-path shape */
+    .hexagon-shape {
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    /* Ambient pulse & glow animations */
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 0.65; transform: scale(1); }
+      50% { opacity: 0.95; transform: scale(1.04); }
+    }
+
+    .ambient-glow {
+      animation: pulse-subtle 4s ease-in-out infinite;
+    }
+
+    /* Fine golden particle sparkle simulation */
+    .gold-radial-light {
+      background: radial-gradient(circle at center, rgba(235, 175, 65, 0.45) 0%, rgba(200, 140, 40, 0.15) 45%, rgba(7, 23, 20, 0) 70%);
+    }
+  </style>
+</head>
+<body class="bg-atlas-dark text-atlas-cream font-sans min-h-screen flex items-center justify-center p-0 md:p-4 selection:bg-atlas-gold selection:text-atlas-dark antialiased">
+<!-- BEGIN: MobileContainer -->
+<!-- Mimics an iOS Device Frame (390 x 844 aspect) -->
+<div class="relative w-full max-w-[400px] h-[100dvh] max-h-[880px] bg-atlas-dark overflow-hidden flex flex-col justify-between shadow-2xl md:rounded-[44px] border border-white/5" data-purpose="mobile-viewport">
+<!-- BEGIN: AtmosphericBackground -->
+<div class="absolute inset-0 pointer-events-none z-0" data-purpose="background-layers">
+<!-- Dark mountain aesthetic backdrop gradient -->
+<div class="absolute inset-0 bg-gradient-to-b from-[#0a201b] via-[#081814] to-[#040e0c]"></div>
+<!-- Mountain silhouettes using layered SVG vectors -->
+<div class="absolute inset-x-0 bottom-1/3 opacity-30 h-64 overflow-hidden">
+<svg class="w-full h-full text-[#112d26] fill-current" preserveaspectratio="none" viewbox="0 0 500 250">
+<polygon points="0,250 80,140 180,210 270,110 390,190 500,120 500,250"></polygon>
+</svg>
+</div>
+<div class="absolute inset-x-0 bottom-1/4 opacity-40 h-72 overflow-hidden">
+<svg class="w-full h-full text-[#0a1e19] fill-current" preserveaspectratio="none" viewbox="0 0 500 250">
+<polygon points="0,250 120,120 220,180 340,90 440,160 500,100 500,250"></polygon>
+</svg>
+</div>
+<!-- Glowing Center Ambient Sun/Exploration Aura -->
+<div class="ambient-glow absolute top-[36%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 gold-radial-light blur-2xl rounded-full"></div>
+<!-- Golden Floating Bokeh Dots -->
+<div class="absolute top-[28%] left-[22%] w-1.5 h-1.5 bg-atlas-gold-light rounded-full opacity-60 blur-[0.5px]"></div>
+<div class="absolute top-[22%] right-[24%] w-2 h-2 bg-atlas-gold rounded-full opacity-50 blur-[0.5px]"></div>
+<div class="absolute top-[48%] left-[16%] w-1 h-1 bg-atlas-gold-light rounded-full opacity-70"></div>
+<div class="absolute top-[44%] right-[18%] w-1.5 h-1.5 bg-atlas-gold rounded-full opacity-70"></div>
+</div>
+<!-- END: AtmosphericBackground -->
+<!-- BEGIN: iOSStatusBar -->
+<header class="relative z-20 flex justify-between items-center px-7 pt-4 pb-2 text-atlas-cream/90 text-sm font-semibold tracking-tight" data-purpose="status-bar">
+<span>9:41</span>
+<!-- Close / Back Button -->
+<button aria-label="Dismiss screen" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 backdrop-blur-md transition-all text-white/80" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</button>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: CelebrationHeroSection -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-2 pb-6" data-purpose="hero-celebration">
+<!-- Hexagonal Landmark Emblem -->
+<div class="relative flex items-center justify-center my-auto" data-purpose="hexagon-badge-container">
+<!-- Radiant Background Halo Burst -->
+<div class="absolute inset-0 scale-125 bg-amber-500/20 blur-xl rounded-full"></div>
+<!-- Radiating Geometric Crosshair Lines -->
+<div class="absolute -inset-6 flex items-center justify-center pointer-events-none opacity-40">
+<div class="w-full h-[1px] bg-gradient-to-r from-transparent via-atlas-gold to-transparent"></div>
+<div class="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-atlas-gold to-transparent"></div>
+</div>
+<!-- Outer Hexagon Border Layer -->
+<div class="relative w-56 h-64 p-[3px] bg-gradient-to-b from-atlas-gold-light via-atlas-gold to-amber-700/60 hexagon-shape flex items-center justify-center filter drop-shadow-[0_10px_25px_rgba(229,169,60,0.35)]">
+<!-- Inner Hexagon Gap / Border Framing -->
+<div class="w-full h-full p-[3px] bg-atlas-dark hexagon-shape flex items-center justify-center">
+<!-- Hexagonal Image Holder with Scenic Sunset Point Backdrop -->
+<div class="relative w-full h-full hexagon-shape overflow-hidden">
+<img alt="Sunset Point mountain landscape illuminated with golden sunlight" class="w-full h-full object-cover object-center scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPZfn-PJQZfsY2_fyYEZhzsQnY9s5F27453YmnzRs1RHLtgeF-UR7XzqttRcdL6U84osXeqNW1dqSZcI7vYjmFFviSp-n5fTeaBYwzppSZ1vQpBQMUJcay4QgRzFDXr5-edSBSUtj3fXy-KF4yakIZ3OszHqCZCIfKews7QbWslLEdqtABXwRLXsnX5cBKGVGTqKYWr-bnp1xyEgHx4D4eVuUzm6NV6XMyxw7lhj8"/>
+<!-- Warm Sunset Golden Gradient Filter Over Image -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-amber-500/20"></div>
+<!-- Center Explorer Icon Overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-atlas-gold/40 flex items-center justify-center text-atlas-gold shadow-lg">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Typography Callout and Milestone Details -->
+<section class="text-center w-full mt-4 mb-2 flex flex-col items-center" data-purpose="reward-details">
+<!-- Milestone Headline -->
+<h1 class="text-[26px] font-bold tracking-tight text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]">
+          Location Unlocked!
+        </h1>
+<!-- Landmark Subtitle -->
+<p class="text-base text-atlas-cream/75 mt-1 font-medium tracking-wide">
+          Sunset Point
+        </p>
+<!-- XP Reward Badge -->
+<div class="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-atlas-gold/15 border border-atlas-gold/40 shadow-[0_0_16px_rgba(229,169,60,0.25)]">
+<svg class="w-4 h-4 text-atlas-gold" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v3H6a1 1 0 100 2h3v3a1 1 0 102 0v-3h3a1 1 0 100-2h-3V6z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-lg font-bold tracking-wide text-atlas-gold">
+            +50 XP
+          </span>
+</div>
+</section>
+</main>
+<!-- END: CelebrationHeroSection -->
+<!-- BEGIN: ActionButtonsFooter -->
+<footer class="relative z-10 px-6 pb-9 pt-2 space-y-3" data-purpose="action-buttons">
+<!-- Primary Action: View on Map -->
+<button class="w-full py-4 px-6 rounded-full bg-atlas-cream hover:bg-white text-atlas-dark font-semibold text-[15px] tracking-tight shadow-lg shadow-black/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="button">
+<svg class="w-4 h-4 text-atlas-forest" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+<line x1="8" x2="8" y1="2" y2="18"></line>
+<line x1="16" x2="16" y1="6" y2="22"></line>
+</svg>
+        View on Map
+      </button>
+<!-- Secondary Action: Share Discovery -->
+<button class="w-full py-3.5 px-6 rounded-full bg-white/10 hover:bg-white/15 text-white/90 font-medium text-[15px] tracking-tight backdrop-blur-md border border-white/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="button">
+<svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="18" cy="5" r="3"></circle>
+<circle cx="6" cy="12" r="3"></circle>
+<circle cx="18" cy="19" r="3"></circle>
+<line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+<line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+</svg>
+        Share
+      </button>
+<!-- Home Indicator Line for iOS devices -->
+<div class="pt-2 flex justify-center">
+<div class="w-32 h-1 bg-white/25 rounded-full"></div>
+</div>
+</footer>
+<!-- END: ActionButtonsFooter -->
+</div>
+<!-- END: MobileContainer -->
+</body></html>

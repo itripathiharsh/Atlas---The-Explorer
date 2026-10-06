@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Friends Leaderboard</title>
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            parchment: '#EFECE6',
+            atlas: {
+              forest: '#1E3D34',
+              accent: '#235347',
+              dark: '#132A24',
+              gold: '#D4AF37',
+              sand: '#E6E1D8',
+              card: '#F6F4F0',
+              muted: '#7A8682',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="base-styles">
+    /* Native iOS mobile frame styling & scrollbar removal */
+    body {
+      background-color: #121615;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style data-purpose="elevation-effects">
+    /* Subtle shadows resembling ATLAS clean mobile UI design */
+    .shadow-soft {
+      box-shadow: 0 4px 20px -2px rgba(27, 46, 38, 0.06);
+    }
+    .shadow-floating-bar {
+      box-shadow: 0 -4px 24px 0 rgba(20, 36, 30, 0.05);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-4">
+<!-- BEGIN: MobileDeviceFrame -->
+<main class="w-full max-w-[412px] h-[100dvh] max-h-[890px] bg-parchment flex flex-col relative overflow-hidden sm:rounded-[44px] sm:shadow-2xl sm:border-[8px] sm:border-[#2A312F]">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 px-7 flex justify-between items-center z-30 select-none" data-purpose="ios-status-bar">
+<span class="text-[14px] font-semibold tracking-tight text-atlas-dark">9:41</span>
+<!-- Dynamic Island / Notch visual indicator -->
+<div class="w-24 h-4 bg-black/5 rounded-full hidden sm:block"></div>
+<div class="flex items-center gap-1.5">
+<!-- Cellular Signal Icon -->
+<svg class="w-4 h-3 text-atlas-dark fill-current" viewbox="0 0 17 12">
+<rect height="3" rx="0.5" width="3" x="0" y="9"></rect>
+<rect height="6" rx="0.5" width="3" x="4.5" y="6"></rect>
+<rect height="9" rx="0.5" width="3" x="9" y="3"></rect>
+<rect height="12" rx="0.5" width="3" x="13.5" y="0"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-3.5 h-3 text-atlas-dark fill-current ml-0.5" viewbox="0 0 16 12">
+<path d="M8 9.6a1.6 1.6 0 100 3.2 1.6 1.6 0 000-3.2zm-4.4-3.2a6.2 6.2 0 018.8 0 .8.8 0 101.1-1.1 7.8 7.8 0 00-11 0 .8.8 0 001.1 1.1zm-2.8-2.8a10.2 10.2 0 0114.4 0 .8.8 0 101.1-1.1 11.8 11.8 0 00-16.6 0 .8.8 0 101.1 1.1z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="w-6 h-3 border border-atlas-dark/80 rounded-[3px] p-[1px] flex items-center ml-0.5">
+<div class="h-full w-4 bg-atlas-dark rounded-[1.5px]"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: MainContentArea -->
+<div class="flex-1 flex flex-col px-6 pt-3 overflow-y-auto hide-scrollbar pb-24" data-purpose="scrollable-content">
+<!-- Header Title -->
+<div class="flex items-center justify-between mb-4">
+<h1 class="text-2xl font-bold tracking-tight text-atlas-dark">Friends</h1>
+<!-- Subtle search/filter button -->
+<button aria-label="Search friends" class="w-9 h-9 rounded-full bg-atlas-sand/50 flex items-center justify-center text-atlas-dark active:scale-95 transition-transform" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</button>
+</div>
+<!-- BEGIN: SegmentedControl -->
+<!-- 3-Way Pill Switcher: Friends | Leaderboard (Active) | Activity -->
+<nav aria-label="Friends Navigation" class="w-full bg-[#E5E1D9] p-1 rounded-full flex items-center justify-between mb-5 select-none" data-purpose="tab-switcher">
+<button class="flex-1 py-2 text-[13px] font-medium text-atlas-muted text-center rounded-full hover:text-atlas-dark transition-all" type="button">
+          Friends
+        </button>
+<button class="flex-1 py-2 text-[13px] font-semibold text-white bg-atlas-forest shadow-sm text-center rounded-full transition-all" type="button">
+          Leaderboard
+        </button>
+<button class="flex-1 py-2 text-[13px] font-medium text-atlas-muted text-center rounded-full hover:text-atlas-dark transition-all" type="button">
+          Activity
+        </button>
+</nav>
+<!-- END: SegmentedControl -->
+<!-- Subheader Info -->
+<div class="flex items-center justify-between px-2 mb-3 text-[12px] font-semibold tracking-wider uppercase text-atlas-muted/80">
+<span>Rank &amp; Explorer</span>
+<span>Explored</span>
+</div>
+<!-- BEGIN: LeaderboardList -->
+<section aria-label="Leaderboard Rankings" class="space-y-2.5" data-purpose="leaderboard-ranking-list">
+<!-- Rank 1: Aditi (Top Explorer with Crown) -->
+<article class="bg-atlas-card rounded-2xl p-3.5 flex items-center justify-between shadow-soft border border-white/60 transition-transform active:scale-[0.99]" data-purpose="leaderboard-item">
+<div class="flex items-center gap-3">
+<!-- Rank Indicator & Crown -->
+<div class="w-7 flex flex-col items-center justify-center">
+<svg class="w-4 h-4 text-amber-500 fill-current mb-0.5" viewbox="0 0 24 24">
+<path d="M2.5 19h19a1 1 0 00.9-1.45l-3.5-7.5a1 1 0 00-1.6.1L13.8 15l-3.2-6.4a1 1 0 00-1.78 0L5.7 15 2.2 10.15A1 1 0 00.6 11.2l2.1 6.35A1 1 0 002.5 19z"></path>
+</svg>
+<span class="text-xs font-bold text-amber-600 leading-none">1</span>
+</div>
+<!-- Avatar -->
+<div class="relative">
+<img alt="Avatar of Aditi" class="w-12 h-12 rounded-full object-cover ring-2 ring-amber-400/60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMK5RpwPCtv1mU1YGaqVcNRO0lNjU6SM-GpxPpnzzakjE0kuTeaKlWRor905R4NRXYCg7QUqsMko3bW0mW8hxtiHgGt0xwfgScpMqhcPMm1480QP9yGrBTHponjV1SCOJbrgnZscqMJCLEPic15dqMotcaGl3Hp99O12yuRNsrcQbv3pZQuU2qNwuycEBTcFkS3uW1OipFe3HPiHmnRdvJW9-6KAOVOE5_rEA8_EQ"/>
+<span class="absolute -bottom-1 -right-1 bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full border border-white">Top</span>
+</div>
+<!-- User Info -->
+<div class="ml-1">
+<h2 class="text-[15px] font-bold text-atlas-dark leading-tight">Aditi</h2>
+<p class="text-[12px] text-atlas-muted mt-0.5">182 places</p>
+</div>
+</div>
+<!-- Percentage -->
+<div class="text-right">
+<span class="text-[15px] font-bold text-atlas-dark">28%</span>
+</div>
+</article>
+<!-- Rank 2: Rohan -->
+<article class="bg-atlas-card rounded-2xl p-3.5 flex items-center justify-between shadow-soft border border-white/60 transition-transform active:scale-[0.99]" data-purpose="leaderboard-item">
+<div class="flex items-center gap-3">
+<!-- Rank Indicator -->
+<div class="w-7 text-center">
+<span class="text-sm font-bold text-atlas-muted">2</span>
+</div>
+<!-- Avatar -->
+<div class="relative">
+<img alt="Avatar of Rohan" class="w-12 h-12 rounded-full object-cover ring-1 ring-black/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDakEmaKuMc5ONv8TcGUv3S5v9dxLRPhdheS8-O_i-Cnc_4WMyZXUuNY-sKJW0uoXBVD_pQocHQnBjKXb0q7Hm6YWc8qMK7Uc0dTVH-ie5aO90Pve90VQvAOf5snwiv5vkU3te7zKkmu_VbYLluiQc9NLRamKbfuMBXnIzqFMse-aFbtr6joGXv_3kaHSxQZWExAy1PHtGsEs67-zA69FC9tjms9SUc_94u66AW458"/>
+</div>
+<!-- User Info -->
+<div class="ml-1">
+<h2 class="text-[15px] font-bold text-atlas-dark leading-tight">Rohan</h2>
+<p class="text-[12px] text-atlas-muted mt-0.5">120 places</p>
+</div>
+</div>
+<!-- Percentage -->
+<div class="text-right">
+<span class="text-[15px] font-bold text-atlas-dark">21%</span>
+</div>
+</article>
+<!-- Rank 3: Current User (Harsh / 'You' - Highlighted Card) -->
+<article class="bg-[#E4ECE7] rounded-2xl p-3.5 flex items-center justify-between shadow-soft border-2 border-atlas-forest/40 ring-1 ring-atlas-forest/10 transition-transform active:scale-[0.99] relative overflow-hidden" data-purpose="current-user-item">
+<!-- Subtle Badge Tag -->
+<div class="absolute top-0 right-0 bg-atlas-forest/10 text-atlas-forest text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-bl-lg">
+            Current Position
+          </div>
+<div class="flex items-center gap-3">
+<!-- Rank Indicator -->
+<div class="w-7 text-center">
+<span class="text-sm font-extrabold text-atlas-forest">3</span>
+</div>
+<!-- Avatar -->
+<div class="relative">
+<img alt="Avatar of Harsh" class="w-12 h-12 rounded-full object-cover ring-2 ring-atlas-forest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKU3SCCkqKZ0qEVMt1fGsRduCVIyMjBAKEswlRBcf2FvtONvMR2pyCLpmYSiMyophO5R6EyNSUZgtVEezHoFvmFOo6-r91SycvdZ-PyDYVaql0_GERXerSMoQlc5GKP8jxXHIzF5MYQg7fq6BHfb4LFlrABMHtcskcmHD4b0vdALtDL2KOr5UVKjnEDNCtxgwQOTLfydj3upS0qE0QoMdOEQa38lyda4bYpWRVVbc"/>
+<span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-atlas-forest border-2 border-white rounded-full"></span>
+</div>
+<!-- User Info -->
+<div class="ml-1">
+<div class="flex items-center gap-1.5">
+<h2 class="text-[15px] font-extrabold text-atlas-dark leading-tight">You</h2>
+<span class="text-[11px] font-medium bg-atlas-forest text-white px-1.5 py-0.5 rounded-md leading-none">Lv. 12</span>
+</div>
+<p class="text-[12px] font-medium text-atlas-forest mt-0.5">48 places</p>
+</div>
+</div>
+<!-- Percentage -->
+<div class="text-right pt-2">
+<span class="text-[16px] font-extrabold text-atlas-forest">12%</span>
+</div>
+</article>
+<!-- Rank 4: Neha -->
+<article class="bg-atlas-card rounded-2xl p-3.5 flex items-center justify-between shadow-soft border border-white/60 transition-transform active:scale-[0.99]" data-purpose="leaderboard-item">
+<div class="flex items-center gap-3">
+<!-- Rank Indicator -->
+<div class="w-7 text-center">
+<span class="text-sm font-bold text-atlas-muted">4</span>
+</div>
+<!-- Avatar -->
+<div class="relative">
+<img alt="Avatar of Neha" class="w-12 h-12 rounded-full object-cover ring-1 ring-black/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe1vkKsKixJaFeu0ztAEPWi3ry3yh02gEt-vUyTzjfVYWc-cI8VIR1azK1PuWk04O4oPQ2Oy_9Y_X1ehhHtjUWDt9PstRTP_8bC8nXreF4pOmKq5diQEolM8J9Ui0p15NvudC7cyRdVuiXY3lqB4fiY6P-B2wmen-1GrgnVxKNXiDAXHlJfmvrjhPWkYsLjyix6kq88kXIJsDLNKAuxLj8dPvmYTPwvdN3-SArGTI"/>
+</div>
+<!-- User Info -->
+<div class="ml-1">
+<h2 class="text-[15px] font-bold text-atlas-dark leading-tight">Neha</h2>
+<p class="text-[12px] text-atlas-muted mt-0.5">41 places</p>
+</div>
+</div>
+<!-- Percentage -->
+<div class="text-right">
+<span class="text-[15px] font-bold text-atlas-dark">10%</span>
+</div>
+</article>
+<!-- Rank 5: Arjun -->
+<article class="bg-atlas-card rounded-2xl p-3.5 flex items-center justify-between shadow-soft border border-white/60 transition-transform active:scale-[0.99]" data-purpose="leaderboard-item">
+<div class="flex items-center gap-3">
+<!-- Rank Indicator -->
+<div class="w-7 text-center">
+<span class="text-sm font-bold text-atlas-muted">5</span>
+</div>
+<!-- Avatar -->
+<div class="relative">
+<img alt="Avatar of Arjun" class="w-12 h-12 rounded-full object-cover ring-1 ring-black/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEcNCCD8ame8_kuD25CA59paS_ZhR6_dWJ5Nohcb8_mc5fkUxhiEqROyDBmqdBWc6BNzGO7PZG-GUaToNFVaKqWdoEttzHzl0US8hKYJ5mN6VrDlrCm7bsqTCHwMFJvMGx5CS59c0RI2c1ggzXistnRe8jLmGVWHlAH3B42Ha-MXZZhp3aEKzmMuCQ7texcUTGyuBmfJf5WWY5QgvAawhXTwYIer7u0YJwJRuLt7s"/>
+</div>
+<!-- User Info -->
+<div class="ml-1">
+<h2 class="text-[15px] font-bold text-atlas-dark leading-tight">Arjun</h2>
+<p class="text-[12px] text-atlas-muted mt-0.5">32 places</p>
+</div>
+</div>
+<!-- Percentage -->
+<div class="text-right">
+<span class="text-[15px] font-bold text-atlas-dark">8%</span>
+</div>
+</article>
+</section>
+<!-- END: LeaderboardList -->
+</div>
+<!-- END: MainContentArea -->
+<!-- BEGIN: BottomNavigation -->
+<!-- Persistent 5-Tab iOS Navigation Bar -->
+<footer class="absolute bottom-0 inset-x-0 bg-parchment/95 backdrop-blur-md border-t border-[#DFDBD3] px-6 pt-2 pb-6 z-40 shadow-floating-bar" data-purpose="bottom-navigation-bar">
+<div class="flex items-center justify-between max-w-sm mx-auto">
+<!-- 1. Home Tab -->
+<a class="flex flex-col items-center group w-12 text-atlas-muted hover:text-atlas-dark transition-colors" href="#home">
+<svg class="w-5 h-5 stroke-[1.8]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Home</span>
+</a>
+<!-- 2. Explore Tab -->
+<a class="flex flex-col items-center group w-12 text-atlas-muted hover:text-atlas-dark transition-colors" href="#explore">
+<svg class="w-5 h-5 stroke-[1.8]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="M21 21l-4.35-4.35" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Explore</span>
+</a>
+<!-- 3. Central Add (+) Button -->
+<div class="flex flex-col items-center">
+<button aria-label="Add Check-in" class="w-11 h-11 -mt-4 rounded-full bg-atlas-forest text-white shadow-lg shadow-atlas-forest/30 flex items-center justify-center hover:bg-atlas-accent active:scale-95 transition-all" type="button">
+<svg class="w-6 h-6 stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<line x1="5" x2="19" y1="12" y2="12"></line>
+</svg>
+</button>
+</div>
+<!-- 4. Social Tab (Active) -->
+<a class="flex flex-col items-center w-12 text-atlas-forest transition-colors" href="#social">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path>
+</svg>
+<span class="text-[10px] font-bold mt-1">Social</span>
+</a>
+<!-- 5. Profile Tab -->
+<a class="flex flex-col items-center group w-12 text-atlas-muted hover:text-atlas-dark transition-colors" href="#profile">
+<svg class="w-5 h-5 stroke-[1.8]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Profile</span>
+</a>
+</div>
+<!-- iOS Home Indicator -->
+<div class="w-32 h-1 bg-black/20 rounded-full mx-auto mt-3"></div>
+</footer>
+<!-- END: BottomNavigation -->
+</main>
+<!-- END: MobileDeviceFrame -->
+</body></html>

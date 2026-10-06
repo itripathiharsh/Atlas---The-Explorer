@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Splash / Welcome</title>
+<!-- Tailwind CSS v3 CDN with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#071714',
+              forest: '#0F2D20',
+              accent: '#194A36',
+              cream: '#EFECE6',
+              gold: '#D4AF37'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'Segoe UI', 'Roboto', 'sans-serif'],
+            script: ['"Brush Script MT"', 'cursive', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    /* Lock viewport to standard mobile app dimensions & safe areas */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #071714;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    /* Ambient mist and atmospheric gradients */
+    .hero-vignette {
+      background: radial-gradient(circle at 50% 40%, rgba(7, 23, 20, 0.25) 0%, rgba(7, 23, 20, 0.7) 70%, rgba(7, 23, 20, 0.95) 100%),
+                  linear-gradient(180deg, rgba(7, 23, 20, 0.85) 0%, rgba(7, 23, 20, 0.2) 30%, rgba(7, 23, 20, 0.4) 65%, rgba(7, 23, 20, 0.98) 95%);
+    }
+
+    /* Letter-spacing precision */
+    .tracking-widest-brand {
+      letter-spacing: 0.35em;
+    }
+    
+    .tracking-expanded {
+      letter-spacing: 0.22em;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-neutral-900">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="relative w-full max-w-[430px] h-[100dvh] max-h-[932px] overflow-hidden flex flex-col justify-between shadow-2xl bg-brand-dark" data-purpose="mobile-viewport-container">
+<!-- Scenic Mountain & Valley River Background Layer -->
+<div class="absolute inset-0 z-0" data-purpose="scenic-background">
+<!-- High-resolution mountain valley landscape with pine trees and winding river -->
+<img alt="Scenic mountain valley with pine forest and winding river" class="w-full h-full object-cover object-center filter brightness-[0.78] contrast-[1.12]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgKEe5-Oe9MtO5bDFyNRuTuc0y43w5RBr3TQI6n14x0otZOtQMhxL7ZgCMYl6BRVhJ2KlaCeSVYGsCikjyoc5Vao2kvLjY9ytDHbEisKaZGiYvcWKu2fb47ro0GcgGVNddWUrnxPhO_5P-Rjb7yI3UzUcoLE7m-9onphNwvD6pmXTUX5-Q8flKrrVGuItcUKuIRbugQ5x-DvCtLclfZEWtdZybgbKNZ53FkYpsPcg"/>
+<!-- Vignette and color atmospheric overlay -->
+<div class="absolute inset-0 hero-vignette pointer-events-none"></div>
+</div>
+<!-- BEGIN: iOSStatusBar -->
+<header class="relative z-20 flex items-center justify-between px-8 pt-3.5 pb-2 text-white" data-purpose="ios-status-bar">
+<!-- Time Display -->
+<div class="text-[15px] font-semibold tracking-tight text-white/95">9:41</div>
+<!-- iOS Status Icons -->
+<div class="flex items-center space-x-2 text-white/95">
+<!-- Cellular Signal -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 17 12">
+<rect height="3" rx="0.6" width="2.5" x="0" y="9"></rect>
+<rect height="5.5" rx="0.6" width="2.5" x="3.8" y="6.5"></rect>
+<rect height="8" rx="0.6" width="2.5" x="7.6" y="4"></rect>
+<rect height="11" rx="0.6" width="2.5" x="11.4" y="1"></rect>
+</svg>
+<!-- Wi-Fi Icon -->
+<svg class="w-4 h-3.5 fill-current ml-0.5" viewbox="0 0 16 12">
+<path d="M8 12a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm-3.8-3.4a5.3 5.3 0 0 1 7.6 0 .8.8 0 0 0 1.1-1.1 6.8 6.8 0 0 0-9.8 0 .8.8 0 0 0 1.1 1.1zm-2.8-2.8a9.2 9.2 0 0 1 13.2 0 .8.8 0 1 0 1.1-1.1 10.7 10.7 0 0 0-15.4 0 .8.8 0 0 0 1.1 1.1z"></path>
+</svg>
+<!-- Battery Icon -->
+<div class="w-6 h-3 border border-white/80 rounded-[4px] p-0.5 flex items-center relative ml-0.5">
+<div class="h-full w-full bg-white rounded-[2px]"></div>
+<div class="absolute -right-1 top-1 w-0.5 h-1 bg-white/80 rounded-r-sm"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: BrandCenterSection -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center px-6 -mt-8" data-purpose="brand-center-container">
+<!-- Compass & Mountain Monogram Badge -->
+<div class="relative w-36 h-36 mb-6 flex items-center justify-center" data-purpose="brand-logo-graphic">
+<!-- Golden Outer Glow -->
+<div class="absolute inset-0 rounded-full bg-brand-gold/10 blur-xl"></div>
+<!-- Rendered Vector Compass Monogram -->
+<svg class="w-full h-full relative drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]" fill="none" viewbox="0 0 160 160">
+<!-- Outer Compass Golden Dashed Circle -->
+<circle cx="80" cy="80" opacity="0.75" r="74" stroke="#D4AF37" stroke-dasharray="5 4" stroke-width="2"></circle>
+<!-- Inner Fine White Circle -->
+<circle cx="80" cy="80" opacity="0.5" r="66" stroke="#FFFFFF" stroke-width="1.2"></circle>
+<!-- Top Compass Starburst (Golden) -->
+<path d="M80 16 L85 40 L106 48 L85 54 L80 74 L75 54 L54 48 L75 40 Z" fill="#D4AF37" opacity="0.95"></path>
+<!-- Primary Stylized A-Mountain Peak (White) -->
+<path d="M80 30 L130 126 H103 L80 80 L57 126 H30 L80 30Z" fill="#FFFFFF"></path>
+<!-- Inner Mountain Shadow Triangle (Deep Forest) -->
+<path d="M80 64 L96 97 H64 L80 64Z" fill="#0F2D20"></path>
+<!-- Central Navigator Gold Star Pivot -->
+<circle cx="80" cy="80" fill="#D4AF37" r="4.5"></circle>
+<!-- Horizon Baseline Line -->
+<line opacity="0.6" stroke="#D4AF37" stroke-dasharray="3 3" stroke-width="1.5" x1="42" x2="118" y1="126" y2="126"></line>
+</svg>
+</div>
+<!-- Brand Wordmark -->
+<h1 class="text-4xl sm:text-[44px] font-black text-white tracking-[0.25em] pl-2 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] uppercase" data-purpose="brand-name">
+        ATLAS
+      </h1>
+<!-- Brand Tagline / Subtitle -->
+<div class="mt-2.5 flex items-center justify-center space-x-2 text-[11px] font-medium tracking-widest-brand text-stone-300 drop-shadow uppercase" data-purpose="brand-tagline">
+<span>EXPLORE</span>
+<span class="text-brand-gold text-[8px] opacity-80">•</span>
+<span>UNLOCK</span>
+<span class="text-brand-gold text-[8px] opacity-80">•</span>
+<span>DISCOVER</span>
+</div>
+<!-- Signature Credit -->
+<div class="mt-4 flex items-center justify-center space-x-1.5 text-stone-300/80" data-purpose="brand-signature">
+<span class="h-[1px] w-5 bg-stone-400/50"></span>
+<span class="font-serif italic text-sm tracking-wide text-stone-300/90">by HVT</span>
+<span class="h-[1px] w-5 bg-stone-400/50"></span>
+</div>
+</main>
+<!-- END: BrandCenterSection -->
+<!-- BEGIN: BottomActionContainer -->
+<footer class="relative z-10 px-6 pb-10 pt-4 flex flex-col items-center w-full" data-purpose="bottom-actions">
+<!-- Primary Action: Get Started Button -->
+<button class="w-full py-4 px-6 bg-brand-cream hover:bg-white active:scale-[0.98] transition duration-200 ease-out rounded-full shadow-[0_10px_25px_rgba(0,0,0,0.5)] flex items-center justify-center" data-purpose="get-started-button" type="button">
+<span class="text-brand-dark font-semibold text-[17px] tracking-normal">
+          Get Started
+        </span>
+</button>
+<!-- Secondary Action: Sign In Link -->
+<button class="mt-4 py-2.5 px-6 text-stone-200/90 hover:text-white active:opacity-75 transition duration-150 text-[15px] font-medium tracking-wide flex items-center justify-center" data-purpose="sign-in-button" type="button">
+        Sign In
+      </button>
+<!-- iOS Home Indicator Bar -->
+<div class="w-36 h-1 bg-white/40 rounded-full mt-5 mx-auto" data-purpose="ios-home-indicator"></div>
+</footer>
+<!-- END: BottomActionContainer -->
+</div>
+<!-- END: MobileDeviceFrame -->
+</body></html>

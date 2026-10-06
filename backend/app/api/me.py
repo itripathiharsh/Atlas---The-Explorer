@@ -27,9 +27,7 @@ def achievements(user: UserDep, db: DbDep):
     all_a = db.query(Achievement).all()
     earned = {
         ua.achievement_id: ua.earned_at
-        for ua in db.query(UserAchievement)
-        .options(joinedload(UserAchievement.achievement))
-        .filter(UserAchievement.user_id == user.id)
+        for ua in db.query(UserAchievement).filter(UserAchievement.user_id == user.id)
     }
     out = []
     for a in all_a:

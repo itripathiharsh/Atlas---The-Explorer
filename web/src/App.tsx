@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
 import { AuthProvider, useAuth } from "./state/auth";
 import { emitFx } from "./state/fx";
 import { api } from "./api/client";
@@ -11,6 +10,7 @@ import MapCanvas from "./map/MapCanvas";
 import { haversineM } from "./utils/geo";
 import HUD from "./components/HUD";
 import StatsDock from "./components/StatsDock";
+import BottomNav, { NavTab } from "./components/BottomNav";
 import AuthScreen from "./components/AuthScreen";
 import Onboarding from "./components/Onboarding";
 import DiscoverySheet from "./components/DiscoverySheet";
@@ -28,14 +28,33 @@ function Game() {
   const [onboarded, setOnboarded] = useState(
     () => localStorage.getItem(ONBOARD_KEY) === "1",
   );
+  const [activeTab, setActiveTab] = useState<NavTab>("map");
   const [selected, setSelected] = useState<Discovery | null>(null);
   const [creating, setCreating] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [nearbyOpen, setNearbyOpen] = useState(false);
+  const [cityListOpen, setCityListOpen] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+
   const [mapCenter, setMapCenter] = useState({ lat: 26.8467, lng: 80.9462 });
   const [pulse, setPulse] = useState<UnlockedCell[]>([]);
   const [merged, setMerged] = useState<GeoFC | null>(null);
-  const [flyTo, setFlyTo] = useState<{ lat: number; lng: number; zoom?: number } | null>(null);
+  const [flyTo, setFlyTo] = useState<{
+    lat: number;
+    lng: number;
+    zoom?: number;
+    bearing?: number;
+    pitch?: number;
+  } | null>(null);
+
+  const showOnboarding = !!user && !onboarded;
+  const tracking = !!user && onboarded;
+
+  const exploration = useExploration(tracking, (cells) => {
+    setPulse(cells);
+    setMerged((cur) => (cur ? mergeCells(cur, cells) : cur));
+  });
+  const geo = useGeolocation((fix) => exploration.push(fix), tracking);
 
   const gpsHint = () =>
     emitFx({
@@ -46,17 +65,6 @@ function Game() {
           : "Finding your location…",
       tone: geo.status === "denied" ? "bad" : "good",
     });
-
-  const showOnboarding = !!user && !onboarded;
-  const tracking = !!user && onboarded;
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [cityListOpen, setCityListOpen] = useState(false);
-
-  const exploration = useExploration(tracking, (cells) => {
-    setPulse(cells);
-    setMerged((cur) => (cur ? mergeCells(cur, cells) : cur));
-  });
-  const geo = useGeolocation((fix) => exploration.push(fix), tracking);
 
   // live position for check-ins — reuses the tracker, falls back to a fresh read
   const getFix = useCallback(async (): Promise<{
@@ -147,6 +155,13 @@ function Game() {
     return () => window.removeEventListener("keydown", onKey);
   }, [selected, creating, nearbyOpen, cityListOpen, profileOpen]);
 
+  // Sync active tab to map when all sheets close
+  useEffect(() => {
+    if (!nearbyOpen && !cityListOpen && !profileOpen && !creating && !selected) {
+      setActiveTab("map");
+    }
+  }, [nearbyOpen, cityListOpen, profileOpen, creating, selected]);
+
   const openDiscovery = useCallback(
     async (id: number) => {
       try {
@@ -167,8 +182,10 @@ function Game() {
 
   if (loading) {
     return (
-      <div className="grid h-full place-items-center">
-        <div className="hud-label animate-pulse">Preparing expedition…</div>
+      <div className="grid h-full place-items-center bg-[#071714]">
+        <div className="hud-label text-emerald-400 animate-pulse font-display text-sm">
+          Preparing expedition…
+        </div>
       </div>
     );
   }
@@ -176,7 +193,8 @@ function Game() {
   if (!user) return <AuthScreen />;
 
   return (
-    <div className="relative h-full overflow-hidden">
+    <div className="relative h-full overflow-hidden bg-[#071714]">
+      {/* 1. Map Canvas Layer */}
       <MapCanvas
         explored={merged}
         pulse={pulse}
@@ -186,61 +204,94 @@ function Game() {
         flyTo={flyTo}
         onMove={setMapCenter}
         categoryFilter={categoryFilter}
+        selectedId={selected?.id ?? null}
       />
 
-      <HUD user={user} stats={stats.data} onProfile={() => setProfileOpen(true)} />
+      {/* 2. Top HUD Bar */}
+      <HUD
+        user={user}
+        stats={stats.data}
+        onProfile={() => {
+          setActiveTab("profile");
+          setProfileOpen(true);
+        }}
+        onSearch={() => {
+          setActiveTab("explore");
+          setNearbyOpen(true);
+        }}
+        onCityList={() => {
+          setActiveTab("cities");
+          setCityListOpen(true);
+        }}
+        categoryFilter={categoryFilter}
+        onSelectCategory={setCategoryFilter}
+        categories={CATEGORIES}
+      />
 
-      {/* category filter chips */}
-      <div className="absolute inset-x-0 top-[86px] z-20 flex gap-1.5 overflow-x-auto px-3 pb-1 [scrollbar-width:none]">
-        <button onClick={() => setCategoryFilter(null)} className={`chip shrink-0 px-3 py-1.5 ${categoryFilter === null ? "active" : ""}`}>
-          All
-        </button>
-        {CATEGORIES.map((c) => (
-          <button
-            key={c}
-            onClick={() => setCategoryFilter(categoryFilter === c ? null : c)}
-            className={`chip shrink-0 px-3 py-1.5 ${categoryFilter === c ? "active" : ""}`}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
-
+      {/* 3. Floating Map Controls & Docked 3-Stat Banner */}
       <StatsDock
         stats={stats.data}
         summary={summary.data}
-        onCityList={() => setCityListOpen(true)}
+        onCityList={() => {
+          setActiveTab("cities");
+          setCityListOpen(true);
+        }}
         onRecenter={() => {
           if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
           else gpsHint();
         }}
-        onNearby={() => setNearbyOpen(true)}
-        onNearbyList={() => setNearbyOpen(true)}
+        onNearbyList={() => {
+          setActiveTab("explore");
+          setNearbyOpen(true);
+        }}
+        onAlignNorth={() => {
+          if (geo.pos) {
+            setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, bearing: 0, pitch: 0 });
+          } else {
+            setFlyTo({ lat: mapCenter.lat, lng: mapCenter.lng, bearing: 0, pitch: 0 });
+          }
+        }}
       />
 
-      {/* add discovery */}
-      <button
-        onClick={() => (geo.pos ? setCreating(true) : gpsHint())}
-        className="glass absolute right-3 top-1/2 z-20 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-2xl transition hover:border-brand/50"
-        aria-label="Add discovery"
-        title="Add a discovery here"
-      >
-        <Plus size={20} className="text-brand" />
-      </button>
+      {/* 4. Persistent 5-Tab Bottom Navigation */}
+      <BottomNav
+        activeTab={activeTab}
+        onSelectTab={(tab) => {
+          setActiveTab(tab);
+          if (tab === "map") {
+            setSelected(null);
+            setNearbyOpen(false);
+            setCityListOpen(false);
+            setProfileOpen(false);
+            setCreating(false);
+            if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
+          } else if (tab === "explore") {
+            setNearbyOpen(true);
+          } else if (tab === "create") {
+            if (geo.pos) setCreating(true);
+            else gpsHint();
+          } else if (tab === "cities") {
+            setCityListOpen(true);
+          } else if (tab === "profile") {
+            setProfileOpen(true);
+          }
+        }}
+      />
 
       {/* GPS status pill */}
       {tracking && geo.status !== "live" && (
-        <div className="glass absolute left-3 top-[76px] z-20 max-w-[75%] rounded-2xl px-3.5 py-2">
-          <span className="hud-label leading-relaxed">
+        <div className="glass absolute left-3 top-[108px] z-20 max-w-[75%] rounded-2xl px-3.5 py-2 border border-emerald-950/70 shadow-lg">
+          <span className="hud-label text-stone-300 leading-relaxed text-[10px]">
             {geo.status === "denied"
               ? "Location blocked — allow it from the address bar, then reload"
               : geo.status === "error"
-                ? "No GPS fix yet — try Chrome/Edge, or check Windows location settings"
-                : "Finding your location…"}
+                ? "Acquiring GPS fix — step outdoors for best accuracy"
+                : "Locating explorer on expedition grid…"}
           </span>
         </div>
       )}
 
+      {/* Onboarding Dialog */}
       {showOnboarding && (
         <Onboarding
           onDone={() => {
@@ -251,6 +302,7 @@ function Game() {
         />
       )}
 
+      {/* Discovery Detail Sheet */}
       {selectedWithDist && (
         <DiscoverySheet
           discovery={selectedWithDist}
@@ -259,6 +311,8 @@ function Game() {
           visitRadiusM={gameConfig.data?.visit_radius_m ?? 150}
         />
       )}
+
+      {/* Nearby Discoveries Sheet */}
       {nearbyOpen && (
         <NearbySheet
           center={mapCenter}
@@ -270,10 +324,12 @@ function Game() {
           }}
           onJumpLucknow={() => {
             setFlyTo({ lat: 26.8467, lng: 80.9462, zoom: 13.5 });
-            emitFx({ kind: "toast", text: "Flying to Lucknow — where the story starts" });
+            emitFx({ kind: "toast", text: "Flying to Lucknow expedition center" });
           }}
         />
       )}
+
+      {/* World Cities Sheet */}
       {cityListOpen && (
         <CityListSheet
           summary={summary.data}
@@ -284,6 +340,8 @@ function Game() {
           }}
         />
       )}
+
+      {/* Create Discovery Sheet */}
       {creating && geo.pos && (
         <CreateDiscoverySheet
           pos={{ lat: geo.pos.lat, lng: geo.pos.lng, accuracy: geo.pos.accuracy }}
@@ -295,8 +353,11 @@ function Game() {
           }}
         />
       )}
+
+      {/* Profile Sheet */}
       {profileOpen && <ProfileSheet user={user} onClose={() => setProfileOpen(false)} />}
 
+      {/* Visual FX Toasts & XP Popups */}
       <XPFX />
     </div>
   );

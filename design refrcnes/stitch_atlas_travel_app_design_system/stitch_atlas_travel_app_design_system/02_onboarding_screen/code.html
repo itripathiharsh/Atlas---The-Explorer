@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            atlas: {
+              cream: '#EFECE6',
+              dark: '#0F201D',
+              forest: '#1F5B4E',
+              gold: '#D4AF37',
+              overlay: 'rgba(15, 32, 29, 0.85)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    /* Subtle touch active states and smooth transitions */
+    .tap-highlight-transparent {
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Dynamic Device Framing */
+    .mobile-frame {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Ambient Mountain Gradient Layer */
+    .scenic-gradient {
+      background: linear-gradient(
+        180deg,
+        rgba(15, 32, 29, 0.45) 0%,
+        rgba(15, 32, 29, 0.05) 25%,
+        rgba(15, 32, 29, 0.2) 50%,
+        rgba(12, 24, 22, 0.92) 80%,
+        #0C1917 100%
+      );
+    }
+  </style>
+</head>
+<body class="bg-[#0b1413] min-h-screen flex items-center justify-center p-0 sm:p-6 font-sans text-white antialiased select-none">
+<!-- BEGIN: MobileDeviceContainer -->
+<!-- Encapsulates the standard iPhone 14/15 Pro form factor -->
+<main class="mobile-frame relative w-full sm:w-[393px] h-screen sm:h-[844px] sm:rounded-[48px] overflow-hidden flex flex-col justify-between bg-[#152321]" data-purpose="mobile-viewport">
+<!-- Scenic Photographic Mountain Background with Explorer -->
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none" data-purpose="background-layer">
+<!-- High alpine adventurer background image -->
+<img alt="Adventurer gazing across misty mountain ridges" class="w-full h-full object-cover object-center scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6vcPhsMsjNeYuKoJ57787yUniLGGUwS0IU6IC06YJpAL-rreOGO8PP_ir1p0Ex8cWLqj2-u947IeRXZXyGXQia2WamCVxGbEkIy43p-65WWxF8W23Qfi2per7GN0gOxcgzfBjI1teMb-gJGYxsC3mxXRPXIPQIshW4gl1z4YQUiuq_VjfN1WBZrS4rCnLekCfI3uZgcK2KJWoalNoSNLeghwz7P1jR8mpWfhSDyk"/>
+<!-- Dramatic Atmospheric & Vignette Gradient -->
+<div class="absolute inset-0 scenic-gradient"></div>
+</div>
+<!-- BEGIN: TopBar -->
+<!-- Native iOS Status Bar & Skip Navigation -->
+<header class="relative z-20 pt-3 px-7 flex justify-between items-center w-full" data-purpose="status-header">
+<!-- Status Bar Time -->
+<div class="text-white text-[15px] font-semibold tracking-tight" data-purpose="clock-time">
+        9:41
+      </div>
+<!-- Skip Button Pill -->
+<a class="tap-highlight-transparent inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-black/25 backdrop-blur-md border border-white/15 text-atlas-cream hover:text-white text-xs font-medium tracking-wide transition-all active:scale-95 shadow-sm" data-purpose="skip-navigation-link" href="#">
+        Skip
+      </a>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: BottomContentArea -->
+<!-- Onboarding Value Proposition & Controls -->
+<section class="relative z-20 px-8 pb-10 sm:pb-12 pt-6 flex flex-col justify-end" data-purpose="onboarding-controls">
+<!-- Headline & Subtitle Group -->
+<div class="space-y-3 mb-10" data-purpose="text-content">
+<h1 class="text-[38px] leading-[1.12] font-extrabold tracking-tight text-white drop-shadow-md">
+          Explore<br/>
+<span class="text-atlas-cream font-bold">the Real World</span>
+</h1>
+<p class="text-[15px] leading-relaxed text-[#D2CEC4] font-normal tracking-wide pr-6">
+          Walk. Discover. Unlock.<br/>
+          Find places worth visiting.
+        </p>
+</div>
+<!-- Footer Action Row: Pagination Indicators & Next Button -->
+<div class="flex items-center justify-between pt-2" data-purpose="navigation-footer">
+<!-- Pagination Dot Indicators (Screen 1 of 4 Active) -->
+<div aria-label="Step 1 of 4" class="flex items-center space-x-2" data-purpose="pagination-dots">
+<!-- Active Pill Indicator -->
+<span aria-current="true" class="w-6 h-2 rounded-full bg-atlas-cream transition-all duration-300 shadow-sm"></span>
+<!-- Inactive Dot 2 -->
+<span class="w-2 h-2 rounded-full bg-white/35 transition-all duration-300"></span>
+<!-- Inactive Dot 3 -->
+<span class="w-2 h-2 rounded-full bg-white/35 transition-all duration-300"></span>
+<!-- Inactive Dot 4 -->
+<span class="w-2 h-2 rounded-full bg-white/35 transition-all duration-300"></span>
+</div>
+<!-- Next Screen Circular Action Button -->
+<button aria-label="Next slide" class="tap-highlight-transparent w-14 h-14 rounded-full bg-white text-atlas-dark flex items-center justify-center shadow-lg shadow-black/40 hover:bg-atlas-cream active:scale-90 transition-all duration-200 group" data-purpose="next-step-button" type="button">
+<!-- Modern right navigation arrow icon -->
+<svg class="w-6 h-6 transform group-hover:translate-x-0.5 transition-transform duration-200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M5 12h14M12 5l7 7-7 7"></path>
+</svg>
+</button>
+</div>
+</section>
+<!-- END: BottomContentArea -->
+<!-- Home Indicator Bar for iOS -->
+<div class="relative z-30 pb-2 flex justify-center pointer-events-none" data-purpose="home-indicator">
+<div class="w-32 h-1 bg-white/35 rounded-full"></div>
+</div>
+</main>
+<!-- END: MobileDeviceContainer -->
+</body></html>

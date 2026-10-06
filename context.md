@@ -5,23 +5,41 @@
 
 ---
 
-## Current State (updated: Iteration 12)
+## Current State (updated: Iteration 13)
 
-- **What works:** the full MVP loop (auth, fog map, GPS unlocks with desktop
-  demo mode, discoveries, recommendations, photos, reports, profile), ATLAS
-  branding (navy/ivory, logo icons), hybrid GPS acquisition that can't stall.
-  Backend tests 37/37; frontend builds clean.
-- **How to run:** `powershell -File scripts\setup_db.ps1` → seed via
-  `backend\.venv\Scripts\python.exe scripts\seed_db.py` →
-  `powershell -File scripts\dev.ps1`. App at **http://localhost:5173**;
-  backend on **:8777** (8000 belongs to the owner's other project).
-- **Not yet done (needs a human outside):** PRD §40's physical walk with a real
-  phone; code-splitting the 1 MB maplibre bundle.
-- **Next milestone:** owner feedback from first real play.
+- **What works:** Complete "Gamified Expedition" design system implementation across all 5 phases based on the Stitch reference system (`design refrcnes/` and `DESIGN.md`), mapped end-to-end to backend:
+  - Phase 1: Tokens & Styling System: Abyssal Forest palette (`#071714`), warm parchment sheets (`#F4F1EA`), radiant gold accents (`#D4AF37`), hexagonal clip-paths (`.hex-cell`, `.hex-shape`), radar beacons (`.me-marker`, `.ping-ring`), reticle camera brackets (`.reticle-corner`).
+  - Phase 2: Top Expedition HUD & 5-Tab Navigation: Avatar with online status pip, Level pill, XP progress bar, quick actions, integrated category filters, persistent 5-tab BottomNav with elevated central (+) button, floating right controls (compass needle, radar trigger, GPS recenter), and 3-stat capsule dock.
+  - Phase 3: Explore Nearby & Place Details: Exploration Field Guide search & filter chips, scenic parchment cards with live distances and XP visit rewards, full-bleed hero photo detail sheet with "Worth It" badges, segmented tabs (About, Photos, Expedition Stats), and GPS reticle verification modal.
+  - Phase 4: Location Unlocked & Accolades: Hexagonal photo milestone unlock modal with radiant halo and XP rewards, Explorer Profile sheet with live stats matrix, and dual-bordered hexagonal accolade medallions.
+  - Phase 5: Atmospheric Auth & World Expeditions: Mountain valley welcome screen with official ATLAS emblem, golden compass ring, and Charted Territories city coverage cards.
+  - Full end-to-end visual QA verified in Edge via `scripts/shot.mjs` (captured all 9 screens in `data/shots/` with 0 errors).
+  - Backend tests 39/39 passed; frontend `npm run build` clean with 0 errors.
+- **How to run:** PostgreSQL 16 portable runs on port **5433** (`tools\pg\bin\postgres.exe -D data\pg`); backend on **:8777** (`python -m uvicorn app.main:app --port 8777 --reload`); frontend on **:5173** (`npm --prefix web run dev`). App at **http://localhost:5173**.
+- **Next milestone:** Real-world GPS walk with mobile device.
 
 ---
 
 ## Iteration Log
+
+## Iteration 13 — 2026-10-07 — Gamified Expedition Design System (Phases 1-5)
+- **Milestone:** Complete implementation of the Stitch design system (`design refrcnes/` + `DESIGN.md`) into ATLAS.
+- **Implementation Highlights:**
+  - `web/src/theme/tokens.ts` & `web/src/index.css`: Unified color tokens (abyssal forest, evergreen, emerald, radiant gold, warm parchment), custom utilities (`.hex-cell`, `.hex-shape`, `.parchment-sheet`, `.parchment-card`, `.ping-ring`, `.reticle-corner`, `.gold-halo`).
+  - `web/src/components/HUD.tsx`: Top floating HUD with user avatar, status pip, level badge `Lv. {n}`, XP bar, quick actions (Search, World), and category pill filters.
+  - `web/src/components/BottomNav.tsx`: Persistent 5-tab bottom navigation (Map, Explore, (+), Cities, Profile) with active indicator dots and elevated glowing center action button.
+  - `web/src/components/StatsDock.tsx`: Floating right compass & GPS recenter controls + bottom 3-stat capsule (`City Explored %`, `Cells`, `Visited`).
+  - `web/src/components/NearbySheet.tsx`: Parchment bottom sheet with search input, category chips, and scenic place cards with live distance & XP reward badges.
+  - `web/src/components/DiscoverySheet.tsx`: Place detail sheet with full hero photo, "Worth It" badge, tabbed content (About, Photos, Expedition Stats), upload action, and check-in trigger.
+  - `web/src/components/CheckInReticleModal.tsx`: Visual camera reticle verification modal matching `07_check_in_verification`.
+  - `web/src/components/LocationUnlockedModal.tsx`: Hexagonal celebratory modal with radiant gold halo and XP badge matching `09_location_unlocked`.
+  - `web/src/components/ProfileSheet.tsx`: Expedition dossier profile sheet with 4-card stats matrix, accolade filters, and dual-bordered hexagonal achievement medallions.
+  - `web/src/components/AuthScreen.tsx`: Scenic mountain valley splash screen with official ATLAS emblem, golden compass ring, and tabs for registration and sign-in.
+  - `web/src/components/CityListSheet.tsx`: Charted Territories sheet with global earth coverage card and per-city progress bars.
+  - Fixed `backend/app/api/me.py` achievements query by removing invalid `joinedload` on unmapped relationship.
+  - Fixed MapLibre icon opacity clamp to eliminate negative opacity warnings.
+  - Ran headless Edge Visual QA (`web/scripts/shot.mjs`) generating verified screenshots for all 9 states in `data/shots/`.
+  - Verified 39/39 backend tests and clean frontend build.
 
 ## Iteration 12 — 2026-10-06 — owner: real-world data + interactive map
 - **Milestone:** world content + interactivity (owner-requested)

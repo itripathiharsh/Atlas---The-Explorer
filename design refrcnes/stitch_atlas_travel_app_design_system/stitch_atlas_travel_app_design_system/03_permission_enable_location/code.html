@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Enable Location</title>
+<!-- Load Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Configure Custom Colors and Font System matching ATLAS Brand Design -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            atlas: {
+              cream: '#ECE8E1',
+              card: '#F6F4F0',
+              forest: '#112D22',
+              'forest-hover': '#1B3B2F',
+              accent: '#315843',
+              pinBlue: '#2D81E0',
+              pinGold: '#D89953',
+              subtleText: '#6D7571',
+              mutedBorder: '#E1DDD5'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          },
+          boxShadow: {
+            soft: '0 8px 24px -4px rgba(17, 45, 34, 0.06)',
+            island: '0 12px 30px -8px rgba(17, 45, 34, 0.12)'
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom styles for iOS status elements and SVG rendering -->
+<style data-purpose="viewport-and-tokens">
+    html, body {
+      height: 100%;
+      background-color: #ECE8E1;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+    .safe-top {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+  </style>
+</head>
+<body class="bg-atlas-cream text-atlas-forest antialiased min-h-screen flex items-center justify-center p-0 sm:p-4">
+<!-- BEGIN: PhoneShellContainer -->
+<!-- Container scaled to mobile portrait dimensions -->
+<main class="w-full max-w-sm h-screen sm:h-[844px] bg-atlas-cream flex flex-col justify-between overflow-hidden sm:rounded-[44px] sm:shadow-2xl sm:border-[8px] sm:border-[#1E2621]/10 relative">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 px-8 flex justify-between items-center z-20 safe-top" data-purpose="ios-status-bar">
+<!-- Time Display -->
+<span class="text-[15px] font-semibold tracking-tight text-atlas-forest">9:41</span>
+<!-- Native Mobile Status Indicators -->
+<div class="flex items-center space-x-2 text-atlas-forest">
+<!-- Cellular Signal Icon -->
+<svg class="w-4 h-3 fill-current" viewbox="0 0 17 12">
+<rect height="4" rx="0.5" width="3" x="0" y="8"></rect>
+<rect height="6.5" rx="0.5" width="3" x="4.5" y="5.5"></rect>
+<rect height="9" rx="0.5" width="3" x="9" y="3"></rect>
+<rect height="12" rx="0.5" width="3" x="13.5" y="0"></rect>
+</svg>
+<!-- Wi-Fi Icon -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 16 12">
+<path d="M8 2.8c2.9 0 5.6 1.2 7.5 3.1.3.3.3.8 0 1.1l-1.1 1.1c-.3.3-.8.3-1.1 0-1.4-1.4-3.3-2.2-5.3-2.2s-3.9.8-5.3 2.2c-.3.3-.8.3-1.1 0L.5 7c-.3-.3-.3-.8 0-1.1C2.4 4 5.1 2.8 8 2.8zm0 4.2c1.7 0 3.3.7 4.5 1.9.3.3.3.8 0 1.1l-1.1 1.1c-.3.3-.8.3-1.1 0-.9-.9-2.1-1.4-3.4-1.4s-2.5.5-3.4 1.4c-.3.3-.8.3-1.1 0L1.3 10c-.3-.3-.3-.8 0-1.1C2.5 7.7 5.1 7 8 7zm0 4.2c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5-1.5-.7-1.5-1.5.7-1.5 1.5-1.5z"></path>
+</svg>
+<!-- iOS Battery Gauge with 100% capacity level -->
+<div class="flex items-center">
+<div class="w-5 h-[11px] border-[1.2px] border-atlas-forest rounded-[3.5px] p-[1.5px] flex items-center">
+<div class="h-full w-full bg-atlas-forest rounded-[1.5px]"></div>
+</div>
+<div class="w-[1.5px] h-[4px] bg-atlas-forest rounded-r-[1px] ml-[0.5px]"></div>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: MainContentArea -->
+<div class="flex-1 flex flex-col items-center justify-between px-7 pt-4 pb-2 z-10" data-purpose="permission-content">
+<!-- Visual Graphic: Top 3D Nature & Map Pin Landscape Illustration -->
+<section class="w-full flex justify-center items-center py-2" data-purpose="permission-illustration">
+<div class="relative w-64 h-56 flex items-center justify-center">
+<!-- Cloud accents in subtle off-white tones -->
+<svg class="absolute top-4 left-3 w-14 h-8 text-white/80 filter drop-shadow-sm animate-pulse" fill="currentColor" style="animation-duration: 6s;" viewbox="0 0 64 36">
+<path d="M48 28c5.5 0 10-4.5 10-10 0-5.1-3.8-9.3-8.8-9.9C47.8 3.5 42.4 0 36 0c-6.8 0-12.4 4-14.7 9.8C19.9 9.3 18 9 16 9 7.2 9 0 16.2 0 25c0 7.2 5.8 13 13 13h35c5.5 0 10-4.5 10-10z"></path>
+</svg>
+<svg class="absolute top-10 right-4 w-12 h-7 text-white/60 filter drop-shadow-sm" fill="currentColor" viewbox="0 0 64 36">
+<path d="M48 28c5.5 0 10-4.5 10-10 0-5.1-3.8-9.3-8.8-9.9C47.8 3.5 42.4 0 36 0c-6.8 0-12.4 4-14.7 9.8C19.9 9.3 18 9 16 9 7.2 9 0 16.2 0 25c0 7.2 5.8 13 13 13h35c5.5 0 10-4.5 10-10z"></path>
+</svg>
+<!-- SVG Vector Diorama of Terraced Mountains & Location Points -->
+<svg class="w-full h-full filter drop-shadow-island" fill="none" viewbox="0 0 280 240" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Gradients for Mountain Slopes -->
+<lineargradient gradientunits="userSpaceOnUse" id="mtnBack" x1="140" x2="140" y1="60" y2="180">
+<stop offset="0%" stop-color="#4F795B"></stop>
+<stop offset="100%" stop-color="#2D513B"></stop>
+</lineargradient>
+<lineargradient gradientunits="userSpaceOnUse" id="mtnMid" x1="180" x2="180" y1="90" y2="200">
+<stop offset="0%" stop-color="#6F9975"></stop>
+<stop offset="100%" stop-color="#3D6448"></stop>
+</lineargradient>
+<lineargradient gradientunits="userSpaceOnUse" id="mtnFront" x1="110" x2="110" y1="110" y2="210">
+<stop offset="0%" stop-color="#8DB68F"></stop>
+<stop offset="100%" stop-color="#4A7553"></stop>
+</lineargradient>
+<lineargradient gradientunits="userSpaceOnUse" id="islandBase" x1="140" x2="140" y1="180" y2="228">
+<stop offset="0%" stop-color="#D7D2C7"></stop>
+<stop offset="100%" stop-color="#BFB9AC"></stop>
+</lineargradient>
+</defs>
+<!-- Ground Base / Terrain Platform -->
+<ellipse cx="140" cy="200" fill="url(#islandBase)" rx="100" ry="24"></ellipse>
+<ellipse cx="140" cy="195" fill="#99BA94" opacity="0.65" rx="92" ry="20"></ellipse>
+<!-- Back Mountain Peak -->
+<path d="M140 65 L195 180 C195 180 160 190 140 190 C120 190 85 180 85 180 Z" fill="url(#mtnBack)"></path>
+<!-- Back Mountain Shading Edge -->
+<path d="M140 65 L140 190 C160 190 195 180 195 180 L140 65 Z" fill="#244430" opacity="0.3"></path>
+<!-- Mountain Snow Cap -->
+<path d="M140 65 L153 92 L143 88 L139 94 L132 90 L127 92 Z" fill="#F4F8F5"></path>
+<!-- Right Hill/Ridge (Warm tone accent) -->
+<path d="M185 98 L225 186 C210 192 185 195 165 194 L142 152 Z" fill="url(#mtnMid)"></path>
+<path d="M185 98 L185 194 C198 193 214 190 225 186 Z" fill="#284A33" opacity="0.25"></path>
+<!-- Left Front Green Valley Peak -->
+<path d="M102 108 L152 196 C138 200 110 200 80 196 L58 175 Z" fill="url(#mtnFront)"></path>
+<path d="M102 108 L102 198 C120 198 140 196 152 196 Z" fill="#32573B" opacity="0.25"></path>
+<!-- Floating Explorer Location Pin (Blue) -->
+<g transform="translate(90, 80)">
+<!-- Outer Glow/Shadow -->
+<ellipse cx="14" cy="42" fill="#112D22" opacity="0.25" rx="7" ry="2.5"></ellipse>
+<!-- Pin Shape -->
+<path d="M14 6 C7.5 6 2 11.5 2 18 C2 27 14 39 14 39 C14 39 26 27 26 18 C26 11.5 20.5 6 14 6 Z" fill="#2977DC"></path>
+<!-- Pin Core Highlight -->
+<circle cx="14" cy="17" fill="#FFFFFF" r="5"></circle>
+</g>
+<!-- Landmark Location Pin (Tan / Gold) -->
+<g transform="translate(162, 86)">
+<!-- Pin Shadow -->
+<ellipse cx="13" cy="40" fill="#112D22" opacity="0.2" rx="6" ry="2.2"></ellipse>
+<!-- Pin Shape -->
+<path d="M13 8 C7.5 8 3 12.5 3 18 C3 26 13 37 13 37 C13 37 23 26 23 18 C23 12.5 18.5 8 13 8 Z" fill="#D69752"></path>
+<!-- Pin Core Highlight -->
+<circle cx="13" cy="17" fill="#FAF5EE" r="4.2"></circle>
+</g>
+</svg>
+</div>
+</section>
+<!-- Headline & Subheadline Description -->
+<header class="text-center px-2 mt-1 mb-4" data-purpose="permission-header">
+<h1 class="text-[27px] font-bold tracking-tight text-atlas-forest leading-snug">
+          Enable Location
+        </h1>
+<p class="text-atlas-subtleText text-[14px] leading-relaxed mt-2 max-w-[260px] mx-auto font-normal">
+          We use your location to verify exploration and unlock the map.
+        </p>
+</header>
+<!-- BEGIN: FeatureChecklistCard -->
+<!-- Clean stacked features listing core benefits of enabling permissions -->
+<section class="w-full bg-atlas-card rounded-2xl p-4 border border-atlas-mutedBorder/60 shadow-soft" data-purpose="benefits-card">
+<div class="space-y-4">
+<!-- Feature Item 1: Unlock real places -->
+<div class="flex items-center space-x-3.5">
+<div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-atlas-forest shadow-sm shrink-0 border border-atlas-mutedBorder/40">
+<!-- Compass / Map Pin Icon -->
+<svg class="w-5 h-5 text-atlas-accent" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<polygon fill="currentColor" fill-opacity="0.15" points="15.5 8.5 13 13 8.5 15.5 11 11 15.5 8.5"></polygon>
+</svg>
+</div>
+<span class="text-[14.5px] font-medium text-atlas-forest tracking-tight">
+              Unlock real places
+            </span>
+</div>
+<!-- Feature Item 2: Track your exploration -->
+<div class="flex items-center space-x-3.5">
+<div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-atlas-forest shadow-sm shrink-0 border border-atlas-mutedBorder/40">
+<!-- Footsteps / Route Navigation Icon -->
+<svg class="w-5 h-5 text-atlas-accent" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<circle cx="6" cy="18" r="2.5"></circle>
+<circle cx="18" cy="6" r="2.5"></circle>
+<path d="M6 15.5c0-4 4.5-5 6-7.5s1.5-2 6-2"></path>
+</svg>
+</div>
+<span class="text-[14.5px] font-medium text-atlas-forest tracking-tight">
+              Track your exploration
+            </span>
+</div>
+<!-- Feature Item 3: Get better recommendations -->
+<div class="flex items-center space-x-3.5">
+<div class="w-9 h-9 rounded-xl bg-white flex items-center justify-center text-atlas-forest shadow-sm shrink-0 border border-atlas-mutedBorder/40">
+<!-- Sparkles / Personalization Icon -->
+<svg class="w-5 h-5 text-atlas-accent" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 2l2.4 5 5.6.8-4 4 1 5.6-5-2.6-5 2.6 1-5.6-4-4 5.6-.8z"></path>
+</svg>
+</div>
+<span class="text-[14.5px] font-medium text-atlas-forest tracking-tight">
+              Get better recommendations
+            </span>
+</div>
+</div>
+</section>
+<!-- END: FeatureChecklistCard -->
+<!-- BEGIN: ActionButtonsGroup -->
+<footer class="w-full flex flex-col items-center mt-5 mb-2 space-y-3" data-purpose="actions-footer">
+<!-- Primary Action: Enable Location (Dark Forest Green Pill) -->
+<button class="w-full py-4 px-6 bg-atlas-forest hover:bg-atlas-forest-hover active:scale-[0.985] text-white font-semibold rounded-2xl shadow-lg transition-all duration-150 flex items-center justify-center text-[15px] tracking-wide cursor-pointer" onclick="handleEnableLocation()" type="button">
+          Enable Location
+        </button>
+<!-- Secondary Dismiss Action: Not now -->
+<button class="py-2.5 px-4 text-atlas-forest/70 hover:text-atlas-forest active:opacity-60 font-medium text-[14px] transition-colors cursor-pointer" onclick="handleDismiss()" type="button">
+          Not now
+        </button>
+</footer>
+<!-- END: ActionButtonsGroup -->
+</div>
+<!-- END: MainContentArea -->
+<!-- BEGIN: iOSHomeIndicator -->
+<div class="w-full flex justify-center pb-2 safe-bottom" data-purpose="home-indicator">
+<div class="w-32 h-1 bg-atlas-forest/20 rounded-full"></div>
+</div>
+<!-- END: iOSHomeIndicator -->
+</main>
+<!-- END: PhoneShellContainer -->
+<!-- Interactivity & Feedback Handlers -->
+<script data-purpose="interaction-handlers">
+    function handleEnableLocation() {
+      // Simulate geolocation permission prompt
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Location enabled successfully:", position.coords);
+            alert("Location access granted! Exploring the world around you...");
+          },
+          (error) => {
+            console.warn("Location permission feedback:", error.message);
+            alert("Location authorized for demonstration.");
+          }
+        );
+      } else {
+        alert("Location verified.");
+      }
+    }
+
+    function handleDismiss() {
+      console.log("Permission postponed: Not now selected.");
+      alert("You can enable location anytime from Profile > Settings.");
+    }
+  </script>
+</body></html>

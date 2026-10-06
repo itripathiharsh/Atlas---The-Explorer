@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>ATLAS - Profile &amp; Progress</title>
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            atlas: {
+              cream: '#F4F1EA',
+              card: '#FFFFFF',
+              primary: '#0F2D23',
+              accent: '#1F5B46',
+              gold: '#D4A346',
+              bronze: '#B46A36',
+              purple: '#5B4EB3',
+              muted: '#76857F',
+              track: '#E2DED5'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Roboto', 'sans-serif']
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(15, 45, 35, 0.06)',
+            'nav': '0 -4px 18px rgba(0, 0, 0, 0.04)'
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="base-layout">
+    body {
+      background-color: #E6E2D8;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    /* Mobile screen container simulation */
+    .app-viewport {
+      max-width: 412px;
+      min-height: 844px;
+      margin: 0 auto;
+      background-color: #F4F1EA;
+    }
+  </style>
+<style data-purpose="custom-badges">
+    /* Hexagonal badge shapes */
+    .hexagon {
+      position: relative;
+      width: 48px;
+      height: 27.71px;
+      margin: 13.86px 0;
+      background-size: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .hexagon::before,
+    .hexagon::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      border-left: 24px solid transparent;
+      border-right: 24px solid transparent;
+      left: 0;
+    }
+    .hexagon::before {
+      bottom: 100%;
+      border-bottom-width: 13.86px;
+      border-bottom-style: solid;
+      border-bottom-color: inherit;
+    }
+    .hexagon::after {
+      top: 100%;
+      width: 0;
+      border-top-width: 13.86px;
+      border-top-style: solid;
+      border-top-color: inherit;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-0 sm:py-6">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="app-viewport w-full relative flex flex-col justify-between overflow-hidden sm:rounded-[44px] shadow-2xl border-stone-300">
+<!-- BEGIN: iOSStatusBar -->
+<header class="pt-3 px-7 pb-2 flex justify-between items-center text-[#111827] text-xs font-semibold select-none z-30" data-purpose="status-bar">
+<span>9:41</span>
+<div class="flex items-center space-x-2">
+<!-- Cellular Signal Icon -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 16 16">
+<rect height="4" rx="0.5" width="2" x="1" y="10"></rect>
+<rect height="6.5" rx="0.5" width="2" x="4.5" y="7.5"></rect>
+<rect height="9" rx="0.5" width="2" x="8" y="5"></rect>
+<rect height="12" rx="0.5" width="2" x="11.5" y="2"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 16 16">
+<path d="M8 12.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm-4.24-2.83a6 6 0 0 1 8.48 0 .75.75 0 0 1-1.06 1.06 4.5 4.5 0 0 0-6.36 0 .75.75 0 1 1-1.06-1.06zm-2.83-2.83a10 10 0 0 1 14.14 0 .75.75 0 0 1-1.06 1.06 8.5 8.5 0 0 0-12.02 0 .75.75 0 0 1-1.06-1.06z"></path>
+</svg>
+<!-- Battery Icon -->
+<svg class="w-5 h-2.5" fill="none" viewbox="0 0 24 12">
+<rect height="10" rx="3" stroke="currentColor" stroke-width="1.5" width="19" x="1" y="1"></rect>
+<rect fill="currentColor" height="6" rx="1.5" width="14" x="3" y="3"></rect>
+<path d="M21 4.5V7.5" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path>
+</svg>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: MainScrollContent -->
+<main class="flex-1 overflow-y-auto px-5 pt-3 pb-24 space-y-5" data-purpose="profile-content">
+<!-- BEGIN: UserProfileHeader -->
+<section class="flex flex-col items-center justify-center pt-2 pb-1" data-purpose="user-header">
+<!-- Avatar with active border badge -->
+<div class="relative mb-3">
+<div class="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-[#1F5B46] to-[#D4A346] shadow-md">
+<img alt="Harsh - Adventurer Profile" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY28qtQC2F57wBOp6lF3_EeuxkMUQbSN3QGE5Pw2oV39KZZf41x96sKxDVRXG4oC4sfOMbL5PWguYDVUyffeTDzkjAb6zbZCJtPbgYJTnzyl4rDtQ77PfbXJ8puW_ECWMYGAI-5IRrUNzghCZsw_0r9h7j4EoJVUGB6AH5POM4sFQkW4xJUvW6N1zbnnM2YLj26Xi50YPw_9HaAmEpWtexwtGBR5ld1KF30WCF748"/>
+</div>
+<!-- Tiny Verified Compass Pin Overlay -->
+<div class="absolute bottom-0 right-1 bg-atlas-primary text-white p-1 rounded-full border-2 border-atlas-cream shadow-sm">
+<svg class="w-3.5 h-3.5" fill="currentColor" viewbox="0 0 20 20">
+<polygon points="10 2, 13 8, 19 10, 13 12, 10 18, 7 12, 1 10, 7 8"></polygon>
+</svg>
+</div>
+</div>
+<!-- Name & Explorer Title Tag -->
+<h1 class="text-2xl font-bold text-atlas-primary tracking-tight">Harsh</h1>
+<div class="mt-1 flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#E5DFD4] border border-[#D9D1C3]">
+<span class="text-xs font-semibold text-atlas-primary tracking-wide">Lv. 12 Explorer</span>
+</div>
+<!-- XP Progress Tracker -->
+<div class="w-full max-w-[280px] mt-3.5" data-purpose="xp-meter">
+<div class="flex justify-between items-center text-[11px] font-medium text-atlas-muted mb-1.5 px-0.5">
+<span class="text-atlas-accent font-semibold">Progress</span>
+<span>1,250 / 2,000 XP</span>
+</div>
+<div class="h-2 w-full bg-atlas-track rounded-full overflow-hidden p-0.5">
+<div class="h-full bg-gradient-to-r from-atlas-accent to-emerald-500 rounded-full" style="width: 62.5%"></div>
+</div>
+</div>
+</section>
+<!-- END: UserProfileHeader -->
+<!-- BEGIN: StatsStrip -->
+<section class="bg-atlas-card rounded-2xl p-4 shadow-soft border border-stone-100 flex items-center justify-around text-center" data-purpose="metrics-strip">
+<div class="flex-1 px-1">
+<p class="text-xl font-extrabold text-atlas-primary tracking-tight">12%</p>
+<p class="text-[11px] font-medium text-atlas-muted leading-tight mt-0.5">World Explored</p>
+</div>
+<div class="w-[1px] h-8 bg-stone-200"></div>
+<div class="flex-1 px-1">
+<p class="text-xl font-extrabold text-atlas-primary tracking-tight">48</p>
+<p class="text-[11px] font-medium text-atlas-muted leading-tight mt-0.5">Places Visited</p>
+</div>
+<div class="w-[1px] h-8 bg-stone-200"></div>
+<div class="flex-1 px-1">
+<p class="text-xl font-extrabold text-atlas-primary tracking-tight">8</p>
+<p class="text-[11px] font-medium text-atlas-muted leading-tight mt-0.5">Badges</p>
+</div>
+</section>
+<!-- END: StatsStrip -->
+<!-- BEGIN: BadgesSection -->
+<section class="space-y-3" data-purpose="badges-container">
+<div class="flex items-center justify-between px-1">
+<h2 class="text-base font-bold text-atlas-primary tracking-tight">My Badges</h2>
+<a class="text-xs font-semibold text-atlas-accent hover:underline" href="#all-badges">View All</a>
+</div>
+<!-- 4 Badges Hexagonal Row -->
+<div class="bg-atlas-card rounded-2xl p-4 shadow-soft border border-stone-100 flex justify-between items-center gap-1.5">
+<!-- Badge 1: Gold First Step -->
+<div class="flex flex-col items-center flex-1 text-center">
+<div class="hexagon border-atlas-gold bg-atlas-gold mb-4 text-white shadow-sm flex items-center justify-center">
+<svg class="w-4 h-4 z-10 drop-shadow" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[10px] font-bold text-atlas-primary tracking-tight leading-tight">First Step</span>
+</div>
+<!-- Badge 2: Green Nature Lover -->
+<div class="flex flex-col items-center flex-1 text-center">
+<div class="hexagon border-atlas-accent bg-atlas-accent mb-4 text-white shadow-sm flex items-center justify-center">
+<svg class="w-4 h-4 z-10 drop-shadow" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M5 20h14M12 3v17m-6-8c0-3.5 3-6 6-6s6 2.5 6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[10px] font-bold text-atlas-primary tracking-tight leading-tight">Nature Lover</span>
+</div>
+<!-- Badge 3: Bronze 100 Places -->
+<div class="flex flex-col items-center flex-1 text-center">
+<div class="hexagon border-[#A85B24] bg-[#A85B24] mb-4 text-white shadow-sm flex items-center justify-center">
+<span class="text-[10px] font-extrabold z-10 tracking-tighter">100</span>
+</div>
+<span class="text-[10px] font-bold text-atlas-primary tracking-tight leading-tight">100 Places</span>
+</div>
+<!-- Badge 4: Violet Mountain Explorer -->
+<div class="flex flex-col items-center flex-1 text-center">
+<div class="hexagon border-atlas-purple bg-atlas-purple mb-4 text-white shadow-sm flex items-center justify-center">
+<svg class="w-4 h-4 z-10 drop-shadow" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2L1 21h22L12 2zm0 4.5l5.8 10.5H6.2L12 6.5z"></path>
+</svg>
+</div>
+<span class="text-[10px] font-bold text-atlas-primary tracking-tight leading-tight">Mountain Explorer</span>
+</div>
+</div>
+</section>
+<!-- END: BadgesSection -->
+<!-- BEGIN: RecentVisitsSection -->
+<section class="space-y-3" data-purpose="recent-visits">
+<div class="flex items-center justify-between px-1">
+<h2 class="text-base font-bold text-atlas-primary tracking-tight">Recent Visits</h2>
+</div>
+<!-- Place Visit Card -->
+<article class="bg-atlas-card rounded-2xl p-3 shadow-soft border border-stone-100 flex items-center gap-3.5 active:scale-[0.99] transition-transform cursor-pointer">
+<!-- Thumbnail using placeholder as specified for unprovided URL -->
+<div class="w-16 h-16 rounded-xl overflow-hidden bg-stone-200 flex-shrink-0 relative">
+<img alt="Kempty Falls scenic waterfall in Mussoorie" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZ2A5Ys15lXT9N5WzyNEc2oVlPY8f5y666jivOCZGOVyDAafBigDAJNQQJ8to5tH0A0rwGMB0O5xI-H9ZuZXhm8CNPhk9iGqNsSsZShgGD1eN5xGEmCaY0hMlH-xBovfB86SF_DFsu3eTE-iZKoeR8evtx_4EOgnTbnaNPr9C9VZO1alKiwadcUgczXQJd_GKMml9W3ojw4YdLhyYwaZ9M43iZoU0Bgn-vMSbJRG8"/>
+</div>
+<!-- Place Details -->
+<div class="flex-1 min-w-0">
+<h3 class="text-sm font-bold text-atlas-primary truncate">Kempty Falls</h3>
+<p class="text-xs text-atlas-muted mt-0.5 flex items-center gap-1.5">
+<span>Mussoorie</span>
+<span class="inline-block w-1 h-1 rounded-full bg-stone-300"></span>
+<span>2 days ago</span>
+</p>
+<div class="mt-1.5 flex items-center gap-2">
+<span class="inline-flex items-center text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                Verified Visit
+              </span>
+<span class="text-[10px] font-semibold text-atlas-gold">+50 XP</span>
+</div>
+</div>
+<!-- Detail Arrow -->
+<div class="text-stone-400 pr-1">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</article>
+</section>
+<!-- END: RecentVisitsSection -->
+</main>
+<!-- END: MainScrollContent -->
+<!-- BEGIN: BottomNavigation -->
+<nav class="absolute bottom-0 inset-x-0 bg-atlas-card/95 backdrop-blur-md border-t border-stone-200/70 px-6 pt-2 pb-5 flex items-center justify-between shadow-nav z-40" data-purpose="bottom-tab-bar">
+<!-- Tab 1: Home -->
+<a class="flex flex-col items-center text-atlas-muted hover:text-atlas-primary transition-colors py-1 group" href="#home">
+<svg class="w-5 h-5 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Home</span>
+</a>
+<!-- Tab 2: Explore -->
+<a class="flex flex-col items-center text-atlas-muted hover:text-atlas-primary transition-colors py-1 group" href="#explore">
+<svg class="w-5 h-5 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="7"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+<span class="text-[10px] font-medium mt-1">Explore</span>
+</a>
+<!-- Tab 3: Central Action (+) -->
+<button class="relative -top-3 w-12 h-12 rounded-full bg-atlas-primary text-white flex items-center justify-center shadow-lg hover:bg-atlas-accent active:scale-95 transition-all">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<line x1="5" x2="19" y1="12" y2="12"></line>
+</svg>
+</button>
+<!-- Tab 4: Social -->
+<a class="flex flex-col items-center text-atlas-muted hover:text-atlas-primary transition-colors py-1 group" href="#social">
+<svg class="w-5 h-5 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[10px] font-medium mt-1">Social</span>
+</a>
+<!-- Tab 5: Profile (Active) -->
+<a class="flex flex-col items-center text-atlas-accent font-semibold py-1" href="#profile">
+<div class="relative">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" fill-rule="evenodd"></path>
+</svg>
+<span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-atlas-accent rounded-full"></span>
+</div>
+<span class="text-[10px] font-bold mt-1 text-atlas-accent">Profile</span>
+</a>
+</nav>
+<!-- END: BottomNavigation -->
+</div>
+<!-- END: MobileDeviceFrame -->
+</body></html>
