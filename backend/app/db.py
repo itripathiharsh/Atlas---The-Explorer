@@ -20,7 +20,11 @@ if sys.platform == "win32":
     if "PSYCOPG_IMPL" not in os.environ:
         os.environ["PSYCOPG_IMPL"] = "python"
 
-engine = create_engine(get_settings().database_url, pool_pre_ping=True)
+_db_url = get_settings().database_url
+if _db_url.startswith("postgresql://"):
+    _db_url = _db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
+engine = create_engine(_db_url, pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
