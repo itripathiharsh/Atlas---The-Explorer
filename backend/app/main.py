@@ -14,7 +14,8 @@ app = FastAPI(title="World Game API", version="0.1.0")
 origins = ["http://localhost:5173", "https://localhost:5173"]
 allow_origin_regex = None
 if settings.cors_allow_lan:
-    allow_origin_regex = r"(https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?|https://.*\.vercel\.app|capacitor://.*|http://localhost)"
+    # Allow all web, mobile, and cloud domains (*.onrender.com, *.vercel.app, capacitor, LAN)
+    allow_origin_regex = r".*"
 
 app.add_middleware(
     CORSMiddleware,
