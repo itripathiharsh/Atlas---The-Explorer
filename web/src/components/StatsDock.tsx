@@ -6,7 +6,6 @@ interface Props {
   summary: MapSummary | undefined;
   onRecenter: () => void;
   onNearbyList: () => void;
-  onCityList: () => void;
   onAlignNorth?: () => void;
 }
 
@@ -15,7 +14,6 @@ export default function StatsDock({
   summary,
   onRecenter,
   onNearbyList,
-  onCityList,
   onAlignNorth,
 }: Props) {
   const city = summary?.current_city || summary?.cities?.[0];
@@ -68,18 +66,12 @@ export default function StatsDock({
         <div className="mx-auto max-w-md pointer-events-auto">
           <div className="glass rounded-2xl py-2.5 px-4 border border-emerald-950/70 shadow-xl flex items-center justify-between backdrop-blur-xl">
             {/* Stat Item 1: Explored % */}
-            <button
-              onClick={onCityList}
-              className="flex-1 flex flex-col items-center group text-center focus:outline-none"
-              title="Click to view all cities"
-            >
-              <span className="hud-label text-[9px] group-hover:text-emerald-300 transition-colors">
-                {city ? city.display_name.split(",")[0] : "World"} Explored 🗺️
-              </span>
+            <div className="flex-1 flex flex-col items-center text-center">
+              <span className="hud-label text-[9px]">Explored</span>
               <span className="font-display text-base font-extrabold text-white mt-0.5">
                 {displayPct}
               </span>
-            </button>
+            </div>
 
             <div className="h-6 w-px bg-white/10" />
 

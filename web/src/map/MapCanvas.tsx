@@ -44,17 +44,47 @@ export default function MapCanvas({
   // --- create map once ---
   useEffect(() => {
     if (!container.current || mapRef.current) return;
+    let initCenter: [number, number] = [80.9462, 26.8467];
+    let initZoom = 13.5;
+    try {
+      const saved = localStorage.getItem("wg_last_pos");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.lat === "number" && typeof parsed.lng === "number") {
+          initCenter = [parsed.lng, parsed.lat];
+        }
+      }
+    } catch {
+      // ignore
+    }
+
     const map = new MlMap({
       container: container.current,
       style: basemapStyle(import.meta.env.VITE_MAPTILER_KEY),
-      center: [80.9462, 26.8467], // Lucknow until the first GPS fix arrives
-      zoom: 2.4, // start on the whole world — it is all explorable now
+      center: initCenter,
+      zoom: initZoom,
       attributionControl: { compact: true },
       dragRotate: false,
       pitchWithRotate: false,
-      preserveDrawingBuffer: true, // headless screenshots / future canvas exports
+      preserveDrawingBuffer: true,
     });
     mapRef.current = map;
+
+    // Fast city resolution if no previous position stored
+    if (!localStorage.getItem("wg_last_pos")) {
+      fetch("https://ipwho.is/")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data && data.latitude && data.longitude && mapRef.current) {
+            mapRef.current.easeTo({
+              center: [data.longitude, data.latitude],
+              zoom: 13.5,
+              duration: 900,
+            });
+          }
+        })
+        .catch(() => {});
+    }
     // dev/testing hook — screenshot scripts drive the map through this
     (window as unknown as { __map?: MlMap }).__map = map;
 
@@ -337,9 +367,19 @@ export default function MapCanvas({
       meMarker.current = new maplibregl.Marker({ element: el })
         .setLngLat([userPos.lng, userPos.lat])
         .addTo(map);
-      map.easeTo({ center: [userPos.lng, userPos.lat], zoom: 15.2, duration: 1400 });
+      map.easeTo({ center: [userPos.lng, userPos.lat], zoom: 13.5, duration: 1200 });
+      try {
+        localStorage.setItem("wg_last_pos", JSON.stringify({ lat: userPos.lat, lng: userPos.lng }));
+      } catch {
+        // ignore
+      }
     } else {
       meMarker.current.setLngLat([userPos.lng, userPos.lat]);
+      try {
+        localStorage.setItem("wg_last_pos", JSON.stringify({ lat: userPos.lat, lng: userPos.lng }));
+      } catch {
+        // ignore
+      }
     }
   }, [userPos, loaded]);
 

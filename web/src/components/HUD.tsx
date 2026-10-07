@@ -1,4 +1,4 @@
-import { Search, Globe } from "lucide-react";
+import { Search } from "lucide-react";
 import type { Stats, User } from "../api/types";
 
 interface Props {
@@ -6,7 +6,6 @@ interface Props {
   stats: Stats | undefined;
   onProfile: () => void;
   onSearch: () => void;
-  onCityList: () => void;
   categoryFilter: string | null;
   onSelectCategory: (cat: string | null) => void;
   categories: string[];
@@ -17,7 +16,6 @@ export default function HUD({
   stats,
   onProfile,
   onSearch,
-  onCityList,
   categoryFilter,
   onSelectCategory,
   categories,
@@ -87,7 +85,7 @@ export default function HUD({
             </div>
           </div>
 
-          {/* Right Quick Controls: Search & World Cities */}
+          {/* Right Quick Controls: Search */}
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={onSearch}
@@ -96,15 +94,6 @@ export default function HUD({
               className="w-9 h-9 rounded-full bg-[#0a1e1a]/90 border border-emerald-900/60 flex items-center justify-center text-white/80 hover:text-white hover:border-emerald-600 active:scale-95 transition-all shadow-md backdrop-blur-md"
             >
               <Search size={15} strokeWidth={2.4} />
-            </button>
-
-            <button
-              onClick={onCityList}
-              aria-label="World Cities"
-              title="Explore World Cities"
-              className="w-9 h-9 rounded-full bg-[#0a1e1a]/90 border border-emerald-900/60 flex items-center justify-center text-white/80 hover:text-white hover:border-emerald-600 active:scale-95 transition-all shadow-md backdrop-blur-md"
-            >
-              <Globe size={15} strokeWidth={2.4} />
             </button>
           </div>
         </div>

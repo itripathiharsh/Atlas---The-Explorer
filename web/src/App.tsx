@@ -16,7 +16,6 @@ import Onboarding from "./components/Onboarding";
 import DiscoverySheet from "./components/DiscoverySheet";
 import CreateDiscoverySheet from "./components/CreateDiscoverySheet";
 import NearbySheet from "./components/NearbySheet";
-import CityListSheet from "./components/CityListSheet";
 import ProfileSheet from "./components/ProfileSheet";
 import XPFX from "./components/XPFX";
 
@@ -33,7 +32,6 @@ function Game() {
   const [creating, setCreating] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [nearbyOpen, setNearbyOpen] = useState(false);
-  const [cityListOpen, setCityListOpen] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
 
   const [mapCenter, setMapCenter] = useState({ lat: 26.8467, lng: 80.9462 });
@@ -135,12 +133,17 @@ function Game() {
     if (explored.data) setMerged(explored.data);
   }, [explored.data]);
 
-  // fly to the user the first time a fix arrives
+  // fly to the user's city the first time a fix arrives
   const firstFix = useRef(true);
   useEffect(() => {
     if (geo.pos && firstFix.current) {
       firstFix.current = false;
-      setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
+      try {
+        localStorage.setItem("wg_last_pos", JSON.stringify({ lat: geo.pos.lat, lng: geo.pos.lng }));
+      } catch {
+        // ignore
+      }
+      setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 13.5 });
     }
   }, [geo.pos]);
 
@@ -151,19 +154,18 @@ function Game() {
       if (selected) setSelected(null);
       else if (creating) setCreating(false);
       else if (nearbyOpen) setNearbyOpen(false);
-      else if (cityListOpen) setCityListOpen(false);
       else if (profileOpen) setProfileOpen(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, creating, nearbyOpen, cityListOpen, profileOpen]);
+  }, [selected, creating, nearbyOpen, profileOpen]);
 
   // Sync active tab to map when all sheets close
   useEffect(() => {
-    if (!nearbyOpen && !cityListOpen && !profileOpen && !creating && !selected) {
+    if (!nearbyOpen && !profileOpen && !creating && !selected) {
       setActiveTab("map");
     }
-  }, [nearbyOpen, cityListOpen, profileOpen, creating, selected]);
+  }, [nearbyOpen, profileOpen, creating, selected]);
 
   const openDiscovery = useCallback(
     async (id: number) => {
@@ -222,10 +224,6 @@ function Game() {
           setActiveTab("explore");
           setNearbyOpen(true);
         }}
-        onCityList={() => {
-          setActiveTab("cities");
-          setCityListOpen(true);
-        }}
         categoryFilter={categoryFilter}
         onSelectCategory={setCategoryFilter}
         categories={CATEGORIES}
@@ -235,12 +233,8 @@ function Game() {
       <StatsDock
         stats={stats.data}
         summary={summary.data}
-        onCityList={() => {
-          setActiveTab("cities");
-          setCityListOpen(true);
-        }}
         onRecenter={() => {
-          if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
+          if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 13.5 });
           else gpsHint();
         }}
         onNearbyList={() => {
@@ -256,7 +250,7 @@ function Game() {
         }}
       />
 
-      {/* 4. Persistent 5-Tab Bottom Navigation */}
+      {/* 4. Streamlined 4-Tab Bottom Navigation */}
       <BottomNav
         activeTab={activeTab}
         onSelectTab={(tab) => {
@@ -264,17 +258,14 @@ function Game() {
           if (tab === "map") {
             setSelected(null);
             setNearbyOpen(false);
-            setCityListOpen(false);
             setProfileOpen(false);
             setCreating(false);
-            if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 15.5 });
+            if (geo.pos) setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 13.5 });
           } else if (tab === "explore") {
             setNearbyOpen(true);
           } else if (tab === "create") {
             if (geo.pos) setCreating(true);
             else gpsHint();
-          } else if (tab === "cities") {
-            setCityListOpen(true);
           } else if (tab === "profile") {
             setProfileOpen(true);
           }
@@ -328,18 +319,6 @@ function Game() {
           onJumpLucknow={() => {
             setFlyTo({ lat: 26.8467, lng: 80.9462, zoom: 13.5 });
             emitFx({ kind: "toast", text: "Flying to Lucknow expedition center" });
-          }}
-        />
-      )}
-
-      {/* World Cities Sheet */}
-      {cityListOpen && (
-        <CityListSheet
-          summary={summary.data}
-          onClose={() => setCityListOpen(false)}
-          onFly={(lat, lng, zoom) => {
-            setCityListOpen(false);
-            setFlyTo({ lat, lng, zoom });
           }}
         />
       )}
