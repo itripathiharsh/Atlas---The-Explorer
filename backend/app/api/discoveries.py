@@ -90,10 +90,11 @@ def nearby(
     db: DbDep,
     lat: float = Query(ge=-90, le=90),
     lng: float = Query(ge=-180, le=180),
-    radius_m: float = Query(default=2000, gt=0, le=50_000),
+    radius_m: float = Query(default=25000, gt=0, le=50_000),
 ):
-    lat_deg = radius_m / 111_320
-    lng_deg = radius_m / (111_320 * max(0.1, __import__("math").cos(__import__("math").radians(lat))))
+    query_radius = max(radius_m, 20_000)
+    lat_deg = query_radius / 111_320
+    lng_deg = query_radius / (111_320 * max(0.1, __import__("math").cos(__import__("math").radians(lat))))
     candidates = (
         db.query(Discovery)
         .filter(
@@ -105,11 +106,12 @@ def nearby(
         )
         .all()
     )
-    # If the area is sparse or new, dynamically discover notable places around this coordinate
-    if len(candidates) < 4:
+
+    # If the area is sparse or new, dynamically discover notable encyclopedic places around this coordinate
+    if len(candidates) < 5:
         try:
             from ..services.places import fetch_and_populate_global_discoveries
-            fetch_and_populate_global_discoveries(db, lat, lng, radius_m=radius_m, user_id=user.id)
+            fetch_and_populate_global_discoveries(db, lat, lng, radius_m=query_radius, user_id=user.id)
             candidates = (
                 db.query(Discovery)
                 .filter(
@@ -124,14 +126,33 @@ def nearby(
         except Exception:
             pass
 
+    # If still sparse, also check if coordinates belong to an existing mapped city
+    if len(candidates) < 5:
+        try:
+            from ..services.places import resolve_or_create_city
+            city = resolve_or_create_city(db, lat, lng)
+            if city:
+                city_candidates = (
+                    db.query(Discovery)
+                    .filter(Discovery.status == "active", Discovery.city_id == city.id)
+                    .all()
+                )
+                existing_ids = {c.id for c in candidates}
+                for c in city_candidates:
+                    if c.id not in existing_ids:
+                        candidates.append(c)
+        except Exception:
+            pass
+
     scored = sorted(
         ((haversine_m(lat, lng, d.lat, d.lng), d) for d in candidates),
         key=lambda t: t[0],
     )
+    max_return_dist = max(radius_m, 35_000)
     return [
         _to_out(db, d, user.id, distance_m=dist)
         for dist, d in scored
-        if dist <= radius_m
+        if dist <= max_return_dist
     ][:50]
 
 

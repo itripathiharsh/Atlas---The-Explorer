@@ -8,7 +8,7 @@ interface Props {
   center: { lat: number; lng: number };
   onClose: () => void;
   onSelect: (d: Discovery) => void;
-  onJumpLucknow: () => void;
+  onRecenter?: () => void;
 }
 
 const CATEGORIES = ["All", "Monument", "Park", "Museum", "Food", "Historic", "Nature", "Culture"];
@@ -35,14 +35,14 @@ function fmtDist(m: number | null): string {
   return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m)} m`;
 }
 
-export default function NearbySheet({ center, onClose, onSelect, onJumpLucknow }: Props) {
+export default function NearbySheet({ center, onClose, onSelect, onRecenter }: Props) {
   const [search, setSearch] = useState("");
   const [selectedCat, setSelectedCat] = useState("All");
 
   const key = `${center.lat.toFixed(2)},${center.lng.toFixed(2)}`;
   const nearby = useQuery<Discovery[]>({
     queryKey: ["nearby-list", key],
-    queryFn: () => api(`/discoveries/nearby?lat=${center.lat}&lng=${center.lng}&radius_m=6000`),
+    queryFn: () => api(`/discoveries/nearby?lat=${center.lat}&lng=${center.lng}&radius_m=25000`),
     refetchInterval: 60_000,
   });
 
@@ -159,15 +159,26 @@ export default function NearbySheet({ center, onClose, onSelect, onJumpLucknow }
               <h3 className="font-display text-base font-bold text-neutral-800">
                 No discoveries in this area yet
               </h3>
-              <p className="mt-1 text-xs text-stone-600 max-w-[260px] leading-relaxed">
-                Be the pioneer who charts it — tap the (+) button to record this spot!
+              <p className="mt-1 text-xs text-stone-600 max-w-[280px] leading-relaxed">
+                Be the pioneer who charts it — tap below to scan for encyclopedic landmarks, or tap (+) to record this spot!
               </p>
-              <button
-                onClick={onJumpLucknow}
-                className="btn-brand mt-4 px-5 py-2.5 text-xs text-[#061623] bg-emerald-600 font-bold hover:bg-emerald-500 text-white rounded-full transition"
-              >
-                Explore Lucknow instead
-              </button>
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                <button
+                  onClick={() => void nearby.refetch()}
+                  className="px-5 py-2.5 text-xs font-bold bg-[#0F2D20] text-white rounded-full transition shadow hover:bg-[#194532] active:scale-95 flex items-center gap-1.5"
+                >
+                  <Compass size={14} />
+                  Scan for Area Landmarks
+                </button>
+                {onRecenter && (
+                  <button
+                    onClick={onRecenter}
+                    className="px-4 py-2.5 text-xs font-bold bg-stone-200 text-stone-700 hover:bg-stone-300 rounded-full transition active:scale-95"
+                  >
+                    Center on My GPS
+                  </button>
+                )}
+              </div>
             </div>
           )}
 

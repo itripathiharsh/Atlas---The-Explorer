@@ -1,0 +1,308 @@
+[
+  {
+    "name": "Central Park",
+    "category": "Park",
+    "description": "Iconic 843-acre urban oasis in Manhattan featuring Bethesda Terrace, Bow Bridge, Wollman Rink, and scenic ramble paths.",
+    "lat": 40.785091,
+    "lng": -73.968285,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Statue of Liberty",
+    "category": "Monument",
+    "description": "Colossal neoclassical copper sculpture on Liberty Island in New York Harbor, a universal symbol of freedom and American heritage.",
+    "lat": 40.689249,
+    "lng": -74.044500,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1605130284535-11dd9eedc58a?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Empire State Building",
+    "category": "Monument",
+    "description": "Historic 102-story Art Deco skyscraper in Midtown Manhattan offering panoramic open-air 360° observatory decks.",
+    "lat": 40.748817,
+    "lng": -73.985428,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1555109307-f7d9da25c244?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "The Metropolitan Museum of Art (The Met)",
+    "category": "Museum",
+    "description": "One of the world's premier art institutions, housing over two million works spanning 5,000 years of global human creativity.",
+    "lat": 40.779437,
+    "lng": -73.963244,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Times Square",
+    "category": "Culture",
+    "description": "The pulsing 'Crossroads of the World' known for illuminated Broadway billboards, neon lights, and vibrant pedestrian plazas.",
+    "lat": 40.758896,
+    "lng": -73.985130,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Brooklyn Bridge",
+    "category": "Historic",
+    "description": "Magnificent 1883 hybrid cable-stayed suspension bridge connecting Manhattan and Brooklyn with a scenic elevated walkway.",
+    "lat": 40.706086,
+    "lng": -73.996864,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "The High Line",
+    "category": "Park",
+    "description": "Elevated 1.45-mile public greenway and garden path transformed from a historic industrial railway along Manhattan's West Side.",
+    "lat": 40.747993,
+    "lng": -74.004765,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1541370976299-4d20eb346765?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "One World Trade Center & 9/11 Memorial",
+    "category": "Monument",
+    "description": "Western Hemisphere's tallest building alongside the poignant twin reflecting pools honoring the victims in Lower Manhattan.",
+    "lat": 40.712743,
+    "lng": -74.013379,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1588714477688-cf28a50e94f7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Museum of Modern Art (MoMA)",
+    "category": "Museum",
+    "description": "Foremost museum of modern art showcasing masterpieces including Van Gogh's Starry Night, Warhol, Picasso, and Dalí.",
+    "lat": 40.761436,
+    "lng": -73.977621,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Rockefeller Center & Top of the Rock",
+    "category": "Viewpoint",
+    "description": "Historic Art Deco complex with the famous ice rink, NBC studios, and multi-tiered observation decks looking towards Central Park.",
+    "lat": 40.758740,
+    "lng": -73.978674,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Grand Central Terminal",
+    "category": "Historic",
+    "description": "World-renowned Beaux-Arts railroad landmark boasting the iconic astronomical ceiling mural, brass clock, and food concourse.",
+    "lat": 40.752726,
+    "lng": -73.977229,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1543731068-7e0f5beff43a?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "American Museum of Natural History",
+    "category": "Museum",
+    "description": "Renowned institution celebrated for immense dinosaur fossil halls, the Rose Center for Earth and Space, and biodiversity displays.",
+    "lat": 40.781324,
+    "lng": -73.973988,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1508997449629-303059a039c0?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Washington Square Park",
+    "category": "Park",
+    "description": "Vibrant Greenwich Village civic heart centered on the historic 1892 marble triumphal arch, live jazz performers, and chess games.",
+    "lat": 40.730823,
+    "lng": -73.997332,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Chelsea Market",
+    "category": "Food",
+    "description": "Enclosed food hall and artisan marketplace inside a vintage Nabisco industrial bakery in the Meatpacking District.",
+    "lat": 40.742416,
+    "lng": -74.006149,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Katz's Delicatessen",
+    "category": "Food",
+    "description": "Legendary Lower East Side Jewish deli serving piled-high hand-sliced pastrami on rye and corned beef sandwiches since 1888.",
+    "lat": 40.722230,
+    "lng": -73.987418,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "DUMBO & Brooklyn Bridge Park",
+    "category": "Viewpoint",
+    "description": "Cobblestone historic waterfront district providing the iconic framed viewpoint of the Manhattan Bridge and Lower Manhattan skyline.",
+    "lat": 40.703277,
+    "lng": -73.989718,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Wall Street & Charging Bull",
+    "category": "Historic",
+    "description": "Historic birthplace of American high finance featuring Federal Hall, the New York Stock Exchange, and the bronze Charging Bull.",
+    "lat": 40.705576,
+    "lng": -74.013421,
+    "city": "new_york",
+    "photo_url": "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Hollywood Sign",
+    "category": "Monument",
+    "description": "World-famous 45-foot monumental letters on Mount Lee overlooking Los Angeles, an indelible symbol of the global entertainment capital.",
+    "lat": 34.134115,
+    "lng": -118.321548,
+    "city": "los_angeles",
+    "photo_url": "https://images.unsplash.com/photo-1580655653885-65763b2597d0?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Griffith Observatory",
+    "category": "Viewpoint",
+    "description": "Spectacular Art Deco public observatory and planetarium with breathtaking vistas spanning downtown Los Angeles to the Pacific Ocean.",
+    "lat": 34.118434,
+    "lng": -118.300393,
+    "city": "los_angeles",
+    "photo_url": "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Santa Monica Pier",
+    "category": "Culture",
+    "description": "Historic 1909 ocean pier marking the western terminus of Route 66, home to Pacific Park's solar-powered Ferris wheel and seaside dining.",
+    "lat": 34.009923,
+    "lng": -118.496006,
+    "city": "los_angeles",
+    "photo_url": "https://images.unsplash.com/photo-1506146332389-18140dc7b2fb?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "The Getty Center",
+    "category": "Museum",
+    "description": "Richard Meier-designed architectural campus in Brentwood displaying European paintings, sculptures, and travertine courtyard gardens.",
+    "lat": 34.078036,
+    "lng": -118.474095,
+    "city": "los_angeles",
+    "photo_url": "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Hollywood Walk of Fame",
+    "category": "Culture",
+    "description": "Famous 15-block sidewalk along Hollywood Boulevard embedded with more than 2,700 brass stars honoring legends of film and music.",
+    "lat": 34.101558,
+    "lng": -118.326815,
+    "city": "los_angeles",
+    "photo_url": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Venice Beach Boardwalk",
+    "category": "Culture",
+    "description": "Vibrant seaside promenade famed for eccentric street performers, Muscle Beach outdoor gym, oceanfront skate park, and street art.",
+    "lat": 33.985047,
+    "lng": -118.469483,
+    "city": "los_angeles",
+    "photo_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "LACMA (Urban Light)",
+    "category": "Museum",
+    "description": "Major art museum complex in Miracle Mile, internationally celebrated for Chris Burden's 'Urban Light' assemblage of 202 historic lampposts.",
+    "lat": 34.063932,
+    "lng": -118.359241,
+    "city": "los_angeles",
+    "photo_url": "https://images.unsplash.com/photo-1566127444979-b3d2b654e3d7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Golden Gate Bridge",
+    "category": "Monument",
+    "description": "Internationally recognized 1.7-mile Art Deco suspension span in International Orange arching majestically across the Golden Gate strait.",
+    "lat": 37.819929,
+    "lng": -122.478255,
+    "city": "san_francisco",
+    "photo_url": "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Alcatraz Island",
+    "category": "Historic",
+    "description": "Former federal maximum-security penitentiary on a rocky island in San Francisco Bay that held notorious convicts like Al Capone.",
+    "lat": 37.826977,
+    "lng": -122.422956,
+    "city": "san_francisco",
+    "photo_url": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Fisherman's Wharf & Pier 39",
+    "category": "Food",
+    "description": "Historic waterfront destination renowned for sunbathing sea lions, freshly steamed clam chowder in sourdough bowls, and bay cruises.",
+    "lat": 37.808673,
+    "lng": -122.409821,
+    "city": "san_francisco",
+    "photo_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Palace of Fine Arts",
+    "category": "Monument",
+    "description": "Monumental Greco-Roman rotunda and colonnade originally built for the 1915 Panama-Pacific Exposition, mirrored in a tranquil swan lagoon.",
+    "lat": 37.802931,
+    "lng": -122.448423,
+    "city": "san_francisco",
+    "photo_url": "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Lombard Street (Crooked Street)",
+    "category": "Street",
+    "description": "The famously steep 'crookedest street in the world' featuring eight tight hairpin switchbacks paved in red brick and bordered by hydrangeas.",
+    "lat": 37.802139,
+    "lng": -122.418740,
+    "city": "san_francisco",
+    "photo_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Golden Gate Park",
+    "category": "Park",
+    "description": "Sprawling 1,017-acre sanctuary housing the Japanese Tea Garden, Conservatory of Flowers, California Academy of Sciences, and bison paddock.",
+    "lat": 37.769421,
+    "lng": -122.486214,
+    "city": "san_francisco",
+    "photo_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Millennium Park & Cloud Gate (The Bean)",
+    "category": "Monument",
+    "description": "Chicago's premier civic gathering space featuring Anish Kapoor's seamless polished stainless steel sculpture reflecting the skyline.",
+    "lat": 41.882702,
+    "lng": -87.623303,
+    "city": "chicago",
+    "photo_url": "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Art Institute of Chicago",
+    "category": "Museum",
+    "description": "Legendary museum guarding one of the world's finest collections of Impressionist and American masterpieces including Nighthawks.",
+    "lat": 41.879585,
+    "lng": -87.623713,
+    "city": "chicago",
+    "photo_url": "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Navy Pier",
+    "category": "Culture",
+    "description": "Historic 3,300-foot landmark pier stretching into Lake Michigan, featuring the Centennial Wheel, waterside eateries, and tour boats.",
+    "lat": 41.891694,
+    "lng": -87.604294,
+    "city": "chicago",
+    "photo_url": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "name": "Willis Tower Skydeck",
+    "category": "Viewpoint",
+    "description": "103rd-floor skyscraper observation deck with 'The Ledge' — glass-bottomed boxes projecting 4.3 feet out into the open sky.",
+    "lat": 41.878876,
+    "lng": -87.635915,
+    "city": "chicago",
+    "photo_url": "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?auto=format&fit=crop&w=800&q=80"
+  }
+]

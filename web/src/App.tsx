@@ -309,16 +309,20 @@ function Game() {
       {/* Nearby Discoveries Sheet */}
       {nearbyOpen && (
         <NearbySheet
-          center={mapCenter}
+          center={geo.pos ? { lat: geo.pos.lat, lng: geo.pos.lng } : mapCenter}
           onClose={() => setNearbyOpen(false)}
           onSelect={(d) => {
             setNearbyOpen(false);
             setSelected(d);
             setFlyTo({ lat: d.lat, lng: d.lng, zoom: 16 });
           }}
-          onJumpLucknow={() => {
-            setFlyTo({ lat: 26.8467, lng: 80.9462, zoom: 13.5 });
-            emitFx({ kind: "toast", text: "Flying to Lucknow expedition center" });
+          onRecenter={() => {
+            if (geo.pos) {
+              setFlyTo({ lat: geo.pos.lat, lng: geo.pos.lng, zoom: 14 });
+              emitFx({ kind: "toast", text: "Centering on your location" });
+            } else {
+              setFlyTo({ lat: mapCenter.lat, lng: mapCenter.lng, zoom: 14 });
+            }
           }}
         />
       )}

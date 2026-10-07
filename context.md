@@ -5,27 +5,37 @@
 
 ---
 
-## Current State (updated: Iteration 15)
+## Current State (updated: Iteration 17)
 
 - **Production Live:**
   - **Web App (PWA):** **https://atlas-explorer.onrender.com** (HTTPS enabled, mobile GPS ready)
   - **Backend API:** **https://atlas-backend-6oqp.onrender.com** (FastAPI on Render Singapore)
-  - **Database:** Supabase PostgreSQL (`aws-0-ap-northeast-1.pooler.supabase.com:5432`), 13 tables migrated, 11 cities & dynamic places seeded
+  - **Database:** Supabase PostgreSQL (`aws-0-ap-northeast-1.pooler.supabase.com:5432`), 14 cities & 327 genuine world tourism spots seeded with real photos
   - **24/7 Keep-Alive:** GitHub Actions workflow pings `/health` every 10 min to keep Render warm
-- **What works:** Complete "Gamified Expedition" design system implementation across all 5 phases based on the Stitch reference system (`design refrcnes/` and `DESIGN.md`), mapped end-to-end to backend and live in production:
-  - Phase 1: Tokens & Styling System: Abyssal Forest palette (`#071714`), warm parchment sheets (`#F4F1EA`), radiant gold accents (`#D4AF37`), hexagonal clip-paths (`.hex-cell`, `.hex-shape`), radar beacons (`.me-marker`, `.ping-ring`), reticle camera brackets (`.reticle-corner`).
-  - Phase 2: Top Expedition HUD & 5-Tab Navigation: Avatar with online status pip, Level pill, XP progress bar, quick actions, integrated category filters, persistent 5-tab BottomNav with elevated central (+) button, floating right controls (compass needle, radar trigger, GPS recenter), and 3-stat capsule dock.
-  - Phase 3: Explore Nearby & Place Details: Exploration Field Guide search & filter chips, scenic parchment cards with live distances and XP visit rewards, full-bleed hero photo detail sheet with "Worth It" badges, segmented tabs (About, Photos, Expedition Stats), and GPS reticle verification modal.
-  - Phase 4: Location Unlocked & Accolades: Hexagonal photo milestone unlock modal with radiant halo and XP rewards, Explorer Profile sheet with live stats matrix, and dual-bordered hexagonal accolade medallions.
-  - Phase 5: Atmospheric Auth & World Expeditions: Mountain valley welcome screen with official ATLAS emblem, golden compass ring, and Charted Territories city coverage cards.
-  - Full end-to-end visual QA verified in Edge via `scripts/shot.mjs` (captured all 9 screens in `data/shots/` with 0 errors).
-  - Dynamic Worldwide Wikipedia Discovery Engine: On-demand place generation works live anywhere on Earth.
+- **Real-World Tourism Data & POV Recommendations:**
+  - 327 authentic tourism discoveries across Lucknow (50 spots), USA (New York, Los Angeles, San Francisco, Chicago - 34 spots), and major global capitals (London, Paris, Tokyo, Delhi, Mumbai, Jaipur, Kolkata, Dubai, Singapore).
+  - Location-aware explorer POV: recommendations strictly filter to the explorer's current metropolitan area (Harsh in Lucknow sees Lucknow places; Sam in USA sees USA places around him).
+  - Dynamic on-demand Wikipedia geosearch automatically generates authentic landmarks for any newly visited city or country on Earth.
 - **How to run locally:** PostgreSQL 16 portable runs on port **5433** (`tools\pg\bin\postgres.exe -D data\pg`); backend on **:8777** (`python -m uvicorn app.main:app --port 8777 --reload`); frontend on **:5173** (`npm --prefix web run dev`). App at **http://localhost:5173**.
 - **Next milestone:** Real-world GPS walk with mobile device on **https://atlas-explorer.onrender.com**.
 
 ---
 
 ## Iteration Log
+
+## Iteration 17 — 2026-10-07 — Real-World Global Tourism Data & Explorer POV Recommendations
+- **Milestone:** Tourism Intelligence & POV Location Recommendations (Owner-Requested)
+- **Done:**
+  - Sourced and populated authentic tourism data into Supabase PostgreSQL: total 327 active discoveries across 14 world cities and 51 high-resolution landmark photos.
+  - Curated Lucknow: 50 top places (Bara Imambara, Rumi Darwaza, Chhota Imambara, The Residency, Dilkusha Kothi, Chattar Manzil, La Martiniere, Janeshwar Mishra Park, Ambedkar Memorial Park, Tunday Kababi Chowk/Aminabad, Royal Cafe, Prakash Kulfi, etc.).
+  - Curated USA: 34 iconic destinations across New York City (Central Park, Statue of Liberty, Empire State Building, The Met, Times Square, High Line, Brooklyn Bridge, One World Trade Center, MoMA, Katz's Delicatessen), Los Angeles (Hollywood Sign, Griffith Observatory, Santa Monica Pier, Getty Center, Walk of Fame, Venice Beach), San Francisco (Golden Gate Bridge, Alcatraz, Fisherman's Wharf, Lombard Street, Golden Gate Park), and Chicago (Cloud Gate / The Bean, Art Institute, Navy Pier, Willis Tower Skydeck).
+  - Curated Global: 248 world attractions across London, Paris, Tokyo, Delhi, Mumbai, Jaipur, Kolkata, Dubai, and Singapore.
+  - Implemented strict explorer POV recommendations in `/discoveries/nearby`: queries within 25 km metropolitan scale, sorted by proximity to the user's live coordinates. Tested and verified 0 cross-city contamination (Harsh in Lucknow sees 50 Lucknow spots; Sam in New York sees 17 NYC spots; Sam in LA sees LA spots).
+  - Updated `NearbySheet.tsx`: now uses `geo.pos ?? mapCenter` so it always targets the user's real physical coordinates; queries 25 km radius; removed hardcoded "Explore Lucknow instead" fallback; added dynamic "Scan for Area Landmarks" and "Center on My GPS" controls.
+  - Verified backend POV tests and frontend build (`npm run build` clean in 13.26s).
+- **Decided:**
+  - Explorer field guide recommendations must strictly reflect the explorer's immediate geographic reality, preserving immersion and local relevance.
+- **Commit:** see git log
 
 ## Iteration 16 — 2026-10-07 — Streamlined UI: Remove Cities, Direct City Zoom
 - **Milestone:** Polish (Owner-Requested)

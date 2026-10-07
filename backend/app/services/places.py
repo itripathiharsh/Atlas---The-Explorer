@@ -127,7 +127,7 @@ def fetch_and_populate_global_discoveries(
     db: Session,
     lat: float,
     lng: float,
-    radius_m: float = 3000,
+    radius_m: float = 5000,
     user_id: int | None = None,
 ) -> int:
     """On-demand discovery spawner: fetches encyclopedic landmarks anywhere on Earth via Wikipedia geosearch."""
@@ -139,22 +139,24 @@ def fetch_and_populate_global_discoveries(
     city = resolve_or_create_city(db, lat, lng)
 
     try:
-        search_radius = min(10000, max(2500, int(radius_m * 1.5)))
+        search_radius = min(10000, max(4000, int(radius_m * 1.5)))
         url = (
             f"https://en.wikipedia.org/w/api.php?action=query&list=geosearch"
-            f"&gscoord={lat}|{lng}&gsradius={search_radius}&gslimit=15&format=json"
+            f"&gscoord={lat}|{lng}&gsradius={search_radius}&gslimit=30&format=json"
         )
         req = urllib.request.Request(url, headers=HEADERS)
-        with urllib.request.urlopen(req, timeout=4.0) as resp:
+        with urllib.request.urlopen(req, timeout=5.0) as resp:
             geo_data = json.loads(resp.read().decode("utf-8"))
 
         items = geo_data.get("query", {}).get("geosearch", [])
         if not items:
+            _DISCOVERY_FETCHED_COORDS.discard(coord_key)
             return 0
 
         # Filter items and batch-fetch extracts and photos
-        page_ids = [str(item["pageid"]) for item in items[:12]]
+        page_ids = [str(item["pageid"]) for item in items[:25]]
         if not page_ids:
+            _DISCOVERY_FETCHED_COORDS.discard(coord_key)
             return 0
 
         details_url = (
@@ -162,7 +164,7 @@ def fetch_and_populate_global_discoveries(
             f"&prop=extracts|pageimages&exintro=1&explaintext=1&pithumbsize=800&format=json"
         )
         req2 = urllib.request.Request(details_url, headers=HEADERS)
-        with urllib.request.urlopen(req2, timeout=4.5) as resp2:
+        with urllib.request.urlopen(req2, timeout=5.5) as resp2:
             pages_data = json.loads(resp2.read().decode("utf-8")).get("query", {}).get("pages", {})
 
         photo_author_id = user_id
@@ -179,7 +181,7 @@ def fetch_and_populate_global_discoveries(
             item_lng = float(item["lon"])
 
             # Skip generic administrative regions or districts
-            if any(term in title.lower() for term in ["district", "constituency", "division", "census town", "subdivision"]):
+            if any(term in title.lower() for term in ["district", "constituency", "division", "census town", "subdivision", "polling station"]):
                 continue
 
             # Check if discovery already exists nearby (within 50 meters or same name)
@@ -240,7 +242,11 @@ def fetch_and_populate_global_discoveries(
             created_count += 1
 
         db.commit()
+        if created_count == 0:
+            _DISCOVERY_FETCHED_COORDS.discard(coord_key)
         return created_count
     except Exception:
         db.rollback()
+        _DISCOVERY_FETCHED_COORDS.discard(coord_key)
         return 0
+

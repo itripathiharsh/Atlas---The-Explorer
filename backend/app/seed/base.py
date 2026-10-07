@@ -46,6 +46,12 @@ CITIES = [
      "center_lat": 25.2048, "center_lng": 55.2708},
     {"name": "singapore", "display_name": "Singapore", "boundary": octagon(1.3521, 103.8198, 10),
      "center_lat": 1.3521, "center_lng": 103.8198},
+    {"name": "los_angeles", "display_name": "Los Angeles", "boundary": octagon(34.0522, -118.2437, 20),
+     "center_lat": 34.0522, "center_lng": -118.2437},
+    {"name": "san_francisco", "display_name": "San Francisco", "boundary": octagon(37.7749, -122.4194, 12),
+     "center_lat": 37.7749, "center_lng": -122.4194},
+    {"name": "chicago", "display_name": "Chicago", "boundary": octagon(41.8781, -87.6298, 16),
+     "center_lat": 41.8781, "center_lng": -87.6298},
 ]
 
 ACHIEVEMENTS = [
