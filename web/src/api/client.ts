@@ -17,12 +17,14 @@ export function setToken(token: string | null) {
   else localStorage.removeItem(TOKEN_KEY);
 }
 
+const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+
 export async function api<T>(
   path: string,
   opts: { method?: string; body?: unknown } = {},
 ): Promise<T> {
   const token = getToken();
-  const res = await fetch("/api" + path, {
+  const res = await fetch(`${API_BASE}/api${path}`, {
     method: opts.method ?? "GET",
     headers: {
       ...(opts.body !== undefined ? { "Content-Type": "application/json" } : {}),
@@ -52,7 +54,7 @@ export async function uploadPhoto(discoveryId: number, file: File): Promise<{ ur
   const token = getToken();
   const fd = new FormData();
   fd.append("file", file);
-  const res = await fetch(`/api/discoveries/${discoveryId}/photos`, {
+  const res = await fetch(`${API_BASE}/api/discoveries/${discoveryId}/photos`, {
     method: "POST",
     headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: fd,
