@@ -27,6 +27,22 @@
 
 ## Iteration Log
 
+## Iteration 16 — 2026-10-07 — Streamlined UI: Remove Cities, Direct City Zoom
+- **Milestone:** Polish (Owner-Requested)
+- **Done:**
+  - Removed "Cities" from the StatsDock banner: now cleanly displays core metrics (`EXPLORED`, `CELLS`, `VISITED`) without hardcoded city names or opening the city modal.
+  - Removed "Cities" tab from BottomNav: streamlined to a balanced 4-element navigation (`Map`, `Explore`, elevated central `(+)`, and `Profile`).
+  - Removed "World Cities" button from HUD header quick actions.
+  - Removed `CityListSheet` modal from active render tree.
+  - Upgraded Map Canvas initialization: map immediately starts centered at the user's current city/location (reading last position from `localStorage` or fast IP geolocation fallback, rather than defaulting to hardcoded Lucknow at zoom 2.4).
+  - Configured city-level zoom (`zoom: 13.5`) upon GPS arrival and recenter, allowing players to immediately see their local neighborhood while freely zooming out to view other locations or the whole world.
+  - Verified `npm run build` clean with 0 errors. Deployed to production on Render (`atlas-explorer`).
+- **Decided:**
+  - In a dynamic worldwide game, hardcoded city selectors are obsolete; the map always begins where the explorer physically is right now.
+- **Not working / known issues:** none.
+- **Next:** Real-world GPS walk with mobile device on `https://atlas-explorer.onrender.com`.
+- **Commit:** see git log
+
 ## Iteration 15 — 2026-10-07 — Full Production Deployment (Render + Supabase + 24/7 Keep-Alive)
 - **Milestone:** Cloud Production Deployment (End-to-End)
 - **Done:**
