@@ -39,6 +39,7 @@
   - Configured server-side rewrites (`/api/*` and `/uploads/*` -> `atlas-backend-6oqp.onrender.com`, fallback `/*` -> `/index.html`) eliminating CORS issues and providing HTTPS for mobile Geolocation.
   - Verified live dynamic discovery engine: queried Lucknow coordinates (`26.8467, 80.9462`), Wikipedia GeoSearch auto-spawned real places and stored them in Supabase.
   - Updated `.github/workflows/keep_alive.yml` with the live Render backend URL so scheduled pings run automatically without manual secret configuration.
+  - Resolved CORS preflight issue where browser OPTIONS requests from `atlas-explorer.onrender.com` returned 400 Disallowed CORS origin. Updated `allow_origin_regex = r".*"` in `backend/app/main.py`. Verified OPTIONS and POST /api/auth/register return 200 with proper Access-Control-Allow-Origin header.
   - Note on Vercel: Vercel key `vck_...` had restricted permissions (no project creation/file upload scope). Deployed both frontend and backend on Render with full API automation.
 - **Decided:**
   - Both frontend and backend hosted on Render under same team workspace for unified management, zero-config rewrites, and instant auto-deploy on git push.
