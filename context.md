@@ -5,24 +5,48 @@
 
 ---
 
-## Current State (updated: Iteration 14)
+## Current State (updated: Iteration 15)
 
-- **What works:** Complete "Gamified Expedition" design system implementation across all 5 phases based on the Stitch reference system (`design refrcnes/` and `DESIGN.md`), mapped end-to-end to backend:
+- **Production Live:**
+  - **Web App (PWA):** **https://atlas-explorer.onrender.com** (HTTPS enabled, mobile GPS ready)
+  - **Backend API:** **https://atlas-backend-6oqp.onrender.com** (FastAPI on Render Singapore)
+  - **Database:** Supabase PostgreSQL (`aws-0-ap-northeast-1.pooler.supabase.com:5432`), 13 tables migrated, 11 cities & dynamic places seeded
+  - **24/7 Keep-Alive:** GitHub Actions workflow pings `/health` every 10 min to keep Render warm
+- **What works:** Complete "Gamified Expedition" design system implementation across all 5 phases based on the Stitch reference system (`design refrcnes/` and `DESIGN.md`), mapped end-to-end to backend and live in production:
   - Phase 1: Tokens & Styling System: Abyssal Forest palette (`#071714`), warm parchment sheets (`#F4F1EA`), radiant gold accents (`#D4AF37`), hexagonal clip-paths (`.hex-cell`, `.hex-shape`), radar beacons (`.me-marker`, `.ping-ring`), reticle camera brackets (`.reticle-corner`).
   - Phase 2: Top Expedition HUD & 5-Tab Navigation: Avatar with online status pip, Level pill, XP progress bar, quick actions, integrated category filters, persistent 5-tab BottomNav with elevated central (+) button, floating right controls (compass needle, radar trigger, GPS recenter), and 3-stat capsule dock.
   - Phase 3: Explore Nearby & Place Details: Exploration Field Guide search & filter chips, scenic parchment cards with live distances and XP visit rewards, full-bleed hero photo detail sheet with "Worth It" badges, segmented tabs (About, Photos, Expedition Stats), and GPS reticle verification modal.
   - Phase 4: Location Unlocked & Accolades: Hexagonal photo milestone unlock modal with radiant halo and XP rewards, Explorer Profile sheet with live stats matrix, and dual-bordered hexagonal accolade medallions.
   - Phase 5: Atmospheric Auth & World Expeditions: Mountain valley welcome screen with official ATLAS emblem, golden compass ring, and Charted Territories city coverage cards.
   - Full end-to-end visual QA verified in Edge via `scripts/shot.mjs` (captured all 9 screens in `data/shots/` with 0 errors).
-  - Backend tests 39/39 passed; frontend `npm run build` clean with 0 errors.
-- **How to run:** PostgreSQL 16 portable runs on port **5433** (`tools\pg\bin\postgres.exe -D data\pg`); backend on **:8777** (`python -m uvicorn app.main:app --port 8777 --reload`); frontend on **:5173** (`npm --prefix web run dev`). App at **http://localhost:5173**.
-- **Next milestone:** Real-world GPS walk with mobile device.
+  - Dynamic Worldwide Wikipedia Discovery Engine: On-demand place generation works live anywhere on Earth.
+- **How to run locally:** PostgreSQL 16 portable runs on port **5433** (`tools\pg\bin\postgres.exe -D data\pg`); backend on **:8777** (`python -m uvicorn app.main:app --port 8777 --reload`); frontend on **:5173** (`npm --prefix web run dev`). App at **http://localhost:5173**.
+- **Next milestone:** Real-world GPS walk with mobile device on **https://atlas-explorer.onrender.com**.
 
 ---
 
 ## Iteration Log
 
-## Iteration 14 — 2026-10-07 — Dynamic Worldwide Discovery Engine & Auto-Territories
+## Iteration 15 — 2026-10-07 — Full Production Deployment (Render + Supabase + 24/7 Keep-Alive)
+- **Milestone:** Cloud Production Deployment (End-to-End)
+- **Done:**
+  - Resolved syntax bug in `backend/app/main.py` (`allow_origin_regex`).
+  - Created and deployed FastAPI Web Service on Render (`atlas-backend`, Singapore region, ID `srv-db30o6cs728c73auqhl0`) linked to `origin/main`.
+  - Configured production database connection to Supabase PostgreSQL cluster (`aws-0-ap-northeast-1.pooler.supabase.com:5432`) via connection pooling with `postgresql+psycopg://` driver.
+  - Configured dynamic entrypoint `python -m app.main` with environment `$PORT` binding for Render.
+  - Verified backend registration, login, JWT issuance, and database read/writes in production against Supabase.
+  - Deployed frontend React PWA on Render as a Static Site (`atlas-explorer`, ID `srv-db30qpqjnfac738asr60`) with Vite production build (`dist/`).
+  - Configured server-side rewrites (`/api/*` and `/uploads/*` -> `atlas-backend-6oqp.onrender.com`, fallback `/*` -> `/index.html`) eliminating CORS issues and providing HTTPS for mobile Geolocation.
+  - Verified live dynamic discovery engine: queried Lucknow coordinates (`26.8467, 80.9462`), Wikipedia GeoSearch auto-spawned real places and stored them in Supabase.
+  - Updated `.github/workflows/keep_alive.yml` with the live Render backend URL so scheduled pings run automatically without manual secret configuration.
+  - Note on Vercel: Vercel key `vck_...` had restricted permissions (no project creation/file upload scope). Deployed both frontend and backend on Render with full API automation.
+- **Decided:**
+  - Both frontend and backend hosted on Render under same team workspace for unified management, zero-config rewrites, and instant auto-deploy on git push.
+  - HTTPS is active on `https://atlas-explorer.onrender.com`, enabling immediate phone testing without certificate bypass warnings.
+- **Not working / known issues:** none.
+- **Next:** Real-world GPS walk with mobile device on `https://atlas-explorer.onrender.com`.
+- **Commit:** see git log
+
 - **Milestone:** M3/M4 (World Coverage & Dynamic Exploration)
 - **Done:**
   - Solved the 11-14 hardcoded city limitation: ATLAS now works dynamically anywhere on Earth.
